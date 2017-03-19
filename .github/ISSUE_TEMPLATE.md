@@ -1,11 +1,11 @@
-** Type **
+**Type**
 
 Feature / Bug / Enhancement
 
-** Current behaviour **
+**Current behaviour**
 
 
-** Expected Behaviour **
+**Expected behaviour**
 
 
-** Motivation / use case **
+**Motivation / use case**
