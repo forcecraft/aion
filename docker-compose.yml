@@ -1,0 +1,21 @@
+version: '3'
+services:
+  db:
+    image: postgres:9.6
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: aion
+  aion:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    command: mix phoenix.server
+    volumes:
+      - ./aion/:/aion
+      - /aion/deps
+      - /aion/node_modules
+    ports:
+      - "4000:4000"
