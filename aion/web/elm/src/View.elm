@@ -8,7 +8,6 @@ import Msgs exposing (Msg(..))
 import Models exposing (Model, Room)
 import String exposing (concat)
 import Routing exposing (roomsPath)
-import Debug exposing (log)
 
 
 view: Model -> Html Msg
@@ -21,7 +20,6 @@ page: Model -> Html Msg
 page model =
   case model.route of
     Models.LoginRoute ->
-      log (toString model.route)
       loginView model
 
     Models.RoomsRoute ->
