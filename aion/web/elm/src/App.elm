@@ -2,9 +2,9 @@ module App exposing (..)
 
 import Html exposing (..)
 import Msgs exposing (Msg)
-import Models exposing (..)
+import Models exposing (Model, initialModel)
 import Update exposing (update)
-import View exposing (..)
+import View exposing (view)
 import Navigation exposing (Location)
 import Routing
 
