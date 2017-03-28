@@ -34,7 +34,7 @@ loginView: Model -> Html Msg
 loginView model =
   div []
     [ p [] [text "Welcome to Aion!"]
-    , input [ type_ "text", placeholder "Username", onInput Username] []
+    , input [ type_ "text", placeholder "Username", onInput UpdateUsername] []
     , p [] [text (concat ["Hello ", model.username, ""])]
     , navigationButton
     ]

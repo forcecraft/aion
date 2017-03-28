@@ -3,5 +3,5 @@ module Msgs exposing(..)
 import Navigation exposing (Location)
 
 type Msg
-  = Username String
+  = UpdateUsername String
   | OnLocationChange Location

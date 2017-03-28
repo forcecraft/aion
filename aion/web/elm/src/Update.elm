@@ -8,9 +8,9 @@ import Routing exposing (parseLocation)
 update: Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case msg of
-    Username username ->
+    UpdateUsername username ->
       ({ model | username = username }, Cmd.none)
-    Msgs.OnLocationChange location ->
+    OnLocationChange location ->
       let
         newRoute =
           parseLocation location
