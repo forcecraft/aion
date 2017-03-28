@@ -1,8 +1,23 @@
 module Models exposing (..)
 
 type alias Model =
-  { username: String }
+  { username: String
+  , rooms: List Room
+  , route: Route
+  }
 
-model: Model
-model =
-  Model ""
+type alias Room =
+    String
+
+initialModel: Route -> Model
+initialModel route =
+  { username = ""
+  , rooms = ["fizyka", "historia", "matematyka"]
+  , route = route
+  }
+
+-- ROUTING
+type Route
+  = LoginRoute
+  | RoomsRoute
+  | NotFoundRoute
