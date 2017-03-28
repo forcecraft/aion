@@ -29,6 +29,7 @@ page model =
       notFoundView
 
 
+-- LOGIN VIEW
 loginView: Model -> Html Msg
 loginView model =
   div []
@@ -50,6 +51,7 @@ navigationButton =
       , text "Rooms"]
 
 
+-- ROOMS VIEW
 roomsView: Model -> Html Msg
 roomsView model =
   div []
@@ -64,6 +66,7 @@ listRooms rooms =
     (List.map (\room -> li [] [ text room ]) rooms)
 
 
+-- NOT FOUND VIEW
 notFoundView: Html Msg
 notFoundView =
   div []
