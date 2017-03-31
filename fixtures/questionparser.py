@@ -16,17 +16,31 @@ def explore_directory(path):
 def parse_file(path):
     question_pattern = r'P\n' \
                        '%(?P<subject>.*)%\n' \
+                       '(\$(?P<image>.*)\$\n)?' \
                        '@(?P<question>.*)@\n' \
                        '@(?P<answers>.*)@\n'
 
     questions = list()
     with open(path, 'r') as f:
-        matches = re.finditer(question_pattern, f.read())
+        matches = re.finditer(re.compile(question_pattern), f.read())
         for match in matches:
-            groups = match.groups()
 
-            question = dict()
-            question['subject'], question['question'], question['answers'] = groups[0], groups[1], groups[2]
+            group_dict = dict()
+            if not match.group('image'):
+                group_dict = {
+                    'subject': 0,
+                    'question': 3,
+                    'answers': 4,
+                }
+
+            else:
+                group_dict = {
+                    'subject': 0,
+                    'image': 2,
+                    'question': 3,
+                    'answers': 4,
+                }
+            question = {group_name: match.groups()[group_id] for group_name, group_id in group_dict.items()}
             question = fix_coding(question)
             questions.append(question)
 
