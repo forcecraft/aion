@@ -13,34 +13,21 @@ def explore_directory(path):
     return questions
 
 
+# P\n%(?P<subject>([^%]|\n)*?)%\n(\$(?P<image>([^$]|\n)*?)\$\n)?@(?P<question>([^@]|\n)*?)@\n@(?P<answers>.*)@\n
+
 def parse_file(path):
     question_pattern = r'P\n' \
-                       '%(?P<subject>.*)%\n' \
-                       '(\$(?P<image>.*)\$\n)?' \
-                       '@(?P<question>.*)@\n' \
-                       '@(?P<answers>.*)@\n'
+                       '%(?P<subject>([^%]|\n)*?)%\n' \
+                       '(\$(?P<image>([^\$]|\n)*?)\$\n)?' \
+                       '@(?P<question>([^@]|\n)*?)@\n' \
+                       '@(?P<answers>([^@]|\n)*?)@\n'
 
     questions = list()
     with open(path, 'r') as f:
         matches = re.finditer(re.compile(question_pattern), f.read())
         for match in matches:
-
-            group_dict = dict()
-            if not match.group('image'):
-                group_dict = {
-                    'subject': 0,
-                    'question': 3,
-                    'answers': 4,
-                }
-
-            else:
-                group_dict = {
-                    'subject': 0,
-                    'image': 2,
-                    'question': 3,
-                    'answers': 4,
-                }
-            question = {group_name: match.groups()[group_id] for group_name, group_id in group_dict.items()}
+            group_names = ('subject', 'question', 'answers', 'image')
+            question = {group_name: match.group(group_name) for group_name in group_names if match.group(group_name)}
             question = fix_coding(question)
             questions.append(question)
 
