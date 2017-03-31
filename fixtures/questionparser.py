@@ -1,5 +1,7 @@
 import os, re
 
+from codingfix import fix_coding
+
 
 def explore_directory(path):
     questions = list()
@@ -7,6 +9,7 @@ def explore_directory(path):
         elem_path = os.path.join(path, elem)
         if os.path.isfile(elem_path):
             questions.extend(parse_file(elem_path))
+
     return questions
 
 
@@ -24,6 +27,7 @@ def parse_file(path):
 
             question = dict()
             question['subject'], question['question'], question['answers'] = groups[0], groups[1], groups[2]
+            question = fix_coding(question)
             questions.append(question)
 
     return questions
