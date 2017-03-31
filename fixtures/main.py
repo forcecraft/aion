@@ -1,5 +1,6 @@
 import argparse
 import questionparser
+from loader import load_questions
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Dump questions in postgresql database.')
@@ -12,5 +13,4 @@ if __name__ == '__main__':
 
     for path in paths:
         questions = questionparser.get_questions(path)
-
-    print(questions)
+    load_questions(questions)
