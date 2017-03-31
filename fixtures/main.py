@@ -1,16 +1,16 @@
-import argparse
-import questionparser
-from loader import load_questions
+import psycopg2
+from tqdm import tqdm
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Dump questions in postgresql database.')
-    parser.add_argument('-path', type=str, nargs='*',
-                        help="Provide path to file/folder containing questions in a proper format")
-    args = parser.parse_args()
-    paths = args.path
-    if paths is None:
-        paths = ['jpks/']
+from config import dbname, user, password, host
+from queries.answers import insert_answers
+from queries.subjects import get_or_insert_subject
+from queries.questions import get_or_insert_question
 
-    for path in paths:
-        questions = questionparser.get_questions(path)
-    load_questions(questions)
+
+def load_questions(questions):
+    conn = psycopg2.connect("dbname={} user={} password={} host={}".format(dbname, user, password, host))
+
+    for question in tqdm(questions, desc="Loading questions into the database"):
+        get_or_insert_subject(question['subject'], conn)
+        get_or_insert_question(question, conn)
+        insert_answers(question, conn)
