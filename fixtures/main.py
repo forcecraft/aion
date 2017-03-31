@@ -11,6 +11,6 @@ if __name__ == '__main__':
         paths = ['jpks/']
 
     for path in paths:
-        questions = questionparser.parse(path)
+        questions = questionparser.get_questions(path)
 
     print(questions)

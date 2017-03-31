@@ -33,7 +33,7 @@ def parse_file(path):
     return questions
 
 
-def parse(path):
+def get_questions(path):
     if os.path.isdir(path):
         results = explore_directory(path)
     elif os.path.isfile(path):
