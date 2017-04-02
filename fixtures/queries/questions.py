@@ -1,18 +1,11 @@
-from queries import escape_string
-from queries.subjects import get_subject_id
-
-
 def get_question_id(subject_id, content, image, conn):
     with conn.cursor() as cur:
-        if image == 'NULL':
-            query = """SELECT id FROM questions WHERE content = '{}' AND image_name IS NULL AND subject_id = '{}'""".format(
-                content, subject_id)
-        else:
-            query = """SELECT id FROM questions WHERE content = '{}' AND image_name = {} AND subject_id = '{}'""".format(
-                content, image, subject_id)
+        query = """SELECT id FROM questions WHERE content = '{}' AND image_name = {} AND subject_id = '{}'""".format(
+            content, image, subject_id)
         cur.execute(query)
         question_id = cur.fetchone()
-    return question_id[0] if question_id is not None else None
+
+    return question_id
 
 
 def get_or_insert_question(question, conn):
@@ -31,6 +24,6 @@ def get_or_insert_question(question, conn):
             cur.execute(query)
             conn.commit()
         else:
-            print("Question already in the database: {}".format(question))
+            print(question, content, image, subject_id)
 
     return get_question_id(subject_id, content, image, conn)
