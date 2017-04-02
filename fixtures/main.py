@@ -14,6 +14,3 @@ if __name__ == '__main__':
     for path in paths:
         questions = questionparser.get_questions(path)
     load_questions(questions)
-    # for question in questions:
-    #     if 'image' in question:
-            # print("yaya")

@@ -18,7 +18,7 @@ def parse_file(path):
             question = {group_name: match.group(group_name) for group_name in group_names if match.group(group_name)}
             question = fix_coding(question)
             questions.append(question)
-
+            assert 'answers' in question and 'subject' in question and 'question' in question
     return questions
 
 
