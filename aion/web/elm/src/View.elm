@@ -55,7 +55,7 @@ navigationButton =
 roomsView: Model -> Html Msg
 roomsView model =
   div []
-    [ div [ class "roomsNames" ] [ text "Rooms:" ]
+    [ div [] [ text "Rooms:" ]
     , listRooms model.rooms
     ]
 
