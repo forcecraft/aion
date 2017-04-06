@@ -1,5 +1,5 @@
-from queries import escape_string
-from queries.subjects import get_subject_id
+from src.queries import escape_string
+from src.queries.subjects import get_subject_id
 
 
 def get_question_id(subject_id, content, image, conn):

@@ -1,10 +1,10 @@
 import psycopg2
 from tqdm import tqdm
 
-from config import dbname, user, password, host
-from queries.answers import insert_answers
-from queries.subjects import get_or_insert_subject
-from queries.questions import get_or_insert_question
+from src.config import dbname, user, password, host
+from src.queries.answers import insert_answers
+from src.queries.subjects import get_or_insert_subject
+from src.queries.questions import get_or_insert_question
 
 
 def load_questions(questions):

@@ -1,6 +1,6 @@
 import os, re
 
-from codingfix import fix_coding
+from src.codingfix import fix_coding
 
 
 def parse_file(path):

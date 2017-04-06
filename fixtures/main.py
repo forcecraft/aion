@@ -1,6 +1,6 @@
 import argparse
-import questionparser
-from loader import load_questions
+from src.loader import load_questions
+from src.questionparser import get_questions
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Dump questions in postgresql database.')
@@ -12,5 +12,5 @@ if __name__ == '__main__':
         paths = ['jpks/']
 
     for path in paths:
-        questions = questionparser.get_questions(path)
+        questions = get_questions(path)
     load_questions(questions)

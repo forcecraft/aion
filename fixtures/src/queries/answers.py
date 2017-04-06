@@ -1,6 +1,6 @@
-from queries import escape_string
-from queries.questions import get_question_id
-from queries.subjects import get_subject_id
+from src.queries import escape_string
+from src.queries.questions import get_question_id
+from src.queries.subjects import get_subject_id
 
 
 def get_answer_id(question_id, answer_content, conn):
