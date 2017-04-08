@@ -2,6 +2,8 @@ FROM elixir:1.4.2
 
 WORKDIR /aion
 ADD aion /aion
+ADD fixtures /fixtures
+ADD scripts /scripts
 
 # Install nodeJS
 RUN apt-get update \
@@ -13,4 +15,10 @@ RUN apt-get update \
 RUN mix local.hex --force \
     && mix local.rebar --force \
     && mix deps.get \
-    && npm install
+    && npm install 
+
+# Install python pip and dependencies
+RUN apt-get -y install python3-pip \
+    && pwd \
+    && ls \
+    && pip3 install -r /fixtures/requirements.txt
