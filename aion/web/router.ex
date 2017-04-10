@@ -1,5 +1,6 @@
 defmodule Aion.Router do
   use Aion.Web, :router
+  use Addict.RoutesHelper
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -13,9 +14,12 @@ defmodule Aion.Router do
     plug :accepts, ["json"]
   end
 
+  scope "/" do
+    addict :routes
+  end
+
   scope "/", Aion do
     pipe_through :browser # Use the default browser stack
-
     get "/", PageController, :index
   end
 
@@ -23,7 +27,7 @@ defmodule Aion.Router do
   # scope "/api", Aion do
   #   pipe_through :api
   # end
-  
+
   scope "/api", Aion do
     pipe_through :api
 
