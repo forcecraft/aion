@@ -1,6 +1,6 @@
 module Update exposing (..)
 
-import Models.Models exposing (Model)
+import Models.Models exposing (Model, Route(..))
 import Msgs exposing (Msg(..))
 import Routing exposing (parseLocation)
 import Phoenix.Socket
@@ -29,7 +29,17 @@ update msg model =
         newRoute =
           parseLocation location
       in
-        ( { model | route = newRoute }, Cmd.none )
+        case newRoute of
+          RoomRoute roomId ->
+            let
+                channel = Phoenix.Channel.init ("rooms:" ++ (toString roomId) )
+                ( socket, cmd ) = Phoenix.Socket.join channel model.socket
+            in
+                ( { model | socket = socket , route = newRoute }
+                , Cmd.map PhoenixMsg cmd
+                )
+          _ ->
+            ( { model | route = newRoute }, Cmd.none )
 
     PhoenixMsg msg ->
       let

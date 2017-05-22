@@ -40,8 +40,6 @@ loginView model =
   div []
     [ p [] [text "Welcome to Aion!"]
     , navigationButton
-    , button [ onClick JoinChannel ] [ text "Join channel" ]
-    , button [ onClick SendMessage ] [ text "Send Message" ]
     ]
 
 

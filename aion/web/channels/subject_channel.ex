@@ -1,7 +1,7 @@
 defmodule Aion.SubjectChannel do
   use Phoenix.Channel
 
-  def join("rooms:lobby", _params, socket) do
+  def join("rooms:" <> _private_room_id, _params, socket) do
     {:ok, socket}
   end
 

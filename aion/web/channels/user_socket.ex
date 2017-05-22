@@ -2,7 +2,7 @@ defmodule Aion.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  channel "rooms:lobby", Aion.SubjectChannel
+  channel "rooms:*", Aion.SubjectChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket
