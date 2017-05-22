@@ -14,7 +14,7 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - db
-    command: mix phoenix.server
+    command: bash /scripts/run_migrations.sh
     volumes:
       - ./aion/:/aion
       - /aion/deps
