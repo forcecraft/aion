@@ -19,6 +19,4 @@ RUN mix local.hex --force \
 
 # Install python pip and dependencies
 RUN apt-get -y install python3-pip \
-    && pwd \
-    && ls \
     && pip3 install -r /fixtures/requirements.txt
