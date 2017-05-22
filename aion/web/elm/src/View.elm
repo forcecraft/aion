@@ -62,10 +62,23 @@ roomsView model =
     , listRooms model.rooms
     ]
 
-
 roomView: Model -> RoomId -> Html Msg
 roomView model roomId =
-  text(String.append "Room# " (toString roomId))
+  let
+      roomList = case model.rooms of
+        RemoteData.Success roomsData ->
+          roomsData.data
+        _ -> []
+
+      room = List.filter (\room -> room.id == roomId) roomList
+                    |> List.head
+
+      roomName = case room of
+                    Just room -> "Room# " ++ room.name
+                    _         -> "Room Not Found"
+
+  in
+      text roomName
 
 
 listRooms: WebData (RoomsData) -> Html Msg
