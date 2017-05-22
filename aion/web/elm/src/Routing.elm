@@ -10,7 +10,7 @@ matchers: Parser (Route -> a) a
 matchers =
   oneOf
     [ map LoginRoute top
-    , map RoomRoute (s "rooms" </> string)
+    , map RoomRoute (s "rooms" </> int)
     , map RoomsRoute (s "rooms")
     ]
 

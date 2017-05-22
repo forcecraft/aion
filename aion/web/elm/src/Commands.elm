@@ -29,5 +29,5 @@ roomsDecoder =
 roomDecoder : Decode.Decoder Room
 roomDecoder =
     decode Room
-        |> required "id" Decode.string
+        |> required "id" Decode.int
         |> required "name" Decode.string

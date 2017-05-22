@@ -21,16 +21,16 @@ type alias ChatMessage =
 update: Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case msg of
-    UpdateUsername username ->
-      ({ model | username = username }, Cmd.none)
     OnFetchRooms response ->
       ( { model | rooms = response }, Cmd.none )
+
     OnLocationChange location ->
       let
         newRoute =
           parseLocation location
       in
         ( { model | route = newRoute }, Cmd.none )
+
     PhoenixMsg msg ->
       let
         ( socket, cmd ) = Phoenix.Socket.update msg model.socket
@@ -38,6 +38,7 @@ update msg model =
         ( { model | socket = socket }
         , Cmd.map PhoenixMsg cmd
         )
+
     ReceiveChatMessage raw ->
       case JD.decodeValue chatMessageDecoder raw of
           Ok chatMessage ->

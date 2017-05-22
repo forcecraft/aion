@@ -1,7 +1,7 @@
 module Models.Room exposing (..)
 
 type alias RoomId =
-    String
+    Int
 
 type alias Room =
   {

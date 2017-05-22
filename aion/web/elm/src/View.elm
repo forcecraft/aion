@@ -39,8 +39,6 @@ loginView: Model -> Html Msg
 loginView model =
   div []
     [ p [] [text "Welcome to Aion!"]
-    , input [ type_ "text", placeholder "Username", onInput UpdateUsername] []
-    , p [] [text (concat ["Hello ", model.username, ""])]
     , navigationButton
     , button [ onClick JoinChannel ] [ text "Join channel" ]
     , button [ onClick SendMessage ] [ text "Send Message" ]
@@ -69,7 +67,7 @@ roomsView model =
 
 roomView: Model -> RoomId -> Html Msg
 roomView model roomId =
-  text(String.append "Room# " roomId)
+  text(String.append "Room# " (toString roomId))
 
 
 listRooms: WebData (RoomsData) -> Html Msg
@@ -83,7 +81,7 @@ listRooms response =
 
     RemoteData.Success roomsData ->
       ul []
-        (List.map (\room -> li [] [ a [href ("#rooms/" ++ room.id)] [text room.name] ]) roomsData.data)
+        (List.map (\room -> li [] [ a [href ("#rooms/" ++ (toString room.id))] [text room.name] ]) roomsData.data)
 
     RemoteData.Failure error ->
       text (toString error)

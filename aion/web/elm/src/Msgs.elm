@@ -7,8 +7,7 @@ import Phoenix.Socket
 import Json.Encode as JE
 
 type Msg
-  = UpdateUsername String
-  | OnLocationChange Location
+  = OnLocationChange Location
   | OnFetchRooms (WebData (RoomsData))
   | PhoenixMsg (Phoenix.Socket.Msg Msg)
   | ReceiveChatMessage JE.Value
