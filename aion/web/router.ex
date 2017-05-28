@@ -31,6 +31,7 @@ defmodule Aion.Router do
   scope "/api", Aion do
     pipe_through :api
 
+    get "/me", UserController, :get_user_info
     resources "/subjects", SubjectController, except: [:new, :edit]
     resources "/questions", QuestionController, except: [:new, :edit]
     resources "/answers", AnswerController, except: [:new, :edit]

@@ -18,7 +18,7 @@ initialModel route =
   , rooms = RemoteData.Loading
   , route = route
   , socket =
-    Phoenix.Socket.init "ws://localhost:4000/socket/websocket"
+    Phoenix.Socket.init "ws://localhost:4000/socket/websocket?username=lamayer"
         |> Phoenix.Socket.on "new:msg" "rooms:lobby" Msgs.ReceiveChatMessage
   }
 

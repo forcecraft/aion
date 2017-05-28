@@ -14,6 +14,7 @@ defmodule Aion do
       supervisor(Aion.Endpoint, []),
       # Start your own worker by calling: Aion.Worker.start_link(arg1, arg2, arg3)
       # worker(Aion.Worker, [arg1, arg2, arg3]),
+      worker(Aion.ChannelMonitor, [%{}])
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html

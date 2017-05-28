@@ -20,7 +20,16 @@ defmodule Aion.UserSocket do
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
   def connect(_params, socket) do
-    {:ok, socket}
+    case _params do
+      %{"username" => username} ->
+        user = Aion.Repo.get_by(Aion.User, name: username)
+        socket = assign(socket, :current_user, user)
+        {:ok, socket}
+      %{} ->
+        :error
+    end
+
+
   end
 
   # Socket id's are topics that allow you to identify all sockets for a given user:
