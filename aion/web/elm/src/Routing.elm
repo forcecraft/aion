@@ -6,26 +6,29 @@ import Models.Room exposing (RoomId)
 import UrlParser exposing (..)
 
 
-matchers: Parser (Route -> a) a
+matchers : Parser (Route -> a) a
 matchers =
-  oneOf
-    [ map LoginRoute top
-    , map RoomRoute (s "rooms" </> int)
-    , map RoomsRoute (s "rooms")
-    ]
+    oneOf
+        [ map LoginRoute top
+        , map RoomRoute (s "rooms" </> int)
+        , map RoomsRoute (s "rooms")
+        ]
 
 
-parseLocation: Location -> Route
+parseLocation : Location -> Route
 parseLocation location =
-  case (parseHash matchers location) of
-    Just route ->
-      route
+    case (parseHash matchers location) of
+        Just route ->
+            route
 
-    Nothing ->
-      NotFoundRoute
+        Nothing ->
+            NotFoundRoute
+
 
 
 -- PATHS
-roomsPath: String
+
+
+roomsPath : String
 roomsPath =
-  "#rooms"
+    "#rooms"

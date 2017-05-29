@@ -28,6 +28,6 @@ defmodule Aion.SubjectChannel do
   end
 
   defp update_room(socket, users) do
-    broadcast! socket, "room_update", %{users: users}
+    broadcast! socket, "user:list", %{users: users}
   end
 end

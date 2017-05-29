@@ -20,10 +20,10 @@ fetchRoomsUrl =
     "http://localhost:4000/api/subjects"
 
 
-roomsDecoder : Decode.Decoder (RoomsData)
+roomsDecoder : Decode.Decoder RoomsData
 roomsDecoder =
-  decode RoomsData
-        |> required "data" (Decode.list(roomDecoder))
+    decode RoomsData
+        |> required "data" (Decode.list (roomDecoder))
 
 
 roomDecoder : Decode.Decoder Room

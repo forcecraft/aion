@@ -22,4 +22,17 @@ import "phoenix_html";
 
 // Set up our Elm App
 const elmDiv = document.querySelector('#elm-container');
-const elmApp = Elm.App.embed(elmDiv);
+const channelToken = getChannelToken();
+const elmApp = Elm.App.embed(elmDiv, {channelToken: channelToken});
+
+function getChannelToken() {
+  var metas = document.getElementsByTagName('meta');
+
+  for (var i=0; i<metas.length; i++) {
+    if (metas[i].getAttribute("name") == "channel_token") {
+      return metas[i].getAttribute("content");
+    }
+  }
+
+  return "";
+}
