@@ -3,7 +3,7 @@ module General.Models exposing (..)
 import Msgs exposing (Msg)
 import Phoenix.Socket
 import RemoteData exposing (WebData)
-import Room.Models exposing (RoomId, RoomsData, UsersInRoom)
+import Room.Models exposing (RoomId, RoomsData, UserGameData, UsersInRoom)
 
 
 -- MODEL
@@ -15,6 +15,7 @@ type alias Model =
     , route : Route
     , socket : Phoenix.Socket.Socket Msg
     , usersInChannel : UsersInRoom
+    , userGameData : UserGameData
     }
 
 
@@ -56,4 +57,5 @@ initialModel flags route =
         Phoenix.Socket.init ("ws://localhost:4000/socket/websocket?token=" ++ flags.channelToken)
             |> Phoenix.Socket.withDebug
     , usersInChannel = []
+    , userGameData = { currentAnswer = "" }
     }

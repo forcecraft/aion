@@ -12,3 +12,4 @@ type Msg
     | OnFetchRooms (WebData RoomsData)
     | PhoenixMsg (Phoenix.Socket.Msg Msg)
     | ReceiveUserList Encode.Value
+    | SetAnswer String

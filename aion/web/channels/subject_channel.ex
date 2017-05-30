@@ -21,6 +21,11 @@ defmodule Aion.SubjectChannel do
     {:noreply, socket}
   end
 
+   def handle_in("new:answer", %{"room_id" => room_id, "answer" => answer}, socket) do
+     ChannelMonitor.new_answer(room_id)
+     {:noreply, socket}
+   end
+
   def handle_info({:after_join, users, question}, socket) do
     send_user_list(socket, users)
     send_question(socket, question)

@@ -55,3 +55,10 @@ update msg model =
 
                 Err error ->
                     ( model, Cmd.none )
+
+        SetAnswer newAnswer ->
+            let
+                debug =
+                    Debug.log "newanswer" newAnswer
+            in
+                ( model, Cmd.none )

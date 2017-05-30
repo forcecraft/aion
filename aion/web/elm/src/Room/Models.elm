@@ -27,3 +27,8 @@ type alias UserInRoomRecord =
 
 type alias UserList =
     { users : List UserInRoomRecord }
+
+
+type alias UserGameData =
+    { currentAnswer : String
+    }

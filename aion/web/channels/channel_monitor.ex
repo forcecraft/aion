@@ -28,6 +28,10 @@ defmodule Aion.ChannelMonitor do
     GenServer.call(__MODULE__, {:new_question, room_id})
   end
 
+  def new_answer(room_id) do
+    GenServer.call(__MODULE__, {:new_answer, room_id})
+  end
+
   # GenServer implementation
 
   def handle_call({:user_joined, room_id, username}, _from, state) do
@@ -53,6 +57,12 @@ defmodule Aion.ChannelMonitor do
 
   def handle_call({:new_question, room_id}, _from, state) do
     {:reply, get_new_question(room_id), state}
+  end
+
+  def handle_call({:new_answer, room_id}, _from, state) do
+    IO.puts "OBECNY STATE"
+    IO.inspect state
+    {:reply, state, state}
   end
 
   defp get_new_question(category_id) do
