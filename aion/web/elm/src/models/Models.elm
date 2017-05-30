@@ -7,7 +7,7 @@ import Models.Room exposing (RoomsData, RoomId)
 
 
 type alias Model =
-    { user : UserModel
+    { user : CurrentUser
     , rooms : WebData RoomsData
     , route : Route
     , socket : Phoenix.Socket.Socket Msg
@@ -15,16 +15,16 @@ type alias Model =
     }
 
 
-type alias UserModel =
+type alias CurrentUser =
     { channelToken : String
-    , username : String
+    , name : String
     }
 
 
 initialModel : Flags -> Route -> Model
 initialModel flags route =
     { user =
-        { username = ""
+        { name = ""
         , channelToken = flags.channelToken
         }
     , rooms = RemoteData.Loading
@@ -49,4 +49,9 @@ type Route
 
 
 type alias UsersInChannel =
-    List String
+    List UserInChannelRecord
+
+type alias UserInChannelRecord =
+  { name: String
+  , score: Int
+  }

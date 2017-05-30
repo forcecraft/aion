@@ -1,6 +1,6 @@
 module Update exposing (..)
 
-import Models.Models exposing (Model, Route(..))
+import Models.Models exposing (Model, Route(..), UserInChannelRecord)
 import Msgs exposing (Msg(..))
 import Routing exposing (parseLocation)
 import Phoenix.Socket
@@ -23,11 +23,17 @@ type alias ChatMessage =
 usersListDecoder : JD.Decoder UserList
 usersListDecoder =
     JD.map UserList
-        (field "users" (JD.list JD.string))
+        (field "users" (JD.list userRecordDecoder))
+
+userRecordDecoder : JD.Decoder UserInChannelRecord
+userRecordDecoder =
+    JD.map2 UserInChannelRecord
+        (field "name" JD.string)
+        (field "score" JD.int)
 
 
 type alias UserList =
-    { users : List String }
+    { users : List UserInChannelRecord }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )

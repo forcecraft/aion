@@ -96,7 +96,7 @@ roomView model roomId =
         div []
             [ text roomName
             , ul []
-                (List.map (\username -> li [] [ text username ]) model.usersInChannel)
+                (List.map (\userRecord -> li [] [ text (userRecord.name ++ " :" ++ (toString userRecord.score)) ]) model.usersInChannel)
             ]
 
 

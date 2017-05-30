@@ -4,7 +4,8 @@ defmodule Aion.SubjectChannel do
 
   def join("rooms:" <> room_id, _params, socket) do
     current_user = socket.assigns.current_user.name
-    users = ChannelMonitor.user_joined(room_id, current_user)[room_id]
+    %{ users: users } = ChannelMonitor.user_joined(room_id, current_user)[room_id]
+    ChannelMonitor.new_question(room_id)
 
     send self, {:after_join, users}
     {:ok, socket}
