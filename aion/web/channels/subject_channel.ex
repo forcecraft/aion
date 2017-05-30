@@ -4,17 +4,15 @@ defmodule Aion.SubjectChannel do
 
   def join("rooms:" <> room_id, _params, socket) do
     current_user = socket.assigns.current_user.name
-    %{ users: users } = ChannelMonitor.user_joined(room_id, current_user)[room_id]
-    ChannelMonitor.new_question(room_id)
+    %{users: users, question: question} = ChannelMonitor.user_joined(room_id, current_user)
 
-    send self, {:after_join, users}
+    send self, {:after_join, users, question}
     {:ok, socket}
   end
 
   def handle_in("user_left", %{"room_id" => room_id}, socket) do
     current_user = socket.assigns.current_user.name
-    users = ChannelMonitor.user_left({room_id, current_user})[room_id]
-    update_room(socket, users)
+    users = ChannelMonitor.user_left({room_id, current_user})
     :ok
   end
 
@@ -23,12 +21,17 @@ defmodule Aion.SubjectChannel do
     {:noreply, socket}
   end
 
-  def handle_info({:after_join, users}, socket) do
-    update_room(socket, users)
+  def handle_info({:after_join, users, question}, socket) do
+    send_user_list(socket, users)
+    send_question(socket, question)
     {:noreply, socket}
   end
 
-  defp update_room(socket, users) do
+  defp send_user_list(socket, users) do
     broadcast! socket, "user:list", %{users: users}
+  end
+
+  defp send_question(socket, question) do
+    broadcast! socket, "new:question", %{ question: question.content }
   end
 end

@@ -34,14 +34,13 @@ defmodule Aion.ChannelMonitor do
     new_state =
       case Map.get(state, room_id) do
         nil ->
-          Map.put(state, room_id, %{users: [%UserRecord{name: username, score: 0}], question: nil})
+          initial_question = get_new_question(room_id)
+          Map.put(state, room_id, %{users: [%UserRecord{name: username, score: 0}], question: initial_question})
         %{ users: currentUsers } ->
           room_state = Map.put(state[room_id], :users , [%UserRecord{name: username, score: 0} | currentUsers])
           Map.put(state, room_id, room_state)
       end
-      IO.puts "NEW STATE"
-      IO.inspect new_state
-    {:reply, new_state, new_state}
+    {:reply, new_state[room_id], new_state}
   end
 
   def handle_call({:user_left, room_id, user}, _from, state) do
@@ -53,9 +52,10 @@ defmodule Aion.ChannelMonitor do
   end
 
   def handle_call({:new_question, room_id}, _from, state) do
-    questions = Repo.all(from q in Question, where: q.subject_id == ^room_id)
-    #IO.puts "NEW_QUESTION"
-    #IO.inspect questions
-    {:reply, state, state}
+    {:reply, get_new_question(room_id), state}
+  end
+
+  defp get_new_question(category_id) do
+    Repo.all(from q in Question, where: q.subject_id == ^category_id) |> Enum.random
   end
 end
