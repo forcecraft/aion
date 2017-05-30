@@ -1,14 +1,14 @@
 module View exposing (..)
 
+import General.Models exposing (Model, Route(LoginRoute, NotFoundRoute, RoomRoute, RoomsRoute))
+import General.View exposing (notFoundView)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput, onClick)
 import Msgs exposing (Msg(..))
-import Models.Models exposing (Model)
-import Models.Room exposing (Room, RoomId, RoomsData)
-import String exposing (concat)
 import Routing exposing (roomsPath)
 import RemoteData exposing (WebData)
+import Room.Models exposing (RoomId, RoomsData)
 
 
 view : Model -> Html Msg
@@ -20,16 +20,16 @@ view model =
 page : Model -> Html Msg
 page model =
     case model.route of
-        Models.Models.LoginRoute ->
+        LoginRoute ->
             loginView model
 
-        Models.Models.RoomsRoute ->
+        RoomsRoute ->
             roomsView model
 
-        Models.Models.RoomRoute id ->
+        RoomRoute id ->
             roomView model id
 
-        Models.Models.NotFoundRoute ->
+        NotFoundRoute ->
             notFoundView
 
 
@@ -96,7 +96,7 @@ roomView model roomId =
         div []
             [ text roomName
             , ul []
-                (List.map (\userRecord -> li [] [ text (userRecord.name ++ " :" ++ (toString userRecord.score)) ]) model.usersInChannel)
+                (List.map (\userRecord -> li [] [ text (userRecord.name ++ ": " ++ (toString userRecord.score)) ]) model.usersInChannel)
             ]
 
 
@@ -115,14 +115,3 @@ listRooms response =
 
         RemoteData.Failure error ->
             text (toString error)
-
-
-
--- NOT FOUND VIEW
-
-
-notFoundView : Html Msg
-notFoundView =
-    div []
-        [ text "Not found"
-        ]

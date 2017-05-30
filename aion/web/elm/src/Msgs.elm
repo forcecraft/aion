@@ -2,9 +2,9 @@ module Msgs exposing (..)
 
 import Navigation exposing (Location)
 import RemoteData exposing (WebData)
-import Models.Room exposing (RoomsData)
 import Phoenix.Socket
 import Json.Encode as JE
+import Room.Models exposing (RoomsData)
 
 
 type Msg

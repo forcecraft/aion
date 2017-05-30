@@ -1,14 +1,13 @@
 module App exposing (..)
 
-import Html exposing (..)
+import General.Models exposing (Flags, Model, initialModel)
 import Msgs exposing (Msg)
-import Models.Models exposing (Model, initialModel, Flags)
+import Navigation exposing (Location)
+import Phoenix.Socket
+import Room.Api exposing (fetchRooms)
+import Routing
 import Update exposing (update)
 import View exposing (view)
-import Navigation exposing (Location)
-import Commands exposing (fetchRooms)
-import Routing
-import Phoenix.Socket
 
 
 init : Flags -> Location -> ( Model, Cmd Msg )

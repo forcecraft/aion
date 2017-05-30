@@ -1,8 +1,7 @@
 module Routing exposing (..)
 
+import General.Models exposing (Route(LoginRoute, NotFoundRoute, RoomRoute, RoomsRoute))
 import Navigation exposing (Location)
-import Models.Models exposing (Route(..))
-import Models.Room exposing (RoomId)
 import UrlParser exposing (..)
 
 
@@ -23,10 +22,6 @@ parseLocation location =
 
         Nothing ->
             NotFoundRoute
-
-
-
--- PATHS
 
 
 roomsPath : String
