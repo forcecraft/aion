@@ -1,13 +1,9 @@
 module View exposing (..)
 
-import General.Models exposing (Model, Route(LoginRoute, NotFoundRoute, RoomListRoute, RoomRoute, RoomsRoute))
+import General.Models exposing (Model, Route(LoginRoute, NotFoundRoute, RoomListRoute, RoomRoute))
 import General.View exposing (homeView, notFoundView)
 import Html exposing (..)
-import Html.Attributes exposing (..)
 import Msgs exposing (Msg(..))
-import Routing exposing (roomsPath)
-import RemoteData exposing (WebData)
-import Room.Models exposing (RoomId, RoomsData)
 import Room.View exposing (roomListView, roomView)
 
 

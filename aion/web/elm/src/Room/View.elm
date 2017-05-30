@@ -1,7 +1,8 @@
 module Room.View exposing (..)
 
 import General.Models exposing (Model)
-import Html exposing (Html, div, text, ul)
+import Html exposing (Html, a, div, li, text, ul)
+import Html.Attributes exposing (href)
 import Msgs exposing (Msg)
 import RemoteData exposing (WebData)
 import Room.Models exposing (RoomId, RoomsData)

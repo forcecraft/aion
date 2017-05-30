@@ -1,7 +1,7 @@
 module General.View exposing (..)
 
 import General.Models exposing (Model)
-import Html exposing (Html, a, div, i, text)
+import Html exposing (Html, a, div, i, p, text)
 import Html.Attributes exposing (href)
 import Msgs exposing (Msg)
 import Routing exposing (roomsPath)
