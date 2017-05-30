@@ -23,3 +23,7 @@ type alias UserInRoomRecord =
     { name : String
     , score : Int
     }
+
+
+type alias UserList =
+    { users : List UserInRoomRecord }

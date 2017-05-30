@@ -1,41 +1,12 @@
 module Update exposing (..)
 
 import General.Models exposing (Model, Route(RoomRoute))
+import Json.Decode as Decode
 import Msgs exposing (Msg(..))
+import Room.Decoders exposing (usersListDecoder)
 import Routing exposing (parseLocation)
 import Phoenix.Socket
 import Phoenix.Channel
-import Json.Decode as JD exposing (field)
-import Phoenix.Push
-import Json.Encode as JE
-import Room.Models exposing (UserInRoomRecord)
-
-
-chatMessageDecoder : JD.Decoder ChatMessage
-chatMessageDecoder =
-    JD.map ChatMessage
-        (field "body" JD.string)
-
-
-type alias ChatMessage =
-    { body : String }
-
-
-usersListDecoder : JD.Decoder UserList
-usersListDecoder =
-    JD.map UserList
-        (field "users" (JD.list userRecordDecoder))
-
-
-userRecordDecoder : JD.Decoder UserInRoomRecord
-userRecordDecoder =
-    JD.map2 UserInRoomRecord
-        (field "name" JD.string)
-        (field "score" JD.int)
-
-
-type alias UserList =
-    { users : List UserInRoomRecord }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -78,37 +49,9 @@ update msg model =
                 )
 
         ReceiveUserList raw ->
-            case JD.decodeValue usersListDecoder raw of
+            case Decode.decodeValue usersListDecoder raw of
                 Ok usersInChannel ->
                     ( { model | usersInChannel = usersInChannel.users }, Cmd.none )
 
                 Err error ->
                     ( model, Cmd.none )
-
-
-
---        JoinChannel ->
---            let
---                channel =
---                    Phoenix.Channel.init "rooms:lobby"
---
---                ( socket, cmd ) =
---                    Phoenix.Socket.join channel model.socket
---            in
---                ( { model | socket = socket }
---                , Cmd.map PhoenixMsg cmd
---                )
---
---        SendMessage ->
---            let
---                payload =
---                    (JE.object [ ( "body", JE.string "New MESSAGE!" ) ])
---
---                push_ =
---                    Phoenix.Push.init "new:msg" "rooms:lobby"
---                        |> Phoenix.Push.withPayload payload
---
---                ( socket, cmd ) =
---                    Phoenix.Socket.push push_ model.socket
---            in
---                ( { model | socket = socket }, Cmd.map PhoenixMsg cmd )
