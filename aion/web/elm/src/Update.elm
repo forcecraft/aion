@@ -7,6 +7,8 @@ import Room.Decoders exposing (questionDecoder, usersListDecoder)
 import Routing exposing (parseLocation)
 import Phoenix.Socket
 import Phoenix.Channel
+import Phoenix.Push
+import Json.Encode as Encode
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -61,11 +63,21 @@ update msg model =
                     ( model, Cmd.none )
 
         SetAnswer newAnswer ->
+            ( { model | userGameData = { currentAnswer = newAnswer } }, Cmd.none )
+
+        SubmitAnswer roomId ->
             let
-                debug =
-                    Debug.log "newanswer" newAnswer
+                payload =
+                    (Encode.object [ ( "answer", Encode.string model.userGameData.currentAnswer ) ])
+
+                push_ =
+                    Phoenix.Push.init "new:answer" ("rooms:" ++ (toString roomId))
+                        |> Phoenix.Push.withPayload payload
+
+                ( socket, cmd ) =
+                    Phoenix.Socket.push push_ model.socket
             in
-                ( model, Cmd.none )
+                ( { model | socket = socket }, Cmd.map PhoenixMsg cmd )
 
         ReceiveQuestion raw ->
             case Decode.decodeValue questionDecoder raw of
