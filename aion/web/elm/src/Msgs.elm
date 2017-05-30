@@ -13,3 +13,4 @@ type Msg
     | PhoenixMsg (Phoenix.Socket.Msg Msg)
     | ReceiveUserList Encode.Value
     | SetAnswer String
+    | ReceiveQuestion Encode.Value

@@ -3,7 +3,7 @@ module Update exposing (..)
 import General.Models exposing (Model, Route(RoomRoute))
 import Json.Decode as Decode
 import Msgs exposing (Msg(..))
-import Room.Decoders exposing (usersListDecoder)
+import Room.Decoders exposing (questionDecoder, usersListDecoder)
 import Routing exposing (parseLocation)
 import Phoenix.Socket
 import Phoenix.Channel
@@ -30,7 +30,11 @@ update msg model =
                                 Phoenix.Channel.init ("rooms:" ++ roomIdToString)
 
                             ( socket, cmd ) =
-                                Phoenix.Socket.join channel (model.socket |> Phoenix.Socket.on "user:list" ("rooms:" ++ roomIdToString) ReceiveUserList)
+                                Phoenix.Socket.join channel
+                                    (model.socket
+                                        |> Phoenix.Socket.on "user:list" ("rooms:" ++ roomIdToString) ReceiveUserList
+                                        |> Phoenix.Socket.on "new:question" ("rooms:" ++ roomIdToString) ReceiveQuestion
+                                    )
                         in
                             ( { model | socket = socket, route = newRoute }
                             , Cmd.map PhoenixMsg cmd
@@ -62,3 +66,11 @@ update msg model =
                     Debug.log "newanswer" newAnswer
             in
                 ( model, Cmd.none )
+
+        ReceiveQuestion raw ->
+            case Decode.decodeValue questionDecoder raw of
+                Ok question ->
+                    ( { model | questionInChannel = question }, Cmd.none )
+
+                Err error ->
+                    ( model, Cmd.none )

@@ -37,6 +37,7 @@ defmodule Aion.SubjectChannel do
   end
 
   defp send_question(socket, question) do
-    broadcast! socket, "new:question", %{ question: question.content }
+    image_name = if question.image_name == nil, do: "", else: question.image_name
+    broadcast! socket, "new:question", %{ content: question.content, image_name: image_name }
   end
 end

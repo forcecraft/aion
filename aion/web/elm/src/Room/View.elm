@@ -6,6 +6,9 @@ import Html.Attributes exposing (href)
 import Html.Events exposing (onInput)
 import Room.Utils exposing (getRoomList, getRoomNameById)
 import Msgs exposing (Msg(SetAnswer))
+import Html exposing (Html, a, div, img, li, p, text, ul)
+import Html.Attributes exposing (href, src)
+import Msgs exposing (Msg)
 import RemoteData exposing (WebData)
 import Room.Models exposing (RoomId, RoomsData, UserInRoomRecord)
 
@@ -27,18 +30,9 @@ roomView model roomId =
         div []
             [ text roomName
             , displayScores model
+            , p [] [ text model.questionInChannel.content ]
+            , displayQuestionImage model.questionInChannel.image_name
             ]
-
-
-displayAnswerInput : Model -> Html Msg
-displayAnswerInput model =
-    form []
-        [ input [ onInput SetAnswer ]
-            []
-        , button []
-            [ text "Submit"
-            ]
-        ]
 
 
 displayScores : Model -> Html Msg
@@ -49,6 +43,16 @@ displayScores model =
 displaySingleScore : UserInRoomRecord -> Html Msg
 displaySingleScore userRecord =
     li [] [ text (userRecord.name ++ ": " ++ (toString userRecord.score)) ]
+
+
+displayQuestionImage : String -> Html Msg
+displayQuestionImage imageName =
+    case imageName of
+        "" ->
+            text "No image"
+
+        imageName ->
+            img [ src ("http://localhost:4000/images/" ++ imageName) ] []
 
 
 listRooms : WebData RoomsData -> Html Msg

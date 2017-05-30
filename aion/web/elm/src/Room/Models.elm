@@ -32,3 +32,9 @@ type alias UserList =
 type alias UserGameData =
     { currentAnswer : String
     }
+
+
+type alias QuestionInRoom =
+    { content : String
+    , image_name : String
+    }
