@@ -21,10 +21,13 @@ defmodule Aion.SubjectChannel do
     {:noreply, socket}
   end
 
-   def handle_in("new:answer", %{"room_id" => room_id, "answer" => answer}, socket) do
-     ChannelMonitor.new_answer(room_id)
+  def handle_in("new:answer", %{"room_id" => room_id, "answer" => answer}, socket) do
+     evaluation = ChannelMonitor.new_answer(room_id, answer)
+     if evaluation do
+       broadcast! socket, "new:msg", %{body: "The answer was correct!"}
+     end
      {:noreply, socket}
-   end
+  end
 
   def handle_info({:after_join, users, question}, socket) do
     send_user_list(socket, users)

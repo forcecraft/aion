@@ -17,6 +17,7 @@ type alias Model =
     , usersInChannel : UsersInRoom
     , userGameData : UserGameData
     , questionInChannel : QuestionInRoom
+    , roomId : RoomId
     }
 
 
@@ -63,4 +64,5 @@ initialModel flags route =
         { content = ""
         , image_name = ""
         }
+    , roomId = 0
     }

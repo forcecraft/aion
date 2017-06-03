@@ -2,6 +2,7 @@ defmodule Aion.ChannelMonitor do
   use GenServer
   alias Aion.Repo
   alias Aion.Question
+  alias Aion.Answer
   alias Aion.UserRecord
   import Ecto.Query, only: [from: 2]
 
@@ -28,8 +29,8 @@ defmodule Aion.ChannelMonitor do
     GenServer.call(__MODULE__, {:new_question, room_id})
   end
 
-  def new_answer(room_id) do
-    GenServer.call(__MODULE__, {:new_answer, room_id})
+  def new_answer(room_id, answer) do
+    GenServer.call(__MODULE__, {:new_answer, room_id, answer})
   end
 
   # GenServer implementation
@@ -38,8 +39,8 @@ defmodule Aion.ChannelMonitor do
     new_state =
       case Map.get(state, room_id) do
         nil ->
-          initial_question = get_new_question(room_id)
-          Map.put(state, room_id, %{users: [%UserRecord{name: username, score: 0}], question: initial_question})
+          %{question: question, answers: answers} = get_new_question_with_answers(room_id)
+          Map.put(state, room_id, %{users: [%UserRecord{name: username, score: 0}], question: question, answers: answers})
         %{ users: currentUsers } ->
           room_state = Map.put(state[room_id], :users , [%UserRecord{name: username, score: 0} | currentUsers])
           Map.put(state, room_id, room_state)
@@ -56,16 +57,30 @@ defmodule Aion.ChannelMonitor do
   end
 
   def handle_call({:new_question, room_id}, _from, state) do
-    {:reply, get_new_question(room_id), state}
+    {:reply, get_new_question_with_answers(room_id), state}
   end
 
-  def handle_call({:new_answer, room_id}, _from, state) do
-    IO.puts "OBECNY STATE"
-    IO.inspect state
-    {:reply, state, state}
+  def handle_call({:new_answer, room_id, answer}, _from, state) do
+    IO.inspect "STATEEEEE"
+    IO.inspect(state)
+    evaluation = Map.get(state, room_id) |> Map.get(:answers) |> Enum.map(fn x -> Map.get(x, :content) end) |> Enum.member?(answer)
+    IO.inspect "EVALUATION"
+    IO.inspect(evaluation)
+
+
+    #    evaluation = Enum.any?()
+    {:reply, evaluation, state}
   end
 
-  defp get_new_question(category_id) do
-    Repo.all(from q in Question, where: q.subject_id == ^category_id) |> Enum.random
+  defp get_new_question_with_answers(category_id) do
+    IO.puts "GETTING A NEW QUESTION"
+
+    question = Repo.all(from q in Question, where: q.subject_id == ^category_id) |> Enum.random
+
+    question_id = Map.get(question, :id)
+    answers = Repo.all(from a in Answer, where: a.question_id == ^question_id)
+    IO.inspect question
+    IO.inspect answers
+    %{question: question, answers: answers}
   end
 end

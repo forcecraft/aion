@@ -38,7 +38,7 @@ update msg model =
                                         |> Phoenix.Socket.on "new:question" ("rooms:" ++ roomIdToString) ReceiveQuestion
                                     )
                         in
-                            ( { model | socket = socket, route = newRoute }
+                            ( { model | socket = socket, route = newRoute, roomId = roomId }
                             , Cmd.map PhoenixMsg cmd
                             )
 
@@ -68,7 +68,7 @@ update msg model =
         SubmitAnswer roomId ->
             let
                 payload =
-                    (Encode.object [ ( "answer", Encode.string model.userGameData.currentAnswer ) ])
+                    (Encode.object [ ( "answer", Encode.string model.userGameData.currentAnswer ), ( "room_id", Encode.string (toString model.roomId) ) ])
 
                 push_ =
                     Phoenix.Push.init "new:answer" ("rooms:" ++ (toString roomId))
