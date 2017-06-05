@@ -24,16 +24,15 @@ defmodule Aion.SubjectChannel do
      username = socket.assigns.current_user.name
      evaluation = ChannelMonitor.new_answer(room_id, answer, username)
      if evaluation do
-       users = ChannelMonitor.list_users(room_id)
        send_user_list(socket, room_id)
-       send_question(socket, room_id)
+       send_new_question(socket, room_id)
      end
      {:noreply, socket}
   end
 
   def handle_info({:after_join, room_id}, socket) do
     send_user_list(socket, room_id)
-    send_question(socket, room_id)
+    send_current_question(socket, room_id)
     {:noreply, socket}
   end
 
@@ -42,9 +41,15 @@ defmodule Aion.SubjectChannel do
     broadcast! socket, "user:list", %{users: users}
   end
 
-  defp send_question(socket, room_id) do
+  defp send_new_question(socket, room_id) do
+    ChannelMonitor.new_question(room_id)
     question = ChannelMonitor.get_room_state(room_id).question
+    image_name = if question.image_name == nil, do: "", else: question.image_name
+    broadcast! socket, "new:question", %{ content: question.content, image_name: image_name }
+  end
 
+  defp send_current_question(socket, room_id) do
+    question = ChannelMonitor.get_room_state(room_id).question
     image_name = if question.image_name == nil, do: "", else: question.image_name
     broadcast! socket, "new:question", %{ content: question.content, image_name: image_name }
   end

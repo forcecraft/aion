@@ -36,6 +36,7 @@ defmodule Aion.ChannelMonitor do
   def get_room_state(room_id) do
     GenServer.call(__MODULE__, {:get_room_state, room_id})
   end
+
   # GenServer implementation
 
   def handle_call({:user_joined, room_id, username}, _from, state) do
@@ -72,7 +73,6 @@ defmodule Aion.ChannelMonitor do
                  |> Enum.map(fn x -> Map.get(x, :content) end)
                  |> Enum.member?(answer)
 
-    IO.inspect evaluation, label: "Answer evaluation"
     if evaluation do
         room_state = Map.get(state, room_id)
         users_in_room = Map.get(room_state, :users)
@@ -88,20 +88,15 @@ defmodule Aion.ChannelMonitor do
     end
   end
 
-  defp get_new_question_with_answers(category_id) do
-    IO.puts "GETTING A NEW QUESTION"
-    questions = Repo.all(from q in Question, where: q.subject_id == ^category_id)
-    IO.inspect questions, label: "QUESTIONS"
-    question = Enum.random(questions)
-    IO.inspect question, label: "RANDOM QUESTION"
-    question_id = Map.get(question, :id)
-    answers = Repo.all(from a in Answer, where: a.question_id == ^question_id)
-    IO.inspect question
-    IO.inspect answers
-    %{question: question, answers: answers}
-  end
-
   def handle_call({:get_room_state, room_id}, _from, state) do
     {:reply, state[room_id], state}
+  end
+
+  defp get_new_question_with_answers(category_id) do
+    question = Repo.all(from q in Question, where: q.subject_id == ^category_id)
+                |> Enum.random
+    question_id = Map.get(question, :id)
+    answers = Repo.all(from a in Answer, where: a.question_id == ^question_id)
+    %{question: question, answers: answers}
   end
 end
