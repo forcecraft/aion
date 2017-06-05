@@ -2,6 +2,7 @@ defmodule Aion.User do
   use Aion.Web, :model
 
   schema "users" do
+    field :name, :string
     field :email, :string
     field :encrypted_password, :string
 
@@ -13,7 +14,7 @@ defmodule Aion.User do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:email, :encrypted_password])
-    |> validate_required([:email, :encrypted_password])
+    |> cast(params, [:name, :email, :encrypted_password])
+    |> validate_required([:name, :email, :encrypted_password])
   end
 end
