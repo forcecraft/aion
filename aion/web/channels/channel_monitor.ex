@@ -29,20 +29,21 @@ defmodule Aion.ChannelMonitor do
     GenServer.call(__MODULE__, {:new_question, room_id})
   end
 
-  def new_answer(room_id, answer) do
-    GenServer.call(__MODULE__, {:new_answer, room_id, answer})
+  def new_answer(room_id, answer, username) do
+    GenServer.call(__MODULE__, {:new_answer, room_id, answer, username})
   end
 
   # GenServer implementation
 
   def handle_call({:user_joined, room_id, username}, _from, state) do
+    new_user_record = %UserRecord{name: username, score: 0}
     new_state =
       case Map.get(state, room_id) do
         nil ->
           %{question: question, answers: answers} = get_new_question_with_answers(room_id)
-          Map.put(state, room_id, %{users: [%UserRecord{name: username, score: 0}], question: question, answers: answers})
+          Map.put(state, room_id, %{users: %{username => new_user_record}, question: question, answers: answers})
         %{ users: currentUsers } ->
-          room_state = Map.put(state[room_id], :users , [%UserRecord{name: username, score: 0} | currentUsers])
+          room_state = Map.put(state[room_id], :users , Map.put(currentUsers, username , new_user_record))
           Map.put(state, room_id, room_state)
       end
     {:reply, new_state[room_id], new_state}
@@ -53,23 +54,33 @@ defmodule Aion.ChannelMonitor do
   end
 
   def handle_call({:list_users, room_id}, _from, state) do
-    {:reply, Map.get(state, room_id), state}
+    {:reply, Map.values(Map.get(state, room_id).users), state}
   end
 
   def handle_call({:new_question, room_id}, _from, state) do
     {:reply, get_new_question_with_answers(room_id), state}
   end
 
-  def handle_call({:new_answer, room_id, answer}, _from, state) do
-    IO.inspect "STATEEEEE"
-    IO.inspect(state)
-    evaluation = Map.get(state, room_id) |> Map.get(:answers) |> Enum.map(fn x -> Map.get(x, :content) end) |> Enum.member?(answer)
-    IO.inspect "EVALUATION"
-    IO.inspect(evaluation)
+  def handle_call({:new_answer, room_id, answer, username}, _from, state) do
+    evaluation = Map.get(state, room_id)
+                 |> Map.get(:answers)
+                 |> Enum.map(fn x -> Map.get(x, :content) end)
+                 |> Enum.member?(answer)
 
+    IO.inspect evaluation, label: "Answer evaluation"
+    if evaluation do
+        room_state = Map.get(state, room_id)
+        users_in_room = Map.get(room_state, :users)
+        %UserRecord{name: ^username, score: score} = Map.get(users_in_room, username)
+        new_user_record = %UserRecord{name: username, score: score+1}
+        updated_score_list = Map.put(users_in_room, username, new_user_record)
 
-    #    evaluation = Enum.any?()
-    {:reply, evaluation, state}
+        new_room_state = Map.put(room_state, :users, updated_score_list)
+        new_state = Map.put(state, room_id, new_room_state)
+        {:reply, evaluation, new_state}
+    else
+        {:reply, evaluation, state}
+    end
   end
 
   defp get_new_question_with_answers(category_id) do

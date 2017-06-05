@@ -5,8 +5,7 @@ defmodule Aion.SubjectChannel do
   def join("rooms:" <> room_id, _params, socket) do
     current_user = socket.assigns.current_user.name
     %{users: users, question: question} = ChannelMonitor.user_joined(room_id, current_user)
-
-    send self, {:after_join, users, question}
+    send self, {:after_join, Map.values(users), question}
     {:ok, socket}
   end
 
@@ -22,9 +21,11 @@ defmodule Aion.SubjectChannel do
   end
 
   def handle_in("new:answer", %{"room_id" => room_id, "answer" => answer}, socket) do
-     evaluation = ChannelMonitor.new_answer(room_id, answer)
+     username = socket.assigns.current_user.name
+     evaluation = ChannelMonitor.new_answer(room_id, answer, username)
      if evaluation do
-       broadcast! socket, "new:msg", %{body: "The answer was correct!"}
+       users = ChannelMonitor.list_users(room_id)
+       send_user_list(socket, users)
      end
      {:noreply, socket}
   end
