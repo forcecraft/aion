@@ -74,14 +74,7 @@ defmodule Aion.ChannelMonitor do
                  |> Enum.member?(answer)
 
     if evaluation do
-        room_state = Map.get(state, room_id)
-        users_in_room = Map.get(room_state, :users)
-        %UserRecord{name: ^username, score: score} = Map.get(users_in_room, username)
-        new_user_record = %UserRecord{name: username, score: score+1}
-        updated_score_list = Map.put(users_in_room, username, new_user_record)
-
-        new_room_state = Map.put(room_state, :users, updated_score_list)
-        new_state = Map.put(state, room_id, new_room_state)
+        new_state = update_in(state, [room_id, :users, username], &increment_score/1)
         {:reply, evaluation, new_state}
     else
         {:reply, evaluation, state}
@@ -94,9 +87,12 @@ defmodule Aion.ChannelMonitor do
 
   defp get_new_question_with_answers(category_id) do
     question = Repo.all(from q in Question, where: q.subject_id == ^category_id)
-                |> Enum.random
+               |> Enum.random
     question_id = Map.get(question, :id)
     answers = Repo.all(from a in Answer, where: a.question_id == ^question_id)
     %{question: question, answers: answers}
+  end
+  defp increment_score(user_record) do
+    Map.update!(user_record, :score, &(&1+1))
   end
 end
