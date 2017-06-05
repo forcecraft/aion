@@ -7,6 +7,7 @@ import Phoenix.Socket
 import Room.Api exposing (fetchRooms)
 import Routing
 import Update exposing (update)
+import User.Api exposing (fetchCurrentUser)
 import View exposing (view)
 
 
@@ -16,7 +17,7 @@ init flags location =
         currentRoute =
             Routing.parseLocation location
     in
-        ( initialModel flags currentRoute, fetchRooms )
+        ( initialModel flags currentRoute, Cmd.batch [ fetchRooms, fetchCurrentUser ] )
 
 
 subscriptions : Model -> Sub Msg

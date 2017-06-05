@@ -4,13 +4,12 @@ import Msgs exposing (Msg)
 import Phoenix.Socket
 import RemoteData exposing (WebData)
 import Room.Models exposing (RoomId, RoomsData, UsersInRoom, QuestionInRoom, UserGameData)
-
-
--- MODEL
+import User.Models exposing (CurrentUser)
 
 
 type alias Model =
-    { user : CurrentUser
+    { user : WebData CurrentUser
+    , channelToken : String
     , rooms : WebData RoomsData
     , route : Route
     , socket : Phoenix.Socket.Socket Msg
@@ -21,19 +20,9 @@ type alias Model =
     }
 
 
-type alias CurrentUser =
-    { channelToken : String
-    , name : String
-    }
-
-
 type alias Flags =
     { channelToken : String
     }
-
-
-
--- ROUTE
 
 
 type Route
@@ -43,16 +32,10 @@ type Route
     | NotFoundRoute
 
 
-
--- INITIAL MODEL
-
-
 initialModel : Flags -> Route -> Model
 initialModel flags route =
-    { user =
-        { name = ""
-        , channelToken = flags.channelToken
-        }
+    { user = RemoteData.Loading
+    , channelToken = flags.channelToken
     , rooms = RemoteData.Loading
     , route = route
     , socket =

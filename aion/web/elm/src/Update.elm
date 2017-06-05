@@ -17,6 +17,9 @@ update msg model =
         OnFetchRooms response ->
             ( { model | rooms = response }, Cmd.none )
 
+        OnFetchCurrentUser response ->
+            ( { model | user = response }, Cmd.none )
+
         OnLocationChange location ->
             let
                 newRoute =
