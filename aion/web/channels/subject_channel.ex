@@ -5,7 +5,7 @@ defmodule Aion.SubjectChannel do
   def join("rooms:" <> room_id, _params, socket) do
     current_user = socket.assigns.current_user.name
     %{users: users, question: question} = ChannelMonitor.user_joined(room_id, current_user)
-    send self, {:after_join, Map.values(users), question}
+    send self, {:after_join, room_id}
     {:ok, socket}
   end
 
@@ -25,22 +25,26 @@ defmodule Aion.SubjectChannel do
      evaluation = ChannelMonitor.new_answer(room_id, answer, username)
      if evaluation do
        users = ChannelMonitor.list_users(room_id)
-       send_user_list(socket, users)
+       send_user_list(socket, room_id)
+       send_question(socket, room_id)
      end
      {:noreply, socket}
   end
 
-  def handle_info({:after_join, users, question}, socket) do
-    send_user_list(socket, users)
-    send_question(socket, question)
+  def handle_info({:after_join, room_id}, socket) do
+    send_user_list(socket, room_id)
+    send_question(socket, room_id)
     {:noreply, socket}
   end
 
-  defp send_user_list(socket, users) do
+  defp send_user_list(socket, room_id) do
+    users = ChannelMonitor.list_users(room_id)
     broadcast! socket, "user:list", %{users: users}
   end
 
-  defp send_question(socket, question) do
+  defp send_question(socket, room_id) do
+    question = ChannelMonitor.get_room_state(room_id).question
+
     image_name = if question.image_name == nil, do: "", else: question.image_name
     broadcast! socket, "new:question", %{ content: question.content, image_name: image_name }
   end
