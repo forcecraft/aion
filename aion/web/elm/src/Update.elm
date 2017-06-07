@@ -91,3 +91,13 @@ update msg model =
 
         FocusResult result ->
             model ! []
+
+        KeyDown key ->
+            let
+                enter =
+                    13
+            in
+                if key == enter then
+                    update (SubmitAnswer model.roomId) model
+                else
+                    model ! []
