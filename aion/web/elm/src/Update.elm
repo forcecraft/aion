@@ -1,14 +1,17 @@
 module Update exposing (..)
 
+import Dom exposing (focus)
 import General.Models exposing (Model, Route(RoomRoute))
 import Json.Decode as Decode
 import Msgs exposing (Msg(..))
 import Room.Decoders exposing (questionDecoder, usersListDecoder)
+import Room.Models exposing (answerInputFieldId)
 import Routing exposing (parseLocation)
 import Phoenix.Socket
 import Phoenix.Channel
 import Phoenix.Push
 import Json.Encode as Encode
+import Task
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -85,7 +88,10 @@ update msg model =
         ReceiveQuestion raw ->
             case Decode.decodeValue questionDecoder raw of
                 Ok question ->
-                    ( { model | questionInChannel = question }, Cmd.none )
+                    { model | questionInChannel = question } ! [ Task.attempt FocusResult (focus answerInputFieldId) ]
 
                 Err error ->
                     ( model, Cmd.none )
+
+        FocusResult result ->
+            model ! []
