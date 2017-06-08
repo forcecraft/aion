@@ -20,3 +20,4 @@ type Msg
     | ReceiveQuestion Encode.Value
     | FocusResult (Result Error ())
     | KeyDown Int
+    | NoOperation

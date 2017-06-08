@@ -5,7 +5,7 @@ import Html exposing (Attribute, Html, a, button, div, form, input, li, text, ul
 import Html.Attributes exposing (href, id, type_, value)
 import Html.Events exposing (keyCode, on, onClick, onInput, onWithOptions)
 import Room.Utils exposing (getRoomList, getRoomNameById)
-import Msgs exposing (Msg(KeyDown, SetAnswer, SubmitAnswer))
+import Msgs exposing (Msg(KeyDown, NoOperation, SetAnswer, SubmitAnswer))
 import Html exposing (Html, a, div, img, li, p, text, ul)
 import Html.Attributes exposing (href, src)
 import Msgs exposing (Msg)
@@ -59,7 +59,7 @@ displayQuestionImage model =
 
 displayAnswerInput : RoomId -> Html Msg
 displayAnswerInput roomId =
-    form [ onWithOptions "submit" { preventDefault = True, stopPropagation = False } (Json.Decode.succeed (KeyDown 1)) ]
+    form [ onWithOptions "submit" { preventDefault = True, stopPropagation = False } (Json.Decode.succeed (NoOperation)) ]
         [ input [ id answerInputFieldId, onInput SetAnswer, onKeyDown KeyDown ] []
         , input [ type_ "button", value "submit", onClick (SubmitAnswer roomId) ] []
         ]
