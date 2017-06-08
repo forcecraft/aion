@@ -38,3 +38,8 @@ type alias QuestionInRoom =
     { content : String
     , image_name : String
     }
+
+
+answerInputFieldId : String
+answerInputFieldId =
+    "answerInputField"

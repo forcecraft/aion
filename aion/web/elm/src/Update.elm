@@ -1,24 +1,27 @@
 module Update exposing (..)
 
+import Dom exposing (focus)
 import General.Models exposing (Model, Route(RoomRoute))
 import Json.Decode as Decode
 import Msgs exposing (Msg(..))
 import Room.Decoders exposing (questionDecoder, usersListDecoder)
+import Room.Models exposing (answerInputFieldId)
 import Routing exposing (parseLocation)
 import Phoenix.Socket
 import Phoenix.Channel
 import Phoenix.Push
 import Json.Encode as Encode
+import Task
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         OnFetchRooms response ->
-            ( { model | rooms = response }, Cmd.none )
+            { model | rooms = response } ! []
 
         OnFetchCurrentUser response ->
-            ( { model | user = response }, Cmd.none )
+            { model | user = response } ! []
 
         OnLocationChange location ->
             let
@@ -41,32 +44,28 @@ update msg model =
                                         |> Phoenix.Socket.on "new:question" ("rooms:" ++ roomIdToString) ReceiveQuestion
                                     )
                         in
-                            ( { model | socket = socket, route = newRoute, roomId = roomId }
-                            , Cmd.map PhoenixMsg cmd
-                            )
+                            { model | socket = socket, route = newRoute, roomId = roomId } ! [ Cmd.map PhoenixMsg cmd ]
 
                     _ ->
-                        ( { model | route = newRoute }, Cmd.none )
+                        { model | route = newRoute } ! []
 
         PhoenixMsg msg ->
             let
                 ( socket, cmd ) =
                     Phoenix.Socket.update msg model.socket
             in
-                ( { model | socket = socket }
-                , Cmd.map PhoenixMsg cmd
-                )
+                { model | socket = socket } ! [ Cmd.map PhoenixMsg cmd ]
 
         ReceiveUserList raw ->
             case Decode.decodeValue usersListDecoder raw of
                 Ok usersInChannel ->
-                    ( { model | usersInChannel = usersInChannel.users }, Cmd.none )
+                    { model | usersInChannel = usersInChannel.users } ! []
 
                 Err error ->
-                    ( model, Cmd.none )
+                    model ! []
 
         SetAnswer newAnswer ->
-            ( { model | userGameData = { currentAnswer = newAnswer } }, Cmd.none )
+            { model | userGameData = { currentAnswer = newAnswer } } ! []
 
         SubmitAnswer roomId ->
             let
@@ -80,12 +79,15 @@ update msg model =
                 ( socket, cmd ) =
                     Phoenix.Socket.push push_ model.socket
             in
-                ( { model | socket = socket }, Cmd.map PhoenixMsg cmd )
+                { model | socket = socket } ! [ Cmd.map PhoenixMsg cmd ]
 
         ReceiveQuestion raw ->
             case Decode.decodeValue questionDecoder raw of
                 Ok question ->
-                    ( { model | questionInChannel = question }, Cmd.none )
+                    { model | questionInChannel = question } ! [ Task.attempt FocusResult (focus answerInputFieldId) ]
 
                 Err error ->
-                    ( model, Cmd.none )
+                    model ! []
+
+        FocusResult result ->
+            model ! []

@@ -1,5 +1,6 @@
 module Msgs exposing (..)
 
+import Dom exposing (Error)
 import Navigation exposing (Location)
 import RemoteData exposing (WebData)
 import Phoenix.Socket
@@ -17,3 +18,4 @@ type Msg
     | SetAnswer String
     | SubmitAnswer RoomId
     | ReceiveQuestion Encode.Value
+    | FocusResult (Result Error ())
