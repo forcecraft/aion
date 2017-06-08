@@ -33,7 +33,7 @@ roomView model roomId =
             , displayScores model
             , p [] [ text model.questionInChannel.content ]
             , displayQuestionImage model
-            , displayAnswerInput model roomId
+            , displayAnswerInput roomId
             ]
 
 
@@ -57,8 +57,8 @@ displayQuestionImage model =
             img [ src ("http://localhost:4000/images/" ++ imageName) ] []
 
 
-displayAnswerInput : Model -> RoomId -> Html Msg
-displayAnswerInput model roomId =
+displayAnswerInput : RoomId -> Html Msg
+displayAnswerInput roomId =
     form []
         [ input [ id answerInputFieldId, onInput SetAnswer, onKeyDown KeyDown ] []
         , input [ type_ "button", value "submit", onClick (SubmitAnswer roomId) ] []
