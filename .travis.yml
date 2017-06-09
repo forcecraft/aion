@@ -6,6 +6,7 @@ addons:
 services:
   - postgresql
 before_script:
+  - cd aion
   - mix do ecto.create, ecto.migrate
 script:
   - mix test
