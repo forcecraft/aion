@@ -90,6 +90,7 @@ defmodule Aion.ChannelMonitor do
                |> Enum.random
     question_id = Map.get(question, :id)
     answers = Repo.all(from a in Answer, where: a.question_id == ^question_id)
+    IO.inspect answers, label: "Answers"
     %{question: question, answers: answers}
   end
   defp increment_score(user_record) do

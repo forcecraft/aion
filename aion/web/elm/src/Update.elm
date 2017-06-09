@@ -101,3 +101,6 @@ update msg model =
                     update (SubmitAnswer model.roomId) model
                 else
                     model ! []
+
+        NoOperation ->
+            model ! []
