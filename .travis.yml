@@ -2,11 +2,12 @@ language: elixir
 elixir:
   - 1.4.2
 addons:
-  postgresql: '9.4'
+  postgresql: '9.6'
 services:
   - postgresql
-before_script:
+before_install:
   - cd aion
+before_script:
   - mix do ecto.create, ecto.migrate
 script:
   - mix test
