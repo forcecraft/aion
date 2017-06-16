@@ -48,6 +48,7 @@ defmodule Aion.ConnCase do
       encrypted_password: "whatever"
     }
     user = Repo.get_by(Publisher.User, user_attrs)
+    IO.inspect user, label: "USER"
     if is_nil(user) do
       struct(Publisher.User, user_attrs)
       |> Repo.insert!
