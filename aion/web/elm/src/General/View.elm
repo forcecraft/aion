@@ -7,7 +7,6 @@ import Msgs exposing (Msg)
 import Routing exposing (panelPath, roomsPath)
 import RemoteData exposing (WebData)
 import Room.Models exposing (RoomsData)
-import Routing exposing (roomsPath)
 
 
 notFoundView : Html Msg
@@ -26,19 +25,6 @@ homeView model =
             , li [] [ a [ href panelPath ] [ text "Panel" ] ]
             ]
         ]
-
-
-roomListButton : Html Msg
-roomListButton =
-    let
-        path =
-            roomsPath
-    in
-        a
-            [ href path ]
-            [ i [] []
-            , text "Rooms"
-            ]
 
 
 roomListView : Model -> Html Msg
