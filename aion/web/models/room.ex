@@ -1,12 +1,12 @@
 defmodule Aion.Room do
   use Aion.Web, :model
-  alias Aion.{Subject, RoomSubject}
+  alias Aion.{Subject, RoomSubject, User}
 
   schema "rooms" do
     field :name, :string
     field :description, :string
     many_to_many :subjects, Subject, join_through: RoomSubject
-    belongs_to :owner, Aion.Owner
+    belongs_to :owner, Aion.User
 
     timestamps()
   end
