@@ -3,11 +3,12 @@ defmodule Aion.UserTest do
 
   alias Aion.User
 
-  @valid_attrs %{email: "some content", encrypted_password: "some content"}
+  @valid_attrs %{name: "John Wink", email: "test@example.com", encrypted_password: "test123"}
   @invalid_attrs %{}
 
   test "changeset with valid attributes" do
     changeset = User.changeset(%User{}, @valid_attrs)
+    IO.inspect changeset
     assert changeset.valid?
   end
 
