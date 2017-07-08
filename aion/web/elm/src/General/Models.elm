@@ -29,6 +29,7 @@ type Route
     = LoginRoute
     | RoomListRoute
     | RoomRoute RoomId
+    | PanelRoute
     | NotFoundRoute
 
 

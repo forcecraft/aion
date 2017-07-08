@@ -23,17 +23,12 @@ defmodule Aion.Router do
     get "/", PageController, :index
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", Aion do
-  #   pipe_through :api
-  # end
-
   scope "/api", Aion do
     pipe_through :api
 
     get "/me", UserController, :get_user_info
     resources "/subjects", SubjectController, except: [:new, :edit]
-    resources "/questions", QuestionController, except: [:new, :edit]
-    resources "/answers", AnswerController, except: [:new, :edit]
+    resources "/questions", QuestionController
+    resources "/answers", AnswerController
   end
 end

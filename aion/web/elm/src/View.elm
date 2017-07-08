@@ -1,9 +1,10 @@
 module View exposing (..)
 
-import General.Models exposing (Model, Route(LoginRoute, NotFoundRoute, RoomListRoute, RoomRoute))
+import General.Models exposing (Model, Route(LoginRoute, NotFoundRoute, PanelRoute, RoomListRoute, RoomRoute))
 import General.View exposing (homeView, notFoundView, roomListView)
 import Html exposing (..)
 import Msgs exposing (Msg(..))
+import Panel.View exposing (panelView)
 import Room.View exposing (roomView)
 
 
@@ -24,6 +25,9 @@ page model =
 
         RoomRoute id ->
             roomView model id
+
+        PanelRoute ->
+            panelView model
 
         NotFoundRoute ->
             notFoundView

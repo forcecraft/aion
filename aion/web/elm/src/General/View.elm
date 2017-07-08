@@ -4,6 +4,7 @@ import General.Models exposing (Model)
 import Html exposing (Html, a, div, i, li, p, text, ul)
 import Html.Attributes exposing (href)
 import Msgs exposing (Msg)
+import Routing exposing (panelPath, roomsPath)
 import RemoteData exposing (WebData)
 import Room.Models exposing (RoomsData)
 import Routing exposing (roomsPath)
@@ -20,7 +21,10 @@ homeView : Model -> Html Msg
 homeView model =
     div []
         [ p [] [ text "Welcome to Aion!" ]
-        , roomListButton
+        , ul []
+            [ li [] [ a [ href roomsPath ] [ text "Rooms" ] ]
+            , li [] [ a [ href panelPath ] [ text "Panel" ] ]
+            ]
         ]
 
 
