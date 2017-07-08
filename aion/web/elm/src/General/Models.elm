@@ -54,5 +54,6 @@ initialModel flags route =
     , panelData =
         { newQuestionContent = ""
         , newAnswerContent = ""
+        , newAnswerCategory = ""
         }
     }

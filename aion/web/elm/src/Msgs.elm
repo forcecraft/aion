@@ -24,4 +24,5 @@ type Msg
     | ReceiveAnswerFeedback Encode.Value
     | SetNewQuestionContent String
     | SetNewAnswerContent String
+    | SetNewAnswerCategory String
     | CreateNewQuestionWithAnswers

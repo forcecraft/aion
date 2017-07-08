@@ -139,5 +139,15 @@ update msg model =
             in
                 { model | panelData = newPanelData } ! []
 
+        SetNewAnswerCategory answerCategory ->
+            let
+                oldPanelData =
+                    model.panelData
+
+                newPanelData =
+                    { oldPanelData | newAnswerCategory = answerCategory }
+            in
+                { model | panelData = newPanelData } ! []
+
         CreateNewQuestionWithAnswers ->
             model ! []
