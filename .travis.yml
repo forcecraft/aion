@@ -16,3 +16,7 @@ before_script:
 
 script:
   - mix test
+
+env:
+  - MIX_ENV=test
+
