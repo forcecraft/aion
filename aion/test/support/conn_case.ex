@@ -12,7 +12,7 @@ defmodule Aion.ConnCase do
   inside a transaction which is reset at the beginning
   of the test unless the test case is marked as async.
   """
-	import Plug.Conn
+  
   use ExUnit.CaseTemplate
 
   using do
@@ -40,25 +40,5 @@ defmodule Aion.ConnCase do
     end
 
     {:ok, conn: Phoenix.ConnTest.build_conn()}
-  end
-  def user do
-    user_attrs =%{
-      name: "Basil Pupkin",
-      email: "basil@mailinator.com",
-      encrypted_password: "whatever"
-    }
-    user = Repo.get_by(Publisher.User, user_attrs)
-    IO.inspect user, label: "USER"
-    if is_nil(user) do
-      struct(Publisher.User, user_attrs)
-      |> Repo.insert!
-    else
-      user
-    end
-  end
-
-  def logged_in(conn) do
-    conn
-    |> assign(:current_user, user)
   end
 end

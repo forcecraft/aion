@@ -1,5 +1,6 @@
 defmodule Aion.AnswerControllerTest do
   use Aion.ConnCase
+
   alias Aion.Answer
   @valid_attrs %{content: "some content"}
   @invalid_attrs %{}
@@ -11,7 +12,6 @@ defmodule Aion.AnswerControllerTest do
   end
 
   test "lists all entries on index", %{conn: conn} do
-    conn = conn |> Aion.ConnCase.logged_in
     conn = get conn, answer_path(conn, :index)
     assert is_list json_response(conn, 200)["data"]
   end
