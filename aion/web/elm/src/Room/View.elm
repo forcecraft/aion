@@ -1,16 +1,17 @@
 module Room.View exposing (..)
 
 import General.Models exposing (Model)
-import Html exposing (Html, a, button, div, form, input, li, text, ul)
+import Html exposing (Attribute, Html, a, button, div, form, input, li, text, ul)
 import Html.Attributes exposing (href, id, type_, value)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (keyCode, on, onClick, onInput, onWithOptions)
 import Room.Utils exposing (getRoomList, getRoomNameById)
-import Msgs exposing (Msg(SetAnswer, SubmitAnswer))
+import Msgs exposing (Msg(KeyDown, NoOperation, SetAnswer, SubmitAnswer))
 import Html exposing (Html, a, div, img, li, p, text, ul)
 import Html.Attributes exposing (href, src)
 import Msgs exposing (Msg)
 import RemoteData exposing (WebData)
 import Room.Models exposing (RoomId, RoomsData, UserInRoomRecord, answerInputFieldId)
+import Json.Decode exposing (map)
 
 
 roomListView : Model -> Html Msg
@@ -32,7 +33,7 @@ roomView model roomId =
             , displayScores model
             , p [] [ text model.questionInChannel.content ]
             , displayQuestionImage model
-            , displayAnswerInput model roomId
+            , displayAnswerInput roomId
             ]
 
 
@@ -56,12 +57,17 @@ displayQuestionImage model =
             img [ src ("http://localhost:4000/images/" ++ imageName) ] []
 
 
-displayAnswerInput : Model -> RoomId -> Html Msg
-displayAnswerInput model roomId =
-    form []
-        [ input [ id answerInputFieldId, onInput SetAnswer ] []
+displayAnswerInput : RoomId -> Html Msg
+displayAnswerInput roomId =
+    form [ onWithOptions "submit" { preventDefault = True, stopPropagation = False } (Json.Decode.succeed (NoOperation)) ]
+        [ input [ id answerInputFieldId, onInput SetAnswer, onKeyDown KeyDown ] []
         , input [ type_ "button", value "submit", onClick (SubmitAnswer roomId) ] []
         ]
+
+
+onKeyDown : (Int -> msg) -> Attribute msg
+onKeyDown tagger =
+    on "keydown" (map tagger keyCode)
 
 
 listRooms : WebData RoomsData -> Html Msg
