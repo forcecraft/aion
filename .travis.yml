@@ -1,0 +1,22 @@
+language: elixir
+
+elixir:
+  - 1.4.1
+
+addons:
+  postgresql: '9.4'
+
+services:
+  - postgresql
+before_install:
+  - cd aion
+before_script:
+  - cp config/travis.exs config/test.exs
+  - mix do ecto.create, ecto.migrate
+
+script:
+  - mix test
+
+env:
+  - MIX_ENV=test
+
