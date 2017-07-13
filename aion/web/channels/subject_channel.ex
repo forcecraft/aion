@@ -21,13 +21,16 @@ defmodule Aion.SubjectChannel do
   end
 
   def handle_in("new:answer", %{"room_id" => room_id, "answer" => answer}, socket) do
-     username = socket.assigns.current_user.name
-     evaluation = ChannelMonitor.new_answer(room_id, answer, username)
-     if evaluation do
-       send_user_list(socket, room_id)
-       send_new_question(socket, room_id)
-     end
-     {:noreply, socket}
+    username = socket.assigns.current_user.name
+    evaluation = ChannelMonitor.new_answer(room_id, answer, username)
+    send_feedback socket, evaluation
+
+    if evaluation == 1.0 do
+      send_user_list(socket, room_id)
+      send_new_question(socket, room_id)
+    end
+
+    {:noreply, socket}
   end
 
   def handle_info({:after_join, room_id}, socket) do
@@ -52,5 +55,15 @@ defmodule Aion.SubjectChannel do
     question = ChannelMonitor.get_room_state(room_id).question
     image_name = if question.image_name == nil, do: "", else: question.image_name
     broadcast! socket, "new:question", %{ content: question.content, image_name: image_name }
+  end
+
+  defp send_feedback(socket, evaluation) do
+    feedback = cond do
+      evaluation == 1.0 -> "Correct!"
+      evaluation > 0.8 -> "Close one!"
+      true -> "Wrong answer."
+    end
+
+    push socket, "answer_feedback", %{"feedback" => feedback}
   end
 end
