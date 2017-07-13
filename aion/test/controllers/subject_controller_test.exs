@@ -11,10 +11,11 @@ defmodule Aion.SubjectControllerTest do
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
   end
 
-#  test "lists all entries on index", %{conn: conn} do
-#    conn = get conn, subject_path(conn, :index)
-#    assert json_response(conn, 200)["data"] == []
-#  end
+  test "lists all entries on index", %{conn: conn} do
+    conn = get conn, subject_path(conn, :index)
+    data = json_response(conn, 200)["data"]
+    assert is_list data
+  end
 
   test "shows chosen resource", %{conn: conn} do
     subject = Repo.insert! %Subject{}
