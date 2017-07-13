@@ -12,8 +12,8 @@ config :logger, level: :warn
 # Configure your database
 config :aion, Aion.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
-  database: "aion_test",
-  hostname: "localhost",
+  username: "root",
+  password: "password",
+  database: "aion",
+  hostname: "db",
   pool: Ecto.Adapters.SQL.Sandbox

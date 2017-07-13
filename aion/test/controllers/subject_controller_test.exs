@@ -5,13 +5,16 @@ defmodule Aion.SubjectControllerTest do
   @valid_attrs %{name: "some content"}
   @invalid_attrs %{}
 
-  setup %{conn: conn} do
+  setup %{conn: _} do
+    user = %{ email: "test@example.com", name: "something"}
+    conn = Plug.Test. init_test_session(build_conn(), %{current_user: user})
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
   end
 
   test "lists all entries on index", %{conn: conn} do
     conn = get conn, subject_path(conn, :index)
-    assert json_response(conn, 200)["data"] == []
+    data = json_response(conn, 200)["data"]
+    assert is_list data
   end
 
   test "shows chosen resource", %{conn: conn} do
