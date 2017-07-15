@@ -9,17 +9,9 @@ import Msgs exposing (Msg(KeyDown, NoOperation, SetAnswer, SubmitAnswer))
 import Html exposing (Html, a, div, img, li, p, text, ul)
 import Html.Attributes exposing (href, src)
 import Msgs exposing (Msg)
-import RemoteData exposing (WebData)
-import Room.Models exposing (RoomId, RoomsData, UserInRoomRecord, answerInputFieldId)
+import Room.Models exposing (Answer, ImageName, RoomId, RoomsData, UserGameData, UserInRoomRecord, answerInputFieldId)
 import Json.Decode exposing (map)
-
-
-roomListView : Model -> Html Msg
-roomListView model =
-    div []
-        [ div [] [ text "Rooms:" ]
-        , listRooms model.rooms
-        ]
+import Room.Constants exposing (defaultImagePath, imagesPath)
 
 
 roomView : Model -> RoomId -> Html Msg
@@ -27,13 +19,19 @@ roomView model roomId =
     let
         roomName =
             getRoomNameById model roomId
+
+        currentAnswer =
+            model.userGameData.currentAnswer
+
+        imageName =
+            model.questionInChannel.image_name
     in
         div []
             [ text roomName
             , displayScores model
             , p [] [ text model.questionInChannel.content ]
-            , displayQuestionImage model
-            , displayAnswerInput roomId
+            , displayQuestionImage imageName
+            , displayAnswerInput currentAnswer
             ]
 
 
@@ -47,41 +45,46 @@ displaySingleScore userRecord =
     li [] [ text (userRecord.name ++ ": " ++ (toString userRecord.score)) ]
 
 
-displayQuestionImage : Model -> Html Msg
-displayQuestionImage model =
-    case model.questionInChannel.image_name of
+displayQuestionImage : ImageName -> Html Msg
+displayQuestionImage imageName =
+    case imageName of
         "" ->
-            text "No image"
+            img [ src defaultImagePath ] []
 
         imageName ->
-            img [ src ("http://localhost:4000/images/" ++ imageName) ] []
+            img [ src (imagesPath ++ imageName) ] []
 
 
-displayAnswerInput : RoomId -> Html Msg
-displayAnswerInput roomId =
-    form [ onWithOptions "submit" { preventDefault = True, stopPropagation = False } (Json.Decode.succeed (NoOperation)) ]
-        [ input [ id answerInputFieldId, onInput SetAnswer, onKeyDown KeyDown ] []
-        , input [ type_ "button", value "submit", onClick (SubmitAnswer roomId) ] []
+displayAnswerInput : Answer -> Html Msg
+displayAnswerInput currentAnswer =
+    form
+        [ onWithOptions "submit" { preventDefault = True, stopPropagation = False } (Json.Decode.succeed (NoOperation)) ]
+        [ displayAnswerInputField currentAnswer
+        , displayAnswerSubmitButton
         ]
+
+
+displayAnswerInputField : Answer -> Html Msg
+displayAnswerInputField currentAnswer =
+    input
+        [ id answerInputFieldId
+        , onInput SetAnswer
+        , onKeyDown KeyDown
+        , value currentAnswer
+        ]
+        []
+
+
+displayAnswerSubmitButton : Html Msg
+displayAnswerSubmitButton =
+    input
+        [ type_ "button"
+        , value "submit"
+        , onClick SubmitAnswer
+        ]
+        []
 
 
 onKeyDown : (Int -> msg) -> Attribute msg
 onKeyDown tagger =
     on "keydown" (map tagger keyCode)
-
-
-listRooms : WebData RoomsData -> Html Msg
-listRooms response =
-    case response of
-        RemoteData.NotAsked ->
-            text ""
-
-        RemoteData.Loading ->
-            text "Loading..."
-
-        RemoteData.Success roomsData ->
-            ul []
-                (List.map (\room -> li [] [ a [ href ("#rooms/" ++ (toString room.id)) ] [ text room.name ] ]) roomsData.data)
-
-        RemoteData.Failure error ->
-            text (toString error)

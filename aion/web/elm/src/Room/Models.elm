@@ -36,10 +36,18 @@ type alias UserGameData =
 
 type alias QuestionInRoom =
     { content : String
-    , image_name : String
+    , image_name : ImageName
     }
 
 
-answerInputFieldId : String
+type alias ImageName =
+    String
+
+
+answerInputFieldId : Answer
 answerInputFieldId =
     "answerInputField"
+
+
+type alias Answer =
+    String
