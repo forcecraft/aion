@@ -1,5 +1,7 @@
 defmodule Aion.Question do
   use Aion.Web, :model
+  alias Aion.Repo
+  alias Aion.Subject
 
   schema "questions" do
     field :content, :string
@@ -13,8 +15,11 @@ defmodule Aion.Question do
   Builds a changeset based on the `struct` and `params`.
   """
   def changeset(struct, params \\ %{}) do
+    subject = Repo.get(Subject, params["subject"])
+
     struct
+    |> Map.put(:subject, subject)
     |> cast(params, [:content, :image_name])
-    |> validate_required([:content, :image_name])
+    |> validate_required([:content, :subject])
   end
 end

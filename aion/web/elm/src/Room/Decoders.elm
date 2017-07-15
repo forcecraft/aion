@@ -1,8 +1,8 @@
 module Room.Decoders exposing (..)
 
-import Json.Decode.Pipeline exposing (decode, required)
 import Room.Models exposing (AnswerFeedback, QuestionInRoom, Room, RoomsData, UserInRoomRecord, UserList)
 import Json.Decode as Decode exposing (field, map, null, oneOf)
+import Json.Decode.Pipeline exposing (decode, required)
 
 
 roomsDecoder : Decode.Decoder RoomsData

@@ -4,6 +4,7 @@ import Dom exposing (focus)
 import General.Models exposing (Model, Route(RoomRoute))
 import Json.Decode as Decode
 import Msgs exposing (Msg(..))
+import Panel.Api exposing (createQuestionWithAnswers)
 import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, usersListDecoder)
 import Room.Constants exposing (enterKeyCode)
 import Room.Models exposing (answerInputFieldId)
@@ -23,6 +24,13 @@ update msg model =
 
         OnFetchCurrentUser response ->
             { model | user = response } ! []
+
+        OnQuestionCreated response ->
+            let
+                a =
+                    Debug.log "test" 1
+            in
+                model ! []
 
         OnLocationChange location ->
             let
@@ -150,4 +158,4 @@ update msg model =
                 { model | panelData = newPanelData } ! []
 
         CreateNewQuestionWithAnswers ->
-            model ! []
+            ( model, createQuestionWithAnswers model.panelData )

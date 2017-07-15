@@ -28,7 +28,7 @@ defmodule Aion.Router do
 
     get "/me", UserController, :get_user_info
     resources "/subjects", SubjectController, except: [:new, :edit]
-    resources "/questions", QuestionController
-    resources "/answers", AnswerController
+    resources "/questions", QuestionController, except: [:new, :edit]
+    resources "/answers", AnswerController, except: [:new, :edit]
   end
 end
