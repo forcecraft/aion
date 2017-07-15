@@ -64,6 +64,6 @@ defmodule Aion.SubjectChannel do
       true -> "Wrong answer."
     end
 
-    push socket, "answer_feedback", %{"feedback" => feedback}
+    push socket, "answer:feedback", %{"feedback" => feedback}
   end
 end

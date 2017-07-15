@@ -40,6 +40,10 @@ type alias QuestionInRoom =
     }
 
 
+type alias AnswerFeedback =
+    { feedback : String }
+
+
 answerInputFieldId : String
 answerInputFieldId =
     "answerInputField"

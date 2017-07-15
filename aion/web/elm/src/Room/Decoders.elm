@@ -1,7 +1,7 @@
 module Room.Decoders exposing (..)
 
 import Json.Decode.Pipeline exposing (decode, required)
-import Room.Models exposing (QuestionInRoom, Room, RoomsData, UserInRoomRecord, UserList)
+import Room.Models exposing (AnswerFeedback, QuestionInRoom, Room, RoomsData, UserInRoomRecord, UserList)
 import Json.Decode as Decode exposing (field, map, null, oneOf)
 
 
@@ -36,3 +36,8 @@ questionDecoder =
     Decode.map2 QuestionInRoom
         (field "content" Decode.string)
         (field "image_name" Decode.string)
+
+
+answerFeedbackDecoder : Decode.Decoder AnswerFeedback
+answerFeedbackDecoder =
+    Decode.map AnswerFeedback (field "feedback" Decode.string)

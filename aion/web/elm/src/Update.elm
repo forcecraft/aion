@@ -4,7 +4,7 @@ import Dom exposing (focus)
 import General.Models exposing (Model, Route(RoomRoute))
 import Json.Decode as Decode
 import Msgs exposing (Msg(..))
-import Room.Decoders exposing (questionDecoder, usersListDecoder)
+import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, usersListDecoder)
 import Room.Models exposing (answerInputFieldId)
 import Routing exposing (parseLocation)
 import Phoenix.Socket
@@ -42,6 +42,7 @@ update msg model =
                                     (model.socket
                                         |> Phoenix.Socket.on "user:list" ("rooms:" ++ roomIdToString) ReceiveUserList
                                         |> Phoenix.Socket.on "new:question" ("rooms:" ++ roomIdToString) ReceiveQuestion
+                                        |> Phoenix.Socket.on "answer:feedback" ("rooms:" ++ roomIdToString) ReceiveAnswerFeedback
                                     )
                         in
                             { model | socket = socket, route = newRoute, roomId = roomId } ! [ Cmd.map PhoenixMsg cmd ]
@@ -60,6 +61,18 @@ update msg model =
             case Decode.decodeValue usersListDecoder raw of
                 Ok usersInChannel ->
                     { model | usersInChannel = usersInChannel.users } ! []
+
+                Err error ->
+                    model ! []
+
+        ReceiveAnswerFeedback rawFeedback ->
+            case Decode.decodeValue answerFeedbackDecoder rawFeedback of
+                Ok answerFeedback ->
+                    let
+                        x =
+                            Debug.log "feedback" answerFeedback.feedback
+                    in
+                        model ! []
 
                 Err error ->
                     model ! []
