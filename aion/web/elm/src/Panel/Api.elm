@@ -23,13 +23,13 @@ createQuestionWithAnswers panelData =
 questionCreationEncoder : PanelData -> Http.Body
 questionCreationEncoder panelData =
     let
-        nestedContent =
+        questionContent =
             [ ( "content", Encode.string panelData.newQuestionContent )
             , ( "subject", Encode.int panelData.newAnswerCategory )
             ]
 
         payload =
-            [ ( "question", Encode.object nestedContent )
+            [ ( "question", Encode.object questionContent )
             , ( "answers", Encode.string panelData.newAnswerContent )
             ]
     in
