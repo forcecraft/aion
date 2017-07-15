@@ -9,14 +9,11 @@ getSubjectIdByName result roomName =
     case result of
         RemoteData.Success roomsData ->
             let
-                filteredList =
-                    List.filter (\room -> room.name == roomName) roomsData.data
-
-                maybeRoomObject =
-                    List.head filteredList
-
                 roomObject =
-                    Maybe.withDefault { id = 0, name = "" } maybeRoomObject
+                    roomsData.data
+                        |> List.filter (\room -> room.name == roomName)
+                        |> List.head
+                        |> Maybe.withDefault { id = 0, name = "" }
             in
                 roomObject.id
 
