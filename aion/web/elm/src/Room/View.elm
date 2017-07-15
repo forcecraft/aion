@@ -9,9 +9,9 @@ import Msgs exposing (Msg(KeyDown, NoOperation, SetAnswer, SubmitAnswer))
 import Html exposing (Html, a, div, img, li, p, text, ul)
 import Html.Attributes exposing (href, src)
 import Msgs exposing (Msg)
-import RemoteData exposing (WebData)
-import Room.Models exposing (Answer, RoomId, RoomsData, UserGameData, UserInRoomRecord, answerInputFieldId)
+import Room.Models exposing (Answer, ImageName, RoomId, RoomsData, UserGameData, UserInRoomRecord, answerInputFieldId)
 import Json.Decode exposing (map)
+import Room.Constants exposing (defaultImagePath, imagesPath)
 
 
 roomView : Model -> RoomId -> Html Msg
@@ -22,12 +22,15 @@ roomView model roomId =
 
         currentAnswer =
             model.userGameData.currentAnswer
+
+        imageName =
+            model.questionInChannel.image_name
     in
         div []
             [ text roomName
             , displayScores model
             , p [] [ text model.questionInChannel.content ]
-            , displayQuestionImage model
+            , displayQuestionImage imageName
             , displayAnswerInput currentAnswer
             ]
 
@@ -42,14 +45,14 @@ displaySingleScore userRecord =
     li [] [ text (userRecord.name ++ ": " ++ (toString userRecord.score)) ]
 
 
-displayQuestionImage : Model -> Html Msg
-displayQuestionImage model =
-    case model.questionInChannel.image_name of
+displayQuestionImage : ImageName -> Html Msg
+displayQuestionImage imageName =
+    case imageName of
         "" ->
-            text "No image"
+            img [ src defaultImagePath ] []
 
         imageName ->
-            img [ src ("http://localhost:4000/images/" ++ imageName) ] []
+            img [ src (imagesPath ++ imageName) ] []
 
 
 displayAnswerInput : Answer -> Html Msg

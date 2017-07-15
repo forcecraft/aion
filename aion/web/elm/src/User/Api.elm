@@ -1,5 +1,6 @@
 module User.Api exposing (..)
 
+import General.Constants exposing (hostname)
 import Http
 import Msgs exposing (Msg)
 import RemoteData
@@ -8,7 +9,7 @@ import User.Decoders exposing (userDecoder)
 
 fetchCurrentUserUrl : String
 fetchCurrentUserUrl =
-    "http://localhost:4000/api/me"
+    hostname ++ "api/me"
 
 
 fetchCurrentUser : Cmd Msg
