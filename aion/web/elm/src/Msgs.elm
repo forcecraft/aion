@@ -22,3 +22,6 @@ type Msg
     | KeyDown Int
     | NoOperation
     | ReceiveAnswerFeedback Encode.Value
+    | SetNewQuestionContent String
+    | SetNewAnswerContent String
+    | CreateNewQuestionWithAnswers

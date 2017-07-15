@@ -84,7 +84,11 @@ update msg model =
         SubmitAnswer ->
             let
                 payload =
-                    (Encode.object [ ( "answer", Encode.string model.userGameData.currentAnswer ), ( "room_id", Encode.string (toString model.roomId) ) ])
+                    (Encode.object
+                        [ ( "answer", Encode.string model.userGameData.currentAnswer )
+                        , ( "room_id", Encode.string (toString model.roomId) )
+                        ]
+                    )
 
                 push_ =
                     Phoenix.Push.init "new:answer" ("rooms:" ++ (toString model.roomId))
@@ -113,4 +117,27 @@ update msg model =
                 model ! []
 
         NoOperation ->
+            model ! []
+
+        SetNewQuestionContent questionContent ->
+            let
+                oldPanelData =
+                    model.panelData
+
+                newPanelData =
+                    { oldPanelData | newQuestionContent = questionContent }
+            in
+                { model | panelData = newPanelData } ! []
+
+        SetNewAnswerContent answerContent ->
+            let
+                oldPanelData =
+                    model.panelData
+
+                newPanelData =
+                    { oldPanelData | newAnswerContent = answerContent }
+            in
+                { model | panelData = newPanelData } ! []
+
+        CreateNewQuestionWithAnswers ->
             model ! []
