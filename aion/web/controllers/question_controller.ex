@@ -9,12 +9,12 @@ defmodule Aion.QuestionController do
     render(conn, "index.json", questions: questions)
   end
 
-  def create(conn, %{"question" => question_params, "answers" => answers_params}) do
+  def create(conn, %{"question" => question_params, "answers" => answers_content}) do
     questionChangeset = Question.changeset(%Question{}, question_params)
 
     case Repo.insert(questionChangeset) do
       {:ok, question} ->
-        answerChangeset = Answer.changeset(%Answer{}, %{"content" => answers_params, "belongs_to" => question})
+        answerChangeset = Answer.changeset(%Answer{}, %{"content" => answers_content, "belongs_to" => question})
         case Repo.insert(answerChangeset) do
           {:ok, answers} ->
             conn

@@ -25,12 +25,13 @@ questionCreationEncoder panelData =
     let
         nestedContent =
             [ ( "content", Encode.string panelData.newQuestionContent )
-            , ( "answers", Encode.string panelData.newAnswerContent )
             , ( "subject", Encode.int panelData.newAnswerCategory )
             ]
 
         payload =
-            [ ( "question", Encode.object nestedContent ) ]
+            [ ( "question", Encode.object nestedContent )
+            , ( "answers", Encode.string panelData.newAnswerContent )
+            ]
     in
         payload
             |> Encode.object
