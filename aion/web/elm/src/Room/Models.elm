@@ -40,11 +40,15 @@ type alias QuestionInRoom =
     }
 
 
+type alias AnswerFeedback =
+    { feedback : String }
+
+
 type alias ImageName =
     String
 
 
-answerInputFieldId : Answer
+answerInputFieldId : String
 answerInputFieldId =
     "answerInputField"
 

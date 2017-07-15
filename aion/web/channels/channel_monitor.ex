@@ -71,13 +71,15 @@ defmodule Aion.ChannelMonitor do
     evaluation = Map.get(state, room_id)
                  |> Map.get(:answers)
                  |> Enum.map(fn x -> Map.get(x, :content) end)
-                 |> Enum.member?(answer)
+                 |> Enum.map(fn correct_answer -> compare_answers(correct_answer, answer) end)
+                 |> Enum.max
 
-    if evaluation do
-        new_state = update_in(state, [room_id, :users, username], &increment_score/1)
-        {:reply, evaluation, new_state}
+
+    if evaluation == 1.0 do
+      new_state = update_in(state, [room_id, :users, username], &increment_score/1)
+      {:reply, evaluation, new_state}
     else
-        {:reply, evaluation, state}
+      {:reply, evaluation, state}
     end
   end
 
@@ -95,5 +97,9 @@ defmodule Aion.ChannelMonitor do
   end
   defp increment_score(user_record) do
     Map.update!(user_record, :score, &(&1+1))
+  end
+
+  defp compare_answers(first, second) do
+    Simetric.Jaro.Winkler.compare (String.capitalize first), (String.capitalize second)
   end
 end

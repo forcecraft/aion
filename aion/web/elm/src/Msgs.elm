@@ -21,3 +21,4 @@ type Msg
     | FocusResult (Result Error ())
     | KeyDown Int
     | NoOperation
+    | ReceiveAnswerFeedback Encode.Value
