@@ -75,7 +75,6 @@ defmodule Aion.ChannelMonitor do
                  |> Enum.max
 
 
-    #TODO react to evaluation
     if evaluation == 1.0 do
       new_state = update_in(state, [room_id, :users, username], &increment_score/1)
       {:reply, evaluation, new_state}
