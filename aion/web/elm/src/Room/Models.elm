@@ -36,7 +36,7 @@ type alias UserGameData =
 
 type alias QuestionInRoom =
     { content : String
-    , image_name : String
+    , image_name : ImageName
     }
 
 
@@ -44,6 +44,14 @@ type alias AnswerFeedback =
     { feedback : String }
 
 
+type alias ImageName =
+    String
+
+
 answerInputFieldId : String
 answerInputFieldId =
     "answerInputField"
+
+
+type alias Answer =
+    String

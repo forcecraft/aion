@@ -5,6 +5,7 @@ import General.Models exposing (Model, Route(RoomRoute))
 import Json.Decode as Decode
 import Msgs exposing (Msg(..))
 import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, usersListDecoder)
+import Room.Constants exposing (enterKeyCode)
 import Room.Models exposing (answerInputFieldId)
 import Routing exposing (parseLocation)
 import Phoenix.Socket
@@ -80,13 +81,13 @@ update msg model =
         SetAnswer newAnswer ->
             { model | userGameData = { currentAnswer = newAnswer } } ! []
 
-        SubmitAnswer roomId ->
+        SubmitAnswer ->
             let
                 payload =
                     (Encode.object [ ( "answer", Encode.string model.userGameData.currentAnswer ), ( "room_id", Encode.string (toString model.roomId) ) ])
 
                 push_ =
-                    Phoenix.Push.init "new:answer" ("rooms:" ++ (toString roomId))
+                    Phoenix.Push.init "new:answer" ("rooms:" ++ (toString model.roomId))
                         |> Phoenix.Push.withPayload payload
 
                 ( socket, cmd ) =
@@ -97,7 +98,7 @@ update msg model =
         ReceiveQuestion raw ->
             case Decode.decodeValue questionDecoder raw of
                 Ok question ->
-                    { model | questionInChannel = question } ! [ Task.attempt FocusResult (focus answerInputFieldId) ]
+                    { model | questionInChannel = question, userGameData = { currentAnswer = "" } } ! [ Task.attempt FocusResult (focus answerInputFieldId) ]
 
                 Err error ->
                     model ! []
@@ -106,14 +107,10 @@ update msg model =
             model ! []
 
         KeyDown key ->
-            let
-                enter =
-                    13
-            in
-                if key == enter then
-                    update (SubmitAnswer model.roomId) model
-                else
-                    model ! []
+            if key == enterKeyCode then
+                update SubmitAnswer model
+            else
+                model ! []
 
         NoOperation ->
             model ! []

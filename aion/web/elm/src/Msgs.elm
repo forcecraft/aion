@@ -16,7 +16,7 @@ type Msg
     | PhoenixMsg (Phoenix.Socket.Msg Msg)
     | ReceiveUserList Encode.Value
     | SetAnswer String
-    | SubmitAnswer RoomId
+    | SubmitAnswer
     | ReceiveQuestion Encode.Value
     | FocusResult (Result Error ())
     | KeyDown Int

@@ -1,10 +1,10 @@
 module View exposing (..)
 
 import General.Models exposing (Model, Route(LoginRoute, NotFoundRoute, RoomListRoute, RoomRoute))
-import General.View exposing (homeView, notFoundView)
+import General.View exposing (homeView, notFoundView, roomListView)
 import Html exposing (..)
 import Msgs exposing (Msg(..))
-import Room.View exposing (roomListView, roomView)
+import Room.View exposing (roomView)
 
 
 view : Model -> Html Msg
