@@ -27,11 +27,7 @@ update msg model =
             { model | user = response } ! []
 
         OnQuestionCreated response ->
-            let
-                a =
-                    Debug.log "Question created successfuly" 1
-            in
-                model ! []
+            model ! []
 
         OnLocationChange location ->
             let
@@ -157,7 +153,7 @@ update msg model =
                     model.panelData
 
                 newPanelData =
-                    Debug.log "id" { oldPanelData | newAnswerCategory = answerCategoryToId }
+                    { oldPanelData | newAnswerCategory = answerCategoryToId }
             in
                 { model | panelData = newPanelData } ! []
 
