@@ -2,12 +2,13 @@ module Update exposing (..)
 
 import Dom exposing (focus)
 import General.Models exposing (Model, Route(RoomRoute))
+import General.Utils exposing (getSubjectIdByName)
 import Json.Decode as Decode
 import Msgs exposing (Msg(..))
 import Panel.Api exposing (createQuestionWithAnswers)
-import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, usersListDecoder)
 import Room.Constants exposing (enterKeyCode)
-import Room.Models exposing (answerInputFieldId)
+import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, usersListDecoder)
+import Room.Models exposing (RoomsData, answerInputFieldId)
 import Routing exposing (parseLocation)
 import Phoenix.Socket
 import Phoenix.Channel
@@ -28,7 +29,7 @@ update msg model =
         OnQuestionCreated response ->
             let
                 a =
-                    Debug.log "test" 1
+                    Debug.log "Question created successfuly" 1
             in
                 model ! []
 
@@ -147,13 +148,16 @@ update msg model =
             in
                 { model | panelData = newPanelData } ! []
 
-        SetNewAnswerCategory answerCategory ->
+        SetNewAnswerCategory answerCategoryName ->
             let
+                answerCategoryToId =
+                    getSubjectIdByName model.rooms answerCategoryName
+
                 oldPanelData =
                     model.panelData
 
                 newPanelData =
-                    { oldPanelData | newAnswerCategory = answerCategory }
+                    Debug.log "id" { oldPanelData | newAnswerCategory = answerCategoryToId }
             in
                 { model | panelData = newPanelData } ! []
 
