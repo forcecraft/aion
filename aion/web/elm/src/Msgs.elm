@@ -22,3 +22,4 @@ type Msg
     | KeyDown Int
     | NoOperation
     | ReceiveAnswerFeedback Encode.Value
+    | ReceiveUserJoined Encode.Value

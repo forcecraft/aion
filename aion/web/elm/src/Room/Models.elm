@@ -40,17 +40,17 @@ type alias QuestionInRoom =
     }
 
 
+type alias UserJoinedInfo =
+    { user : String
+    }
+
+
 type alias AnswerFeedback =
     { feedback : String }
 
 
 type alias ImageName =
     String
-
-
-answerInputFieldId : String
-answerInputFieldId =
-    "answerInputField"
 
 
 type alias Answer =

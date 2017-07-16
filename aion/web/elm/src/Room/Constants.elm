@@ -16,3 +16,8 @@ imagesPath =
 defaultImagePath : String
 defaultImagePath =
     imagesPath ++ "question-mark.jpg"
+
+
+answerInputFieldId : String
+answerInputFieldId =
+    "answerInputField"

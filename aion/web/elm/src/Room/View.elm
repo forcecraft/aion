@@ -9,9 +9,9 @@ import Msgs exposing (Msg(KeyDown, NoOperation, SetAnswer, SubmitAnswer))
 import Html exposing (Html, a, div, img, li, p, text, ul)
 import Html.Attributes exposing (href, src)
 import Msgs exposing (Msg)
-import Room.Models exposing (Answer, ImageName, RoomId, RoomsData, UserGameData, UserInRoomRecord, answerInputFieldId)
+import Room.Models exposing (Answer, ImageName, RoomId, RoomsData, UserGameData, UserInRoomRecord)
 import Json.Decode exposing (map)
-import Room.Constants exposing (defaultImagePath, imagesPath)
+import Room.Constants exposing (answerInputFieldId, defaultImagePath, imagesPath)
 
 
 roomView : Model -> RoomId -> Html Msg

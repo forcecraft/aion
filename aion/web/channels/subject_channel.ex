@@ -5,7 +5,8 @@ defmodule Aion.SubjectChannel do
   def join("rooms:" <> room_id, _params, socket) do
     current_user = socket.assigns.current_user.name
     %{users: users, question: question} = ChannelMonitor.user_joined(room_id, current_user)
-    send self, {:after_join, room_id}
+
+    send self, {:after_join, room_id, current_user}
     {:ok, socket}
   end
 
@@ -33,7 +34,9 @@ defmodule Aion.SubjectChannel do
     {:noreply, socket}
   end
 
-  def handle_info({:after_join, room_id}, socket) do
+  def handle_info({:after_join, room_id, current_user}, socket) do
+    broadcast! socket, "room:user:joined", %{user: current_user}
+
     send_user_list(socket, room_id)
     send_current_question(socket, room_id)
     {:noreply, socket}

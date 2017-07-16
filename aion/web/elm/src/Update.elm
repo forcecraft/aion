@@ -4,9 +4,9 @@ import Dom exposing (focus)
 import General.Models exposing (Model, Route(RoomRoute))
 import Json.Decode as Decode
 import Msgs exposing (Msg(..))
-import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, usersListDecoder)
-import Room.Constants exposing (enterKeyCode)
-import Room.Models exposing (answerInputFieldId)
+import RemoteData
+import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, userJoinedInfoDecoder, usersListDecoder)
+import Room.Constants exposing (answerInputFieldId, enterKeyCode)
 import Routing exposing (parseLocation)
 import Phoenix.Socket
 import Phoenix.Channel
@@ -44,6 +44,7 @@ update msg model =
                                         |> Phoenix.Socket.on "user:list" ("rooms:" ++ roomIdToString) ReceiveUserList
                                         |> Phoenix.Socket.on "new:question" ("rooms:" ++ roomIdToString) ReceiveQuestion
                                         |> Phoenix.Socket.on "answer:feedback" ("rooms:" ++ roomIdToString) ReceiveAnswerFeedback
+                                        |> Phoenix.Socket.on "room:user:joined" ("rooms:" ++ roomIdToString) ReceiveUserJoined
                                     )
                         in
                             { model | socket = socket, route = newRoute, roomId = roomId } ! [ Cmd.map PhoenixMsg cmd ]
@@ -70,8 +71,28 @@ update msg model =
             case Decode.decodeValue answerFeedbackDecoder rawFeedback of
                 Ok answerFeedback ->
                     let
-                        x =
+                        log =
                             Debug.log "feedback" answerFeedback.feedback
+                    in
+                        model ! []
+
+                Err error ->
+                    model ! []
+
+        ReceiveUserJoined rawUserJoinedInfo ->
+            case Decode.decodeValue userJoinedInfoDecoder rawUserJoinedInfo of
+                Ok userJoinedInfo ->
+                    let
+                        log =
+                            case model.user of
+                                RemoteData.Success currentUser ->
+                                    if currentUser.name == userJoinedInfo.user then
+                                        Debug.log currentUser.name "you have successfully joined the room!"
+                                    else
+                                        Debug.log userJoinedInfo.user "user joined."
+
+                                _ ->
+                                    ""
                     in
                         model ! []
 
