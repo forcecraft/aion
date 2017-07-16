@@ -1,5 +1,6 @@
 module Panel.Api exposing (..)
 
+import General.Constants exposing (hostname)
 import Http
 import Msgs exposing (Msg)
 import RemoteData
@@ -10,7 +11,7 @@ import Json.Encode as Encode
 
 createQuestionUrl : String
 createQuestionUrl =
-    "http://localhost:4000/api/questions"
+    hostname ++ "api/questions"
 
 
 createQuestionWithAnswers : PanelData -> Cmd Msg
