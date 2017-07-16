@@ -1,22 +1,20 @@
 language: elixir
-
 elixir:
-  - 1.4.1
-
+- 1.4.1
 addons:
   postgresql: '9.4'
-
 services:
-  - postgresql
+- postgresql
 before_install:
-  - cd aion
+- cd aion
 before_script:
-  - cp config/travis.exs config/test.exs
-  - mix do ecto.create, ecto.migrate
-
+- cp config/travis.exs config/test.exs
+- mix do ecto.create, ecto.migrate
 script:
-  - mix test
-
+- mix test
 env:
-  - MIX_ENV=test
-
+- MIX_ENV=test
+notifications:
+  email: false
+  slack:
+    secure: 0wrGLWdpp9HLujCNNwJnPvmfQmK3phQXbUj/EZ/x/YROEp1TdaDzLnXI4Qo6JyZszmH+zFb3S58iiOUrX2oCJFhdUGz/tN8YSBQBdMDPhi602BfarK4dfOSsnMq60KYzEV+zkM3GQFXIl/UudeZ5AhEpEn4tF6HrjSYqMOAJkjv4REesdY/GLDVSFfNF/KfXhd1afsB5IA5O0VMERr247aCtnr9pbHuE6yqicZCuw0aU41e3zPRm8BVUIP1np5jRaGCJs7Vpx/5Q+SpdTjqdtgB05APvHveupDJrGV2uVH2iXScxHIP5SZOJbaaUxkIvjjrMN4IW3IiFDjxDuN6PAFZfJ3mpTowtDl96t4fgOfTM9a/EVv7OlPeQAVkOvHIdfsZ2PUpGV7+yWN1RssyiaYxcHdJ825on2jb+lj7lhsZmlGDfa/8GhkPQuKJr/msaXaposYDa42460hinn4UPHGrgO4AuGrXF9Cc7/xbGIdAkHogsswYy1X2XDf7aDR5yktgz/sQ1aHnvF9K1SzopDd1TS6YjLpgN0Y4kqWrUqWxHM6Ne1mTYLTREfbs+49+oPaq+n+HilFB0BAjCpwtwvKi+VhPgH5ZCSYL0hqiYpsUNL2Q3oWUHra1YlPIc/2QtIf6E1XtpqADRqnI/Ow8XkTgi4xWq2gKmHn5jEZhW9Ng=
