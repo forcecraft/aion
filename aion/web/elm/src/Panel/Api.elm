@@ -26,12 +26,12 @@ questionCreationEncoder panelData =
     let
         questionContent =
             [ ( "content", Encode.string panelData.newQuestionContent )
-            , ( "subject", Encode.int panelData.newAnswerCategory )
             ]
 
         payload =
             [ ( "question", Encode.object questionContent )
             , ( "answers", Encode.string panelData.newAnswerContent )
+            , ( "subject", Encode.int panelData.newAnswerCategory )
             ]
     in
         payload

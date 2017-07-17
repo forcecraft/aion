@@ -10,8 +10,8 @@ defmodule Aion.QuestionController do
     render(conn, "index.json", questions: questions)
   end
 
-  def create(conn, %{"question" => question_params, "answers" => answers_content}) do
-    question_subject = Repo.get(Subject, question_params["subject"])
+  def create(conn, %{"question" => question_params, "answers" => answers_content, "subject" => subject_id}) do
+    question_subject = Repo.get(Subject, subject_id)
 
     transaction_result = Repo.transaction(fn ->
       question_changeset = Question.changeset(%Question{}, Map.put(question_params, "belongs_to", question_subject))
