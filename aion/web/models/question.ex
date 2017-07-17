@@ -15,17 +15,10 @@ defmodule Aion.Question do
   Builds a changeset based on the `struct` and `params`.
   """
   def changeset(struct, params \\ %{}) do
-    if params["subject"] do
-      subject = Repo.get(Subject, params["subject"])
-
-      struct
-        |> Map.put(:subject, subject)
-        |> cast(params, [:content, :image_name])
-        |> validate_required([:content, :subject])
-    else
-      struct
-        |> cast(params, [:content, :image_name])
-        |> validate_required([:content])
-    end
+    struct
+      |> Repo.preload(:subject)
+      |> cast(params, [:content, :image_name])
+      |> validate_required([:content])
+      |> put_assoc(:subject, params["belongs_to"])
   end
 end
