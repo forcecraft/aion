@@ -13,32 +13,32 @@ defmodule Aion.QuestionController do
   def create(conn, %{"question" => question_params, "answers" => answers_content}) do
     question_subject = Repo.get(Subject, question_params["subject"])
 
-    if question_subject do
+    transaction_result = Repo.transaction(fn ->
       question_changeset = Question.changeset(%Question{}, Map.put(question_params, "belongs_to", question_subject))
       case Repo.insert(question_changeset) do
         {:ok, question} ->
           answer_changeset = Answer.changeset(%Answer{}, %{"content" => answers_content, "belongs_to" => question})
           case Repo.insert(answer_changeset) do
             {:ok, answer} ->
-              conn
-                |> put_status(:created)
-                |> put_resp_header("location", question_path(conn, :show, question))
-                |> render("show.json", question: question, answer: answer)
+              question
             {:error, error_answer_changeset} ->
-              Repo.delete(question)
-              conn
-                |> put_status(:unprocessable_entity)
-                |> render(Aion.ChangesetView, "error.json", changeset: error_answer_changeset)
+              Repo.rollback(error_answer_changeset)
           end
         {:error, error_question_changeset} ->
-          conn
-            |> put_status(:unprocessable_entity)
-            |> render(Aion.ChangesetView, "error.json", changeset: error_question_changeset)
+          Repo.rollback(error_question_changeset)
       end
-    else
-      conn
-        |> put_status(:unprocessable_entity)
-        |> render(Aion.ChangesetView, "error.json", info: "Question subject does not exist" )
+    end)
+
+    case transaction_result do
+      {:ok, question} ->
+        conn
+          |> put_status(:created)
+          |> put_resp_header("location", question_path(conn, :show, question))
+          |> render("show.json", question: question)
+      {:error, changeset} ->
+        conn
+          |> put_status(:unprocessable_entity)
+          |> render(Aion.ChangesetView, "error.json", changeset: changeset)
     end
   end
 

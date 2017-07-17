@@ -2,6 +2,8 @@ defmodule Aion.QuestionControllerTest do
   use Aion.ConnCase
 
   alias Aion.Question
+  alias Aion.Subject
+
   @valid_attrs %{content: "some content", image_name: "some content"}
   @invalid_attrs %{}
   @answers "some content"
