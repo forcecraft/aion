@@ -7,6 +7,8 @@ import Phoenix.Socket
 import Json.Encode as Encode
 import Room.Models exposing (RoomId, RoomsData)
 import User.Models exposing (CurrentUser)
+import Toasty
+import Toasty.Defaults
 
 
 type Msg
@@ -22,3 +24,5 @@ type Msg
     | KeyDown Int
     | NoOperation
     | ReceiveAnswerFeedback Encode.Value
+    | WrongAnswer
+    | ToastyMsg (Toasty.Msg Toasty.Defaults.Toast)

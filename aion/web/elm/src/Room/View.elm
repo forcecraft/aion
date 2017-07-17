@@ -5,14 +5,16 @@ import Html exposing (Attribute, Html, a, button, div, form, input, li, text, ul
 import Html.Attributes exposing (href, id, type_, value)
 import Html.Events exposing (keyCode, on, onClick, onInput, onWithOptions)
 import Room.Utils exposing (getRoomList, getRoomNameById)
-import Msgs exposing (Msg(KeyDown, NoOperation, SetAnswer, SubmitAnswer))
+import Msgs exposing (Msg(KeyDown, NoOperation, SetAnswer, SubmitAnswer, ToastyMsg))
 import Html exposing (Html, a, div, img, li, p, text, ul)
 import Html.Attributes exposing (href, src)
 import Msgs exposing (Msg)
 import Room.Models exposing (Answer, ImageName, RoomId, RoomsData, UserGameData, UserInRoomRecord, answerInputFieldId)
 import Json.Decode exposing (map)
 import Room.Constants exposing (defaultImagePath, imagesPath)
-
+import Toasty
+import Room.Notifications exposing(myConfig)
+import Toasty.Defaults
 
 roomView : Model -> RoomId -> Html Msg
 roomView model roomId =
@@ -32,6 +34,7 @@ roomView model roomId =
             , p [] [ text model.questionInChannel.content ]
             , displayQuestionImage imageName
             , displayAnswerInput currentAnswer
+            , Toasty.view myConfig Toasty.Defaults.view ToastyMsg model.toasties
             ]
 
 

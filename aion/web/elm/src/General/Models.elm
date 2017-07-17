@@ -5,6 +5,8 @@ import Phoenix.Socket
 import RemoteData exposing (WebData)
 import Room.Models exposing (RoomId, RoomsData, UsersInRoom, QuestionInRoom, UserGameData)
 import User.Models exposing (CurrentUser)
+import Toasty.Defaults
+import Toasty
 
 
 type alias Model =
@@ -17,6 +19,7 @@ type alias Model =
     , userGameData : UserGameData
     , questionInChannel : QuestionInRoom
     , roomId : RoomId
+    , toasties : Toasty.Stack Toasty.Defaults.Toast
     }
 
 
@@ -48,4 +51,5 @@ initialModel flags route =
         , image_name = ""
         }
     , roomId = 0
+    , toasties = Toasty.initialState
     }

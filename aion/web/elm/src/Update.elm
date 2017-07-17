@@ -13,6 +13,8 @@ import Phoenix.Channel
 import Phoenix.Push
 import Json.Encode as Encode
 import Task
+import Room.Notifications exposing (..)
+import Toasty
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -46,7 +48,7 @@ update msg model =
                                         |> Phoenix.Socket.on "answer:feedback" ("rooms:" ++ roomIdToString) ReceiveAnswerFeedback
                                     )
                         in
-                            { model | socket = socket, route = newRoute, roomId = roomId } ! [ Cmd.map PhoenixMsg cmd ]
+                            { model | socket = socket, route = newRoute, roomId = roomId, toasties = Toasty.initialState } ! [ Cmd.map PhoenixMsg cmd ]
 
                     _ ->
                         { model | route = newRoute } ! []
@@ -89,11 +91,14 @@ update msg model =
                 push_ =
                     Phoenix.Push.init "new:answer" ("rooms:" ++ (toString model.roomId))
                         |> Phoenix.Push.withPayload payload
+                        |> Phoenix.Push.onError (\v -> WrongAnswer)
 
                 ( socket, cmd ) =
                     Phoenix.Socket.push push_ model.socket
             in
                 { model | socket = socket } ! [ Cmd.map PhoenixMsg cmd ]
+
+        WrongAnswer ->  wrongAnswerToast (model ! [])
 
         ReceiveQuestion raw ->
             case Decode.decodeValue questionDecoder raw of
@@ -114,3 +119,7 @@ update msg model =
 
         NoOperation ->
             model ! []
+
+        ToastyMsg subMsg ->
+            Toasty.update myConfig ToastyMsg subMsg model
+

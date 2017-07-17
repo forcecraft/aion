@@ -30,7 +30,8 @@ type alias UserList =
 
 
 type alias UserGameData =
-    { currentAnswer : String
+    {
+      currentAnswer : String
     }
 
 
