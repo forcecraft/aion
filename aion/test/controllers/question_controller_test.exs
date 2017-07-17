@@ -33,13 +33,13 @@ defmodule Aion.QuestionControllerTest do
   end
 
   test "creates and renders resource when data is valid", %{conn: conn} do
-    conn = post conn, question_path(conn, :create), question: @valid_attrs, answers: @answers
+    conn = post conn, question_path(conn, :create), question: Map.put(@valid_attrs, "subject", 1), answers: @answers
     assert json_response(conn, 201)["data"]["id"]
     assert Repo.get_by(Question, @valid_attrs)
   end
 
   test "does not create resource and renders errors when data is invalid", %{conn: conn} do
-    conn = post conn, question_path(conn, :create), question: @invalid_attrs, answers: @answers
+    conn = post conn, question_path(conn, :create), question: Map.put(@invalid_attrs, "subject", 1), answers: @answers
     assert json_response(conn, 422)["errors"] != %{}
   end
 
