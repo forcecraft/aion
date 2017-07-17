@@ -128,21 +128,15 @@ update msg model =
             let
                 oldPanelData =
                     model.panelData
-
-                newPanelData =
-                    { oldPanelData | newQuestionContent = questionContent }
             in
-                { model | panelData = newPanelData } ! []
+                { model | panelData = { oldPanelData | newQuestionContent = questionContent } } ! []
 
         SetNewAnswerContent answerContent ->
             let
                 oldPanelData =
                     model.panelData
-
-                newPanelData =
-                    { oldPanelData | newAnswerContent = answerContent }
             in
-                { model | panelData = newPanelData } ! []
+                { model | panelData = { oldPanelData | newAnswerContent = answerContent } } ! []
 
         SetNewAnswerCategory answerCategoryName ->
             let
@@ -151,11 +145,8 @@ update msg model =
 
                 oldPanelData =
                     model.panelData
-
-                newPanelData =
-                    { oldPanelData | newAnswerCategory = answerCategoryToId }
             in
-                { model | panelData = newPanelData } ! []
+                { model | panelData = { oldPanelData | newAnswerCategory = answerCategoryToId } } ! []
 
         CreateNewQuestionWithAnswers ->
             ( model, createQuestionWithAnswers model.panelData )
