@@ -5,7 +5,9 @@ defmodule Aion.Room do
   schema "rooms" do
     field :name, :string
     field :description, :string
-    many_to_many :subjects, Subject, join_through: RoomSubject
+    many_to_many :subjects, Subject,
+      join_through: RoomSubject,
+      on_delete: :delete_all
     belongs_to :owner, Aion.User
 
     timestamps()

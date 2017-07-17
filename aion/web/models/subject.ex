@@ -6,7 +6,9 @@ defmodule Aion.Subject do
   alias Aion.{Room, RoomSubject}
   schema "subjects" do
     field :name, :string
-    many_to_many :rooms, Room, join_through: RoomSubject
+    many_to_many :rooms, Room,
+      join_through: RoomSubject,
+      on_delete: :delete_all
     timestamps()
   end
 
