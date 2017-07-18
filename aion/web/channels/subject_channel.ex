@@ -21,18 +21,16 @@ defmodule Aion.SubjectChannel do
   end
 
   def handle_in("new:answer", %{"room_id" => room_id, "answer" => answer}, socket) do
-     username = socket.assigns.current_user.name
-     evaluation = ChannelMonitor.new_answer(room_id, answer, username)
-     send_feedback socket, evaluation
+    username = socket.assigns.current_user.name
+    evaluation = ChannelMonitor.new_answer(room_id, answer, username)
+    send_feedback socket, evaluation
 
-     case evaluation do
-       1.0 ->
-         send_user_list(socket, room_id)
-         send_new_question(socket, room_id)
-         {:noreply, socket}
-       _ ->
-         {:reply, :error, socket}
-     end
+    if evaluation == 1.0 do
+     send_user_list(socket, room_id)
+     send_new_question(socket, room_id)
+    end
+
+    {:noreply, socket}
   end
 
   def handle_info({:after_join, room_id}, socket) do
@@ -61,9 +59,9 @@ defmodule Aion.SubjectChannel do
 
   defp send_feedback(socket, evaluation) do
     feedback = cond do
-      evaluation == 1.0 -> "Correct!"
-      evaluation > 0.8 -> "Close one!"
-      true -> "Wrong answer."
+      evaluation == 1.0 -> :correct
+      evaluation > 0.8 -> :close
+      true -> :incorrect
     end
 
     push socket, "answer:feedback", %{"feedback" => feedback}
