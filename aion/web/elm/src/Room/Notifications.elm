@@ -16,5 +16,11 @@ addToast toast ( model, cmd ) =
     Toasty.addToast myConfig ToastyMsg toast ( model, cmd )
 
 
-wrongAnswerToast : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
-wrongAnswerToast = addToast (Toasty.Defaults.Error "Error!" "Wrong Answer")
+incorrectAnswerToast : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+incorrectAnswerToast = addToast (Toasty.Defaults.Error "Error!" "Wrong Answer")
+
+closeAnswerToast : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+closeAnswerToast = addToast (Toasty.Defaults.Warning "Close one!" "Your Answer is Almost Correct")
+
+correctAnswerToast : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+correctAnswerToast = addToast (Toasty.Defaults.Success "Good Answer!" "You Answer is Correct")

@@ -72,10 +72,14 @@ update msg model =
             case Decode.decodeValue answerFeedbackDecoder rawFeedback of
                 Ok answerFeedback ->
                     let
-                        x =
-                            Debug.log "feedback" answerFeedback.feedback
+                        answerToast =
+                            case answerFeedback.feedback of
+                                "incorrect" -> incorrectAnswerToast
+                                "close" -> closeAnswerToast
+                                "correct" -> correctAnswerToast
+                                _ -> (\x -> x)
                     in
-                        model ! []
+                        answerToast (model ! [])
 
                 Err error ->
                     model ! []
@@ -91,14 +95,12 @@ update msg model =
                 push_ =
                     Phoenix.Push.init "new:answer" ("rooms:" ++ (toString model.roomId))
                         |> Phoenix.Push.withPayload payload
-                        |> Phoenix.Push.onError (\v -> WrongAnswer)
+                        |> Phoenix.Push.onOk (\v -> ReceiveAnswerFeedback v)
 
                 ( socket, cmd ) =
                     Phoenix.Socket.push push_ model.socket
             in
                 { model | socket = socket } ! [ Cmd.map PhoenixMsg cmd ]
-
-        WrongAnswer ->  wrongAnswerToast (model ! [])
 
         ReceiveQuestion raw ->
             case Decode.decodeValue questionDecoder raw of

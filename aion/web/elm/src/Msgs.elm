@@ -24,5 +24,4 @@ type Msg
     | KeyDown Int
     | NoOperation
     | ReceiveAnswerFeedback Encode.Value
-    | WrongAnswer
     | ToastyMsg (Toasty.Msg Toasty.Defaults.Toast)
