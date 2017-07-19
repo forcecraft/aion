@@ -1,4 +1,4 @@
 dbname = 'aion'
-user = 'root'
-password = 'password'
-host = 'db'
+user = 'postgres'
+password = 'postgres'
+host = 'localhost'
