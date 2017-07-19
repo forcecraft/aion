@@ -1,6 +1,7 @@
 module General.Models exposing (..)
 
 import Msgs exposing (Msg)
+import Panel.Models exposing (PanelData)
 import Phoenix.Socket
 import RemoteData exposing (WebData)
 import Room.Models exposing (RoomId, RoomsData, UsersInRoom, QuestionInRoom, UserGameData)
@@ -17,6 +18,7 @@ type alias Model =
     , userGameData : UserGameData
     , questionInChannel : QuestionInRoom
     , roomId : RoomId
+    , panelData : PanelData
     }
 
 
@@ -29,6 +31,7 @@ type Route
     = LoginRoute
     | RoomListRoute
     | RoomRoute RoomId
+    | PanelRoute
     | NotFoundRoute
 
 
@@ -48,4 +51,9 @@ initialModel flags route =
         , image_name = ""
         }
     , roomId = 0
+    , panelData =
+        { newQuestionContent = ""
+        , newAnswerContent = ""
+        , newAnswerCategory = 1
+        }
     }

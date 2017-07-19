@@ -2,6 +2,7 @@ module Msgs exposing (..)
 
 import Dom exposing (Error)
 import Navigation exposing (Location)
+import Panel.Models exposing (QuestionCreatedData)
 import RemoteData exposing (WebData)
 import Phoenix.Socket
 import Json.Encode as Encode
@@ -13,6 +14,7 @@ type Msg
     = OnLocationChange Location
     | OnFetchRooms (WebData RoomsData)
     | OnFetchCurrentUser (WebData CurrentUser)
+    | OnQuestionCreated (WebData QuestionCreatedData)
     | PhoenixMsg (Phoenix.Socket.Msg Msg)
     | ReceiveUserList Encode.Value
     | SetAnswer String
@@ -22,3 +24,7 @@ type Msg
     | KeyDown Int
     | NoOperation
     | ReceiveAnswerFeedback Encode.Value
+    | SetNewQuestionContent String
+    | SetNewAnswerContent String
+    | SetNewAnswerCategory String
+    | CreateNewQuestionWithAnswers
