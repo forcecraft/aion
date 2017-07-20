@@ -16,10 +16,10 @@ docker_stop:
 # local development part
 
 start_dev:
-	mix phoenix.server
+	cd aion && mix phoenix.server
 
 development: local_db local_deps local_config
-	mix phoenix.server
+	cd aion && mix phoenix.server
 
 clean:
 	rm -rf aion/deps
