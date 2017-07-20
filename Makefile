@@ -21,11 +21,6 @@ start_dev:
 development: local_db local_deps local_config
 	cd aion && mix phoenix.server
 
-clean:
-	rm -rf aion/deps
-	rm -rf aion/web/elm/elm-stuff
-	rm -rf aion/node_modules
-
 local_db:
 	cd aion && mix ecto.create && mix ecto.migrate
 
@@ -34,3 +29,9 @@ local_deps:
 
 local_config:
 	cp aion/config/local_dev.exs aion/config/dev.exs
+
+clean:
+	rm -rf aion/deps
+	rm -rf aion/web/elm/elm-stuff
+	rm -rf aion/node_modules
+
