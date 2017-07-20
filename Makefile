@@ -15,10 +15,10 @@ docker_stop:
 
 # local development part
 
-start_dev:
-	cd aion && mix phoenix.server
 
-development: local_db local_deps local_config
+development: local_db local_deps local_config start_dev
+
+start_dev:
 	cd aion && mix phoenix.server
 
 local_db:
