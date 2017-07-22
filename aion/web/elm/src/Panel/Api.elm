@@ -1,11 +1,13 @@
 module Panel.Api exposing (..)
 
+import Forms
 import General.Constants exposing (hostname)
+import General.Models exposing (Model)
+import General.Utils exposing (getSubjectIdByName)
 import Http
 import Msgs exposing (Msg)
 import RemoteData
 import Panel.Decoders exposing (questionCreatedDecoder)
-import Panel.Models exposing (PanelData)
 import Json.Encode as Encode
 
 
@@ -14,24 +16,39 @@ createQuestionUrl =
     hostname ++ "api/questions"
 
 
-createQuestionWithAnswers : PanelData -> Cmd Msg
-createQuestionWithAnswers panelData =
-    Http.post createQuestionUrl (questionCreationEncoder panelData) questionCreatedDecoder
+createQuestionWithAnswers : Model -> Cmd Msg
+createQuestionWithAnswers model =
+    Http.post createQuestionUrl (questionCreationEncoder model) questionCreatedDecoder
         |> RemoteData.sendRequest
         |> Cmd.map Msgs.OnQuestionCreated
 
 
-questionCreationEncoder : PanelData -> Http.Body
-questionCreationEncoder panelData =
+questionCreationEncoder : Model -> Http.Body
+questionCreationEncoder model =
     let
+        form =
+            model.panelData.createQuestionForm
+
+        questionValue =
+            Forms.formValue form "question"
+
+        answersValue =
+            Forms.formValue form "answers"
+
+        subjectValue =
+            Forms.formValue form "subject"
+
+        subjectId =
+            getSubjectIdByName model.rooms subjectValue
+
         questionContent =
-            [ ( "content", Encode.string panelData.newQuestionContent )
+            [ ( "content", Encode.string questionValue )
             ]
 
         payload =
             [ ( "question", Encode.object questionContent )
-            , ( "answers", Encode.string panelData.newAnswerContent )
-            , ( "subject", Encode.int panelData.newAnswerCategory )
+            , ( "answers", Encode.string answersValue )
+            , ( "subject", Encode.int subjectId )
             ]
     in
         payload

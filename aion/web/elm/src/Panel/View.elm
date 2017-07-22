@@ -1,5 +1,6 @@
 module Panel.View exposing (..)
 
+import Forms
 import General.Models exposing (Model)
 import Html exposing (..)
 import Html.Attributes exposing (placeholder, type_, value)
@@ -15,14 +16,46 @@ panelView model =
     div []
         [ h3 [] [ text "Create new question for certain category:" ]
         , form []
-            [ p [] [ text "Enter question content below:" ]
-            , input [ placeholder "How much is 2+2?", onInput SetNewQuestionContent ] []
-            , p [] [ text "Enter answer below, separate all posibilities with comma:" ]
-            , input [ placeholder "4", onInput SetNewAnswerContent ] []
-            , p [] [ text "Select the category to which to add the question:" ]
-            , Select.from (listRooms model.rooms) SetNewAnswerCategory
+            [ questionFormElement model.panelData.createQuestionForm
+            , answersFormElement model.panelData.createQuestionForm
+            , subjectFormElement model.panelData.createQuestionForm (listRooms model.rooms)
             , input [ type_ "button", value "submit", onClick CreateNewQuestionWithAnswers ] []
             ]
+        ]
+
+
+questionFormElement : Forms.Form -> Html Msg
+questionFormElement form =
+    div []
+        [ p [] [ text "Enter question content below:" ]
+        , input
+            [ placeholder "How much is 2+2?"
+            , onInput (UpdateCreateQuestionForm "question")
+            ]
+            []
+        , small [] [ text (Forms.errorString form "question") ]
+        ]
+
+
+answersFormElement : Forms.Form -> Html Msg
+answersFormElement form =
+    div []
+        [ p [] [ text "Enter answer below, separate all posibilities with comma:" ]
+        , input
+            [ placeholder "4,cztery"
+            , onInput (UpdateCreateQuestionForm "answers")
+            ]
+            []
+        , small [] [ text (Forms.errorString form "answers") ]
+        ]
+
+
+subjectFormElement : Forms.Form -> List String -> Html Msg
+subjectFormElement form roomList =
+    div []
+        [ p [] [ text "Select the category to which to add the question:" ]
+        , Select.from roomList (UpdateCreateQuestionForm "subject")
+        , small [] [ text (Forms.errorString form "subject") ]
         ]
 
 

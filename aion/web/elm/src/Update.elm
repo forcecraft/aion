@@ -1,8 +1,8 @@
 module Update exposing (..)
 
 import Dom exposing (focus)
+import Forms
 import General.Models exposing (Model, Route(RoomRoute))
-import General.Utils exposing (getSubjectIdByName)
 import Json.Decode as Decode
 import Msgs exposing (Msg(..))
 import Panel.Api exposing (createQuestionWithAnswers)
@@ -121,32 +121,19 @@ update msg model =
             else
                 model ! []
 
-        NoOperation ->
-            model ! []
-
-        SetNewQuestionContent questionContent ->
+        UpdateCreateQuestionForm name value ->
             let
                 oldPanelData =
                     model.panelData
             in
-                { model | panelData = { oldPanelData | newQuestionContent = questionContent } } ! []
-
-        SetNewAnswerContent answerContent ->
-            let
-                oldPanelData =
-                    model.panelData
-            in
-                { model | panelData = { oldPanelData | newAnswerContent = answerContent } } ! []
-
-        SetNewAnswerCategory answerCategoryName ->
-            let
-                answerCategoryToId =
-                    getSubjectIdByName model.rooms answerCategoryName
-
-                oldPanelData =
-                    model.panelData
-            in
-                { model | panelData = { oldPanelData | newAnswerCategory = answerCategoryToId } } ! []
+                { model
+                    | panelData =
+                        { oldPanelData | createQuestionForm = Forms.updateFormInput oldPanelData.createQuestionForm name value }
+                }
+                    ! []
 
         CreateNewQuestionWithAnswers ->
-            ( model, createQuestionWithAnswers model.panelData )
+            ( model, createQuestionWithAnswers model )
+
+        NoOperation ->
+            model ! []

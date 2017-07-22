@@ -24,7 +24,5 @@ type Msg
     | KeyDown Int
     | NoOperation
     | ReceiveAnswerFeedback Encode.Value
-    | SetNewQuestionContent String
-    | SetNewAnswerContent String
-    | SetNewAnswerCategory String
     | CreateNewQuestionWithAnswers
+    | UpdateCreateQuestionForm String String
