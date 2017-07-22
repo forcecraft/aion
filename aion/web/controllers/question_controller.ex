@@ -5,6 +5,8 @@ defmodule Aion.QuestionController do
   alias Aion.Answer
   alias Aion.Subject
 
+  @answer_separator ","
+
   def index(conn, _params) do
     questions = Repo.all(Question)
     render(conn, "index.json", questions: questions)
@@ -17,12 +19,16 @@ defmodule Aion.QuestionController do
       question_changeset = Question.changeset(%Question{}, Map.put(question_params, "belongs_to", question_subject))
       case Repo.insert(question_changeset) do
         {:ok, question} ->
-          answer_changeset = Answer.changeset(%Answer{}, %{"content" => answers_content, "belongs_to" => question})
-          case Repo.insert(answer_changeset) do
-            {:ok, answer} ->
-              question
-            {:error, error_answer_changeset} ->
-              Repo.rollback(error_answer_changeset)
+          insert_asnwers =
+            answers_content
+            |> String.split(@answer_separator)
+            |> Enum.map(fn answer_content -> Answer.changeset(%Answer{}, %{"content" => answer_content, "belongs_to" => question}) end)
+            |> Enum.map(fn answer_changeset -> Repo.insert(answer_changeset) end)
+
+          if Enum.all?(insert_asnwers, fn {insert_result, _} -> insert_result == :ok end) do
+            question #TODO: change to return also answers and subject to a client?
+          else
+            Repo.rollback(:error)
           end
         {:error, error_question_changeset} ->
           Repo.rollback(error_question_changeset)
