@@ -1,6 +1,8 @@
 module Panel.Models exposing (..)
 
 import Forms
+import Panel.Validators exposing (answersValidations, questionValidations, subjectValidations)
+import Regex
 
 
 type alias PanelData =
@@ -15,14 +17,8 @@ type alias CreateQuestionForm =
 createQuestionForm : List ( String, List Forms.FieldValidator )
 createQuestionForm =
     [ ( "question", questionValidations )
-    , ( "answers", questionValidations )
-    , ( "subject", questionValidations )
-    ]
-
-
-questionValidations : List Forms.FieldValidator
-questionValidations =
-    [ Forms.validateExistence
+    , ( "answers", answersValidations )
+    , ( "subject", subjectValidations )
     ]
 
 

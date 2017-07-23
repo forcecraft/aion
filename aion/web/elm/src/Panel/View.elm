@@ -63,7 +63,7 @@ listRooms : WebData RoomsData -> List String
 listRooms result =
     case result of
         RemoteData.Success roomsData ->
-            List.map (\room -> room.name) roomsData.data
+            "" :: List.map (\room -> room.name) roomsData.data
 
         _ ->
             []
