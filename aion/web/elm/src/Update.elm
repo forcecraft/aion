@@ -29,7 +29,7 @@ update msg model =
 
         OnQuestionCreated response ->
             case response of
-                RemoteData.Success ->
+                RemoteData.Success responseData ->
                     let
                         oldPanelData =
                             model.panelData
