@@ -4,8 +4,10 @@ import Dom exposing (focus)
 import Forms
 import General.Models exposing (Model, Route(RoomRoute))
 import Json.Decode as Decode
+import Json.Encode as Encode
 import Msgs exposing (Msg(..))
 import Panel.Api exposing (createQuestionWithAnswers)
+import RemoteData
 import Room.Constants exposing (enterKeyCode)
 import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, usersListDecoder)
 import Room.Models exposing (RoomsData, answerInputFieldId)
@@ -13,7 +15,6 @@ import Routing exposing (parseLocation)
 import Phoenix.Socket
 import Phoenix.Channel
 import Phoenix.Push
-import Json.Encode as Encode
 import Task
 
 
@@ -27,7 +28,25 @@ update msg model =
             { model | user = response } ! []
 
         OnQuestionCreated response ->
-            model ! []
+            case response of
+                RemoteData.Success ->
+                    let
+                        oldPanelData =
+                            model.panelData
+
+                        oldCreateQuestionForm =
+                            model.panelData.createQuestionForm
+
+                        newCreateQuestionForm =
+                            Forms.updateFormInput oldCreateQuestionForm "question" ""
+
+                        evenNewerCreateQuestionForm =
+                            Forms.updateFormInput newCreateQuestionForm "answers" ""
+                    in
+                        { model | panelData = { oldPanelData | createQuestionForm = evenNewerCreateQuestionForm } } ! []
+
+                _ ->
+                    model ! []
 
         OnLocationChange location ->
             let

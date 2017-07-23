@@ -31,6 +31,7 @@ questionFormElement form =
         , input
             [ placeholder "How much is 2+2?"
             , onInput (UpdateCreateQuestionForm "question")
+            , value (Forms.formValue form "question")
             ]
             []
         , small [] [ text (Forms.errorString form "question") ]
@@ -44,6 +45,7 @@ answersFormElement form =
         , input
             [ placeholder "4,cztery"
             , onInput (UpdateCreateQuestionForm "answers")
+            , value (Forms.formValue form "answers")
             ]
             []
         , small [] [ text (Forms.errorString form "answers") ]
