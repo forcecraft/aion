@@ -2,7 +2,6 @@ module Panel.Models exposing (..)
 
 import Forms
 import Panel.Validators exposing (answersValidations, questionValidations, subjectValidations)
-import Regex
 
 
 type alias PanelData =

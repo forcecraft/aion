@@ -19,7 +19,7 @@ answersValidations : List Forms.FieldValidator
 answersValidations =
     let
         answersRegex =
-            "\\w+(,\\w+(\\s\\w+)*)*"
+            "\\w+(\\s\\w+)*(,\\w+(\\s\\w+)*)*"
     in
         [ Forms.validateExistence
         , validateRegularExpression answersRegex
