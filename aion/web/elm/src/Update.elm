@@ -152,7 +152,20 @@ update msg model =
                     ! []
 
         CreateNewQuestionWithAnswers ->
-            ( model, createQuestionWithAnswers model )
+            let
+                possibleFields =
+                    [ "question", "answers", "subject" ]
+
+                validationErrors =
+                    possibleFields
+                        |> List.map (\name -> Forms.errorList model.panelData.createQuestionForm name)
+                        |> List.foldr (++) []
+                        |> List.filter (\validations -> validations /= Nothing)
+            in
+                if List.isEmpty validationErrors then
+                    ( model, createQuestionWithAnswers model )
+                else
+                    model ! []
 
         NoOperation ->
             model ! []
