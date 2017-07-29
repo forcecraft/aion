@@ -30,6 +30,9 @@ local_deps:
 local_config:
 	cp aion/config/local_dev.exs aion/config/dev.exs
 
+seed_db:
+	cp fixtures/src/local_config.py fixtures/src/config.py && python3 fixtures/main.py -p fixtures/jpks
+
 clean:
 	rm -rf aion/deps
 	rm -rf aion/web/elm/elm-stuff
