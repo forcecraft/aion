@@ -1,4 +1,6 @@
-# docker part
+###############
+# docker part #
+###############
 
 docker_build:
 	@docker-compose down
@@ -12,9 +14,9 @@ docker_start:
 docker_stop:
 	@docker-compose down
 
-
-# local development part
-
+##########################
+# local development part #
+##########################
 
 development: local_db local_deps local_config start_dev
 
@@ -30,8 +32,12 @@ local_deps:
 local_config:
 	cp aion/config/local_dev.exs aion/config/dev.exs
 
-seed_db:
-	cp fixtures/src/local_config.py fixtures/src/config.py && python3 fixtures/main.py -p fixtures/jpks
+populate_database:
+	scripts/populate_database
+
+##########
+# common #
+##########
 
 clean:
 	rm -rf aion/deps
