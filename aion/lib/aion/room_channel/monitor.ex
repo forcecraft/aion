@@ -8,6 +8,10 @@ defmodule Aion.RoomChannel.Monitor do
   # general interface #
   #####################
 
+  def start_link(room_id) do
+    GenServer.start_link(__MODULE__, Room.new(), name: ref(room_id))
+  end
+
   def create(room_id) do
     case GenServer.whereis(ref(room_id)) do
       nil ->
@@ -15,10 +19,6 @@ defmodule Aion.RoomChannel.Monitor do
       _board ->
         {:error, :room_already_exists}
     end
-  end
-
-  def start_link(room_id) do
-    GenServer.start_link(__MODULE__, %{}, name: ref(room_id))
   end
 
   defp try_call(room_id, message) do
@@ -72,16 +72,9 @@ defmodule Aion.RoomChannel.Monitor do
   #########################
 
   def handle_call({:user_joined, room_id, username}, _from, state) do
-    new_user_record = %PlayerRecord{name: username, score: 0}
-    new_state =
-      case state do
-        %{} ->
-          %{question: question, answers: answers} = Room.get_new_question_with_answers(room_id)
-          %{users: %{username => new_user_record}, question: question, answers: answers}
+    new_player = %PlayerRecord{name: username}
+    new_state = Room.add_player(state, new_player)
 
-        %{users: current_users} ->
-          room_state = Map.put(state, :users , Map.put(current_users, username , new_user_record))
-      end
     {:reply, new_state, new_state}
   end
 
@@ -102,16 +95,10 @@ defmodule Aion.RoomChannel.Monitor do
   end
 
   def handle_call({:new_answer, room_id, answer, username}, _from, state) do
-    evaluation =
-      state
-      |> Map.get(:answers)
-      |> Enum.map(fn x -> Map.get(x, :content) end)
-      |> Enum.map(fn correct_answer -> Room.compare_answers(correct_answer, answer) end)
-      |> Enum.max
+    evaluation = Room.evaluate_answer(state, answer)
 
     if evaluation == 1.0 do
-      new_state = update_in(state, [:users, username], &PlayerRecord.increment_score/1)
-      {:reply, evaluation, new_state}
+      {:reply, evaluation, Room.award_player(state, username)}
     else
       {:reply, evaluation, state}
     end

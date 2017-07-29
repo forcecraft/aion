@@ -22,4 +22,13 @@ defmodule Aion.Answer do
     |> validate_required([:content])
     |> put_assoc(:question, params["belongs_to"])
   end
+
+  #######
+  # API #
+  #######
+
+  defp get_answers(question_id) do
+    Repo.all(from a in Answer, where: a.question_id == ^question_id)
+  end
+
 end
