@@ -2,11 +2,13 @@ module Update exposing (..)
 
 import Dom exposing (focus)
 import General.Models exposing (Model, Route(RoomRoute))
+import General.Utils exposing (getSubjectIdByName)
 import Json.Decode as Decode
 import Msgs exposing (Msg(..))
-import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, usersListDecoder)
+import Panel.Api exposing (createQuestionWithAnswers)
 import Room.Constants exposing (enterKeyCode)
-import Room.Models exposing (answerInputFieldId)
+import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, usersListDecoder)
+import Room.Models exposing (RoomsData, answerInputFieldId)
 import Routing exposing (parseLocation)
 import Phoenix.Socket
 import Phoenix.Channel
@@ -25,6 +27,9 @@ update msg model =
 
         OnFetchCurrentUser response ->
             { model | user = response } ! []
+
+        OnQuestionCreated response ->
+            model ! []
 
         OnLocationChange location ->
             let
@@ -90,7 +95,11 @@ update msg model =
         SubmitAnswer ->
             let
                 payload =
-                    (Encode.object [ ( "answer", Encode.string model.userGameData.currentAnswer ), ( "room_id", Encode.string (toString model.roomId) ) ])
+                    (Encode.object
+                        [ ( "answer", Encode.string model.userGameData.currentAnswer )
+                        , ( "room_id", Encode.string (toString model.roomId) )
+                        ]
+                    )
 
                 push_ =
                     Phoenix.Push.init "new:answer" ("rooms:" ++ (toString model.roomId))
@@ -125,3 +134,29 @@ update msg model =
         ToastyMsg subMsg ->
             Toasty.update myConfig ToastyMsg subMsg model
 
+        SetNewQuestionContent questionContent ->
+            let
+                oldPanelData =
+                    model.panelData
+            in
+                { model | panelData = { oldPanelData | newQuestionContent = questionContent } } ! []
+
+        SetNewAnswerContent answerContent ->
+            let
+                oldPanelData =
+                    model.panelData
+            in
+                { model | panelData = { oldPanelData | newAnswerContent = answerContent } } ! []
+
+        SetNewAnswerCategory answerCategoryName ->
+            let
+                answerCategoryToId =
+                    getSubjectIdByName model.rooms answerCategoryName
+
+                oldPanelData =
+                    model.panelData
+            in
+                { model | panelData = { oldPanelData | newAnswerCategory = answerCategoryToId } } ! []
+
+        CreateNewQuestionWithAnswers ->
+            ( model, createQuestionWithAnswers model.panelData )

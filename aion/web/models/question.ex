@@ -1,5 +1,10 @@
 defmodule Aion.Question do
+  @moduledoc """
+  This model represents a single question that user may have to answer.
+  """
   use Aion.Web, :model
+  alias Aion.Repo
+  alias Aion.Subject
 
   schema "questions" do
     field :content, :string
@@ -14,7 +19,9 @@ defmodule Aion.Question do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:content, :image_name])
-    |> validate_required([:content, :image_name])
+      |> Repo.preload(:subject)
+      |> cast(params, [:content, :image_name])
+      |> validate_required([:content])
+      |> put_assoc(:subject, params["belongs_to"])
   end
 end

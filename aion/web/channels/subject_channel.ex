@@ -1,4 +1,9 @@
 defmodule Aion.SubjectChannel do
+  @moduledoc """
+  This module is responsible for providing a commucation between Elixir and Elm. It describes how the backend part
+  should react to new messages or events.
+  """
+
   use Phoenix.Channel
   alias Aion.ChannelMonitor
 
@@ -48,13 +53,13 @@ defmodule Aion.SubjectChannel do
     ChannelMonitor.new_question(room_id)
     question = ChannelMonitor.get_room_state(room_id).question
     image_name = if question.image_name == nil, do: "", else: question.image_name
-    broadcast! socket, "new:question", %{ content: question.content, image_name: image_name }
+    broadcast! socket, "new:question", %{content: question.content, image_name: image_name}
   end
 
   defp send_current_question(socket, room_id) do
     question = ChannelMonitor.get_room_state(room_id).question
     image_name = if question.image_name == nil, do: "", else: question.image_name
-    broadcast! socket, "new:question", %{ content: question.content, image_name: image_name }
+    broadcast! socket, "new:question", %{content: question.content, image_name: image_name}
   end
 
   defp send_feedback(socket, evaluation) do

@@ -1,11 +1,13 @@
 defmodule Aion.ChannelMonitor do
+  @moduledoc """
+  ChannelMonitor is deprecated and is going to be replaced by other modules pretty soon. Its tasks for now is holding
+  the state of all the rooms.
+  """
   use GenServer
-  alias Aion.Repo
-  alias Aion.Question
-  alias Aion.Answer
-  alias Aion.UserRecord
+  alias Aion.{Repo, Question, Answer, UserRecord}
+  alias Simetric.Jaro.Winkler, as: JaroWinkler
   import Ecto.Query, only: [from: 2]
-
+  require Logger
 
   def start_link(initial_state) do
     GenServer.start_link(__MODULE__, initial_state, name: __MODULE__)
@@ -46,7 +48,7 @@ defmodule Aion.ChannelMonitor do
         nil ->
           %{question: question, answers: answers} = get_new_question_with_answers(room_id)
           Map.put(state, room_id, %{users: %{username => new_user_record}, question: question, answers: answers})
-        %{ users: currentUsers } ->
+        %{users: currentUsers} ->
           room_state = Map.put(state[room_id], :users , Map.put(currentUsers, username , new_user_record))
           Map.put(state, room_id, room_state)
       end
@@ -62,18 +64,20 @@ defmodule Aion.ChannelMonitor do
   end
 
   def handle_call({:new_question, room_id}, _from, state) do
-    room_state = Map.get(state, room_id) |> Map.merge(get_new_question_with_answers(room_id))
+    room_state = state
+                 |> Map.get(room_id)
+                 |> Map.merge(get_new_question_with_answers(room_id))
     state = Map.put(state, room_id, room_state)
     {:reply, state, state}
   end
 
   def handle_call({:new_answer, room_id, answer, username}, _from, state) do
-    evaluation = Map.get(state, room_id)
+    evaluation = state
+                 |> Map.get(room_id)
                  |> Map.get(:answers)
                  |> Enum.map(fn x -> Map.get(x, :content) end)
                  |> Enum.map(fn correct_answer -> compare_answers(correct_answer, answer) end)
                  |> Enum.max
-
 
     if evaluation == 1.0 do
       new_state = update_in(state, [room_id, :users, username], &increment_score/1)
@@ -88,18 +92,21 @@ defmodule Aion.ChannelMonitor do
   end
 
   defp get_new_question_with_answers(category_id) do
-    question = Repo.all(from q in Question, where: q.subject_id == ^category_id)
-               |> Enum.random
+    query = from q in Question, where: q.subject_id == ^category_id
+    question = query
+               |> Repo.all()
+               |> Enum.random()
+
     question_id = Map.get(question, :id)
     answers = Repo.all(from a in Answer, where: a.question_id == ^question_id)
-    IO.inspect answers, label: "Answers"
+    Logger.debug fn -> "Answers: #{inspect(answers)}" end
     %{question: question, answers: answers}
   end
   defp increment_score(user_record) do
-    Map.update!(user_record, :score, &(&1+1))
+    Map.update!(user_record, :score, &(&1 + 1))
   end
 
   defp compare_answers(first, second) do
-    Simetric.Jaro.Winkler.compare (String.capitalize first), (String.capitalize second)
+    JaroWinkler.compare (String.capitalize first), (String.capitalize second)
   end
 end

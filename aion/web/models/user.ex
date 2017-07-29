@@ -1,4 +1,7 @@
 defmodule Aion.User do
+  @moduledoc """
+  User model, necessary for authentication.
+  """
   use Aion.Web, :model
 
   schema "users" do

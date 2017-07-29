@@ -1,13 +1,13 @@
 module General.Models exposing (..)
 
 import Msgs exposing (Msg)
+import Panel.Models exposing (PanelData)
 import Phoenix.Socket
 import RemoteData exposing (WebData)
 import Room.Models exposing (RoomId, RoomsData, UsersInRoom, QuestionInRoom, UserGameData)
 import User.Models exposing (CurrentUser)
 import Toasty.Defaults
 import Toasty
-
 
 type alias Model =
     { user : WebData CurrentUser
@@ -20,6 +20,7 @@ type alias Model =
     , questionInChannel : QuestionInRoom
     , roomId : RoomId
     , toasties : Toasty.Stack Toasty.Defaults.Toast
+    , panelData : PanelData
     }
 
 
@@ -32,6 +33,7 @@ type Route
     = LoginRoute
     | RoomListRoute
     | RoomRoute RoomId
+    | PanelRoute
     | NotFoundRoute
 
 
@@ -52,4 +54,9 @@ initialModel flags route =
         }
     , roomId = 0
     , toasties = Toasty.initialState
+    , panelData =
+        { newQuestionContent = ""
+        , newAnswerContent = ""
+        , newAnswerCategory = 1
+        }
     }
