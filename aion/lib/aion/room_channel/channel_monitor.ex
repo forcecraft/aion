@@ -90,6 +90,4 @@ defmodule Aion.ChannelMonitor do
   def handle_call({:get_room_state, room_id}, _from, state) do
     {:reply, state[room_id], state}
   end
-
-
 end
