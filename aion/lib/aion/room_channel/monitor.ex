@@ -13,15 +13,18 @@ defmodule Aion.RoomChannel.Monitor do
   end
 
   def start_link(room_id) do
-    GenServer.start_link(__MODULE__, [], name: ref(room_id))
+    GenServer.start_link(__MODULE__, %{}, name: ref(room_id))
   end
 
-  defp try_call(board_id, message) do
-    case GenServer.whereis(ref(board_id)) do
+  defp try_call(room_id, message) do
+    case GenServer.whereis(ref(room_id)) do
       nil ->
         {:error, :room_does_not_exist}
-      board ->
-        GenServer.call(board, message)
+      room ->
+        IO.inspect room, label: "Room"
+        IO.inspect message, label: "Message"
+        GenServer.call(room, message)
+      _ -> IO.inspect "WTF JUST HAPPENED"
     end
   end
 
@@ -42,23 +45,23 @@ defmodule Aion.RoomChannel.Monitor do
   end
 
   def user_left(room_id, user) do
-    GenServer.call(__MODULE__, {:user_left, room_id, user})
+    try_call(room_id, {:user_left, room_id, user})
   end
 
   def list_users(room_id) do
-    GenServer.call(__MODULE__, {:list_users, room_id})
+    try_call(room_id, {:list_users, room_id})
   end
 
   def new_question(room_id) do
-    GenServer.call(__MODULE__, {:new_question, room_id})
+    try_call(room_id, {:new_question, room_id})
   end
 
   def new_answer(room_id, answer, username) do
-    GenServer.call(__MODULE__, {:new_answer, room_id, answer, username})
+    try_call(room_id, {:new_answer, room_id, answer, username})
   end
 
   def get_room_state(room_id) do
-    GenServer.call(__MODULE__, {:get_room_state, room_id})
+    try_call(room_id, {:get_room_state, room_id})
   end
 
   # GenServer implementation
@@ -66,15 +69,15 @@ defmodule Aion.RoomChannel.Monitor do
   def handle_call({:user_joined, room_id, username}, _from, state) do
     new_user_record = %PlayerRecord{name: username, score: 0}
     new_state =
-      case Map.get(state, room_id) do
-        nil ->
+      case state do
+        %{} ->
           %{question: question, answers: answers} = Room.get_new_question_with_answers(room_id)
-          Map.put(state, room_id, %{users: %{username => new_user_record}, question: question, answers: answers})
-        %{users: currentUsers} ->
-          room_state = Map.put(state[room_id], :users , Map.put(currentUsers, username , new_user_record))
-          Map.put(state, room_id, room_state)
+          %{users: %{username => new_user_record}, question: question, answers: answers}
+
+        %{users: current_users} ->
+          room_state = Map.put(state, :users , Map.put(current_users, username , new_user_record))
       end
-    {:reply, new_state[room_id], new_state}
+    {:reply, new_state, new_state}
   end
 
   def handle_call({:user_left, room_id, user}, _from, state) do
@@ -82,7 +85,7 @@ defmodule Aion.RoomChannel.Monitor do
   end
 
   def handle_call({:list_users, room_id}, _from, state) do
-    {:reply, Map.values(Map.get(state, room_id).users), state}
+    {:reply, Map.values(state.users), state}
   end
 
   def handle_call({:new_question, room_id}, _from, state) do
@@ -110,6 +113,6 @@ defmodule Aion.RoomChannel.Monitor do
   end
 
   def handle_call({:get_room_state, room_id}, _from, state) do
-    {:reply, state[room_id], state}
+    {:reply, state, state}
   end
 end
