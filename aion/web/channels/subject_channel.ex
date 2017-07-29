@@ -31,8 +31,8 @@ defmodule Aion.SubjectChannel do
     send_feedback socket, evaluation
 
     if evaluation == 1.0 do
-     send_user_list(socket, room_id)
-     send_new_question(socket, room_id)
+      send_user_list(socket, room_id)
+      send_new_question(socket, room_id)
     end
 
     {:noreply, socket}

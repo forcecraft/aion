@@ -82,7 +82,7 @@ update msg model =
                                 "incorrect" -> incorrectAnswerToast
                                 "close" -> closeAnswerToast
                                 "correct" -> correctAnswerToast
-                                _ -> (\x -> x)
+                                _ -> Debug.crash "Unexpected Feedback"
                     in
                         answerToast (model ! [])
 
@@ -104,7 +104,7 @@ update msg model =
                 push_ =
                     Phoenix.Push.init "new:answer" ("rooms:" ++ (toString model.roomId))
                         |> Phoenix.Push.withPayload payload
-                        |> Phoenix.Push.onOk (\v -> ReceiveAnswerFeedback v)
+                        |> Phoenix.Push.onOk (\rawFeedback -> ReceiveAnswerFeedback rawFeedback)
 
                 ( socket, cmd ) =
                     Phoenix.Socket.push push_ model.socket
