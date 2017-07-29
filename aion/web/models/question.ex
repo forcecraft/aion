@@ -1,4 +1,7 @@
 defmodule Aion.Question do
+  @moduledoc """
+  This model represents a single question that user may have to answer.
+  """
   use Aion.Web, :model
   alias Aion.Repo
   alias Aion.Subject

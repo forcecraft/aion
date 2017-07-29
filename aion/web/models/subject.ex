@@ -1,4 +1,7 @@
 defmodule Aion.Subject do
+  @moduledoc """
+  This model represents a category of questions.
+  """
   use Aion.Web, :model
 
   schema "subjects" do

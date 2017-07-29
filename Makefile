@@ -39,6 +39,9 @@ populate_database:
 # common #
 ##########
 
+install-hooks:
+	cp scripts/hooks/* .git/hooks/
+
 clean:
 	rm -rf aion/deps
 	rm -rf aion/web/elm/elm-stuff
