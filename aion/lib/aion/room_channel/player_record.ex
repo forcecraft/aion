@@ -1,4 +1,4 @@
-defmodule Aion.PlayerRecord do
+defmodule Aion.RoomChannel.PlayerRecord do
   @moduledoc """
   This struct represents a player's game state in certain room.
   """

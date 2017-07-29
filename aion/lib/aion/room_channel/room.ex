@@ -1,10 +1,12 @@
-defmodule Room do
+defmodule Aion.RoomChannel.Room do
   @moduledoc """
   This module represents one game room
   """
+  alias Aion.{Repo, Question}
+  import Ecto.Query, only: [from: 2]
+  require Logger
 
-
-  defp get_new_question_with_answers(category_id) do
+  def get_new_question_with_answers(category_id) do
     query = from q in Question, where: q.subject_id == ^category_id
     question = query
                |> Repo.all()
