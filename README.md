@@ -17,11 +17,6 @@ If you want to run it locally:
 ### Installing
 
 You can run the project both in a docker container or locally. 
-In both cases, run:
-
-```
-make clean && make install-hooks
-```
 
 To run in a docker container:
 
@@ -56,6 +51,10 @@ TBD
 
 ## Contributing
 
+Run 
+```
+make install-hooks
+```
 TBD
 
 ## Authors
