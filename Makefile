@@ -33,6 +33,7 @@ local_config:
 	cp aion/config/local_dev.exs aion/config/dev.exs
 
 populate_database:
+	cp fixtures/src/local_config.py fixtures/src/config.py
 	scripts/populate_database
 
 ##########
