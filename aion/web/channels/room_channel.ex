@@ -18,7 +18,7 @@ defmodule Aion.RoomChannel do
         Monitor.create(room_id)
     end
 
-    %{users: users, question: question} = Monitor.user_joined(room_id, current_user)
+    Monitor.user_joined(room_id, current_user)
     send self, {:after_join, room_id}
     {:ok, socket}
   end

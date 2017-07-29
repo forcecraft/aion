@@ -4,12 +4,12 @@ defmodule Aion.Question do
   """
   use Aion.Web, :model
   alias Aion.Repo
-  alias Aion.Subject
+  alias Aion.{Question, Subject}
 
   schema "questions" do
     field :content, :string
     field :image_name, :string
-    belongs_to :subject, Aion.Subject
+    belongs_to :subject, Subject
 
     timestamps()
   end

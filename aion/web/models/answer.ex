@@ -3,11 +3,11 @@ defmodule Aion.Answer do
   This model represents one of the possible answers to certain question.
   """
   use Aion.Web, :model
-  alias Aion.Repo
+  alias Aion.{Repo, Question, Answer}
 
   schema "answers" do
     field :content, :string
-    belongs_to :question, Aion.Question
+    belongs_to :question, Question
 
     timestamps()
   end
@@ -27,7 +27,7 @@ defmodule Aion.Answer do
   # API #
   #######
 
-  defp get_answers(question_id) do
+  def get_answers(question_id) do
     Repo.all(from a in Answer, where: a.question_id == ^question_id)
   end
 

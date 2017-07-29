@@ -83,22 +83,20 @@ defmodule Aion.RoomChannel.Monitor do
   end
 
   def handle_call({:user_left, room_id, user}, _from, state) do
+    # TODO implement
     {:reply, state, state}
   end
 
   def handle_call({:list_users, room_id}, _from, state) do
-    {:reply, Map.values(state.users), state}
+    {:reply, Map.values(state.players), state}
   end
 
   def handle_call({:new_question, room_id}, _from, state) do
-    new_state =
-      state
-      |> Map.merge(Room.get_new_question_with_answers(room_id))
-
+    new_state = Room.change_question(state, room_id)
     {:reply, new_state, new_state}
   end
 
-  def handle_call({:new_answer, room_id, answer, username}, _from, state) do
+  def handle_call({:new_answer, _, answer, username}, _from, state) do
     evaluation = Room.evaluate_answer(state, answer)
 
     if evaluation == 1.0 do

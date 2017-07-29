@@ -5,7 +5,7 @@ defmodule Aion.RoomChannel.Room do
 
   alias Simetric.Jaro.Winkler, as: JaroWinkler
   alias Aion.{Repo, Question, Answer}
-  alias Aion.RoomChannel.Room
+  alias Aion.RoomChannel.{Room, PlayerRecord}
 
   import Ecto.Query, only: [from: 2]
   require Logger
@@ -21,14 +21,6 @@ defmodule Aion.RoomChannel.Room do
     if is_nil question && answers == [] do
       change_question(room, room_id)
     end
-  end
-
-  defp get_new_question_with_answers(category_id) do
-    question = Question.get_random_question(category_id)
-    answers = Answer.get_answers(question.id)
-    Logger.debug fn -> "Answers: #{inspect(answers)}" end
-
-    %{question: question, answers: answers}
   end
 
   def evaluate_answer(room, player_answer) do
@@ -50,12 +42,22 @@ defmodule Aion.RoomChannel.Room do
   @doc """
   Note: this function's signature will change as soon as we get rid of categories = subject_id = room_id mapping.
   """
-  defp change_question(room, room_id) do
+  def change_question(room, room_id) do
     room
     |> struct(get_new_question_with_answers(room_id))
     |> IO.inspect(label: "bo nie uwierze")
   end
+
   def add_player(room, player) do
     %Room{room | players: [player | room.players]}
   end
+
+  defp get_new_question_with_answers(category_id) do
+      question = Question.get_random_question(category_id)
+      answers = Answer.get_answers(question.id)
+      Logger.debug fn -> "Answers: #{inspect(answers)}" end
+
+      %{question: question, answers: answers}
+    end
+
 end
