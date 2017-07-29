@@ -18,13 +18,22 @@ If you want to run it locally:
 
 You can run the project both in a docker container or locally. 
 In both cases, run:
-`make clean && make install-hooks`
+
+```
+make clean && make install-hooks
+```
 
 To run in a docker container:
-`make && make docker-start` 
+
+```
+make && make docker-start
+``` 
 
 To run locally:
-`make development && make start-dev`
+
+```
+make development && make start-dev
+```
 
 In both cases the platform should be accessible at [localhost:4000](localhost:4000)
 
