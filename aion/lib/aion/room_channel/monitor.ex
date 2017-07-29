@@ -1,4 +1,7 @@
 defmodule Aion.RoomChannel.Monitor do
+  @moduledoc """
+  This module represents a GenServer that holds current game state in certain Room.
+  """
   use GenServer
   alias Aion.RoomChannel.PlayerRecord
   alias Aion.RoomChannel.Room
