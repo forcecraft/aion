@@ -1,4 +1,7 @@
 defmodule Aion.RoomChannel.Supervisor do
+  @moduledoc """
+  This module is responsible for supervising game rooms
+  """
   use Supervisor
 
   def start_link do

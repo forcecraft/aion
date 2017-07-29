@@ -6,13 +6,12 @@ defmodule Aion.RoomChannel.Monitor do
   alias Aion.RoomChannel.PlayerRecord
   alias Aion.RoomChannel.Room
 
-
   #####################
   # general interface #
   #####################
 
   def start_link(room_id) do
-    GenServer.start_link(__MODULE__, Room.new(), name: ref(room_id))
+    GenServer.start_link(__MODULE__, Room.new(room_id), name: ref(room_id))
   end
 
   def create(room_id) do
@@ -37,8 +36,10 @@ defmodule Aion.RoomChannel.Monitor do
     {:global, {:room, room_id}}
   end
 
+  @doc """
+    Checks if a given room exists
+  """
   def exists?(room_id) do
-    @doc "Checks if a given room exists"
     GenServer.whereis(ref(room_id)) != nil
   end
 

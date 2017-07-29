@@ -25,7 +25,6 @@ defmodule Aion.Question do
       |> put_assoc(:subject, params["belongs_to"])
   end
 
-
   #######
   # API #
   #######
@@ -41,5 +40,4 @@ defmodule Aion.Question do
       |> Repo.all()
       |> Enum.random()
   end
-
 end

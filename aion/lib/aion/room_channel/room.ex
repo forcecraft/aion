@@ -5,6 +5,8 @@ defmodule Aion.RoomChannel.Room do
 
   alias Simetric.Jaro.Winkler, as: JaroWinkler
   alias Aion.{Repo, Question, Answer}
+  alias Aion.RoomChannel.Room
+
   import Ecto.Query, only: [from: 2]
   require Logger
 
@@ -13,9 +15,12 @@ defmodule Aion.RoomChannel.Room do
             question: nil,
             answers: []
 
-  def new(players \\ [], question \\ nil, answers \\ []) do
+  def new(room_id, players \\ [], question \\ nil, answers \\ []) do
     room = %Room{}
-    if is_nil question && answers == [], do: change_question(room)
+
+    if is_nil question && answers == [] do
+      change_question(room, room_id)
+    end
   end
 
   defp get_new_question_with_answers(category_id) do
@@ -39,14 +44,16 @@ defmodule Aion.RoomChannel.Room do
   end
 
   def award_player(room, username, amount \\ 1) do
-    update_in(room, [:users, username], &PlayerRecord.increment_score/1)
+    update_in(room, [:users, username], &PlayerRecord.update_score(&1, amount))
   end
 
-  def change_question(room, room_id) do
-    @doc """
-    Note: this function's signature will change as soon as we get rid of categories = subject_id = room_id mapping.
-    """
-    struct(room, get_new_question_with_answers(room_id)) |> IO.inspect(label: "BONIEUWIERZE")
+  @doc """
+  Note: this function's signature will change as soon as we get rid of categories = subject_id = room_id mapping.
+  """
+  defp change_question(room, room_id) do
+    room
+    |> struct(get_new_question_with_answers(room_id))
+    |> IO.inspect(label: "bo nie uwierze")
   end
   def add_player(room, player) do
     %Room{room | players: [player | room.players]}
