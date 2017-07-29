@@ -102,11 +102,6 @@ defmodule Aion.ChannelMonitor do
     Logger.debug fn -> "Answers: #{inspect(answers)}" end
     %{question: question, answers: answers}
   end
-  defp increment_score(user_record) do
-    Map.update!(user_record, :score, &(&1 + 1))
-  end
 
-  defp compare_answers(first, second) do
-    JaroWinkler.compare (String.capitalize first), (String.capitalize second)
-  end
+
 end
