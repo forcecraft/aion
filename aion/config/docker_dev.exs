@@ -36,8 +36,8 @@ config :phoenix, :stacktrace_depth, 20
 # Configure your database
 config :aion, Aion.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
+  username: "root",
+  password: "password",
   database: "aion",
-  hostname: "localhost",
+  hostname: "db",
   pool_size: 10
