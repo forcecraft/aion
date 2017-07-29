@@ -55,8 +55,8 @@ defmodule Aion.RoomChannel.Monitor do
     try_call(room_id, {:user_left, room_id, user})
   end
 
-  def list_users(room_id) do
-    try_call(room_id, {:list_users, room_id})
+  def get_scores(room_id) do
+    try_call(room_id, {:get_scores, room_id})
   end
 
   def new_question(room_id) do
@@ -76,7 +76,7 @@ defmodule Aion.RoomChannel.Monitor do
   #########################
 
   def handle_call({:user_joined, room_id, username}, _from, state) do
-    new_player = %PlayerRecord{name: username}
+    new_player = %PlayerRecord{username: username}
     new_state = Room.add_player(state, new_player)
 
     {:reply, new_state, new_state}
@@ -87,8 +87,9 @@ defmodule Aion.RoomChannel.Monitor do
     {:reply, state, state}
   end
 
-  def handle_call({:list_users, room_id}, _from, state) do
-    {:reply, Map.values(state.players), state}
+  def handle_call({:get_scores, room_id}, _from, state) do
+    players = Room.get_scores(state)
+    {:reply, players, state}
   end
 
   def handle_call({:new_question, room_id}, _from, state) do

@@ -40,7 +40,7 @@ defmodule Aion.RoomChannel do
     send_feedback socket, evaluation
 
     if evaluation == 1.0 do
-      send_user_list(socket, room_id)
+      send_scores(socket, room_id)
       send_new_question(socket, room_id)
     end
 
@@ -48,14 +48,15 @@ defmodule Aion.RoomChannel do
   end
 
   def handle_info({:after_join, room_id}, socket) do
-    send_user_list(socket, room_id)
+    send_scores(socket, room_id)
     send_current_question(socket, room_id)
     {:noreply, socket}
   end
 
-  defp send_user_list(socket, room_id) do
-    users = Monitor.list_users(room_id)
-    broadcast! socket, "user:list", %{users: users}
+  defp send_scores(socket, room_id) do
+    scores = Monitor.get_scores(room_id)
+    IO.inspect scores, label: "SCOAZZZ"
+    broadcast! socket, "user:list", %{users: scores}
   end
 
   defp send_new_question(socket, room_id) do

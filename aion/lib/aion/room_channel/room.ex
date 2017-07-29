@@ -52,6 +52,12 @@ defmodule Aion.RoomChannel.Room do
     %Room{room | players: [player | room.players]}
   end
 
+  def get_scores(room) do
+    room
+    |> Map.get(:players)
+    |> Enum.map(fn player -> %{player.username => player.score} end)
+  end
+
   defp get_new_question_with_answers(category_id) do
       question = Question.get_random_question(category_id)
       answers = Answer.get_answers(question.id)
