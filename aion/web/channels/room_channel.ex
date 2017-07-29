@@ -14,7 +14,7 @@ defmodule Aion.RoomChannel do
     Note: this is a temporary solution. In the future, this function should return an error
     if a user wants to join a room that does not exist.
     """
-    if not Monitor.exists(room_id) do
+    if not Monitor.exists?(room_id) do
         Monitor.create(room_id)
     end
 

@@ -3,6 +3,11 @@ defmodule Aion.RoomChannel.Monitor do
   alias Aion.RoomChannel.PlayerRecord
   alias Aion.RoomChannel.Room
 
+
+  #####################
+  # general interface #
+  #####################
+
   def create(room_id) do
     case GenServer.whereis(ref(room_id)) do
       nil ->
@@ -29,13 +34,14 @@ defmodule Aion.RoomChannel.Monitor do
     {:global, {:room, room_id}}
   end
 
-  def exists(room_id) do
+  def exists?(room_id) do
+    @doc "Checks if a given room exists"
     GenServer.whereis(ref(room_id)) != nil
   end
 
-  #####################
-
-    # GenServer interface
+  ###########################
+  # game specific interface #
+  ###########################
 
   def user_joined(room_id, user) do
     try_call(room_id, {:user_joined, room_id, user})
@@ -61,7 +67,9 @@ defmodule Aion.RoomChannel.Monitor do
     try_call(room_id, {:get_room_state, room_id})
   end
 
-  # GenServer implementation
+  #########################
+  #     implementation    #
+  #########################
 
   def handle_call({:user_joined, room_id, username}, _from, state) do
     new_user_record = %PlayerRecord{name: username, score: 0}
@@ -86,23 +94,23 @@ defmodule Aion.RoomChannel.Monitor do
   end
 
   def handle_call({:new_question, room_id}, _from, state) do
-    room_state = state
-                 |> Map.get(room_id)
-                 |> Map.merge(Room.get_new_question_with_answers(room_id))
-    state = Map.put(state, room_id, room_state)
-    {:reply, state, state}
+    new_state =
+      state
+      |> Map.merge(Room.get_new_question_with_answers(room_id))
+
+    {:reply, new_state, new_state}
   end
 
   def handle_call({:new_answer, room_id, answer, username}, _from, state) do
-    evaluation = state
-                 |> Map.get(room_id)
-                 |> Map.get(:answers)
-                 |> Enum.map(fn x -> Map.get(x, :content) end)
-                 |> Enum.map(fn correct_answer -> Room.compare_answers(correct_answer, answer) end)
-                 |> Enum.max
+    evaluation =
+      state
+      |> Map.get(:answers)
+      |> Enum.map(fn x -> Map.get(x, :content) end)
+      |> Enum.map(fn correct_answer -> Room.compare_answers(correct_answer, answer) end)
+      |> Enum.max
 
     if evaluation == 1.0 do
-      new_state = update_in(state, [room_id, :users, username], &PlayerRecord.increment_score/1)
+      new_state = update_in(state, [:users, username], &PlayerRecord.increment_score/1)
       {:reply, evaluation, new_state}
     else
       {:reply, evaluation, state}

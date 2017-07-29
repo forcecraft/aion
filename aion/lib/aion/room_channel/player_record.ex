@@ -5,7 +5,7 @@ defmodule Aion.RoomChannel.PlayerRecord do
 
   defstruct name: "anonymous", score: 0
 
-  defp increment_score(player_record) do
+  def increment_score(player_record) do
     Map.update!(player_record, :score, &(&1 + 1))
   end
 end
