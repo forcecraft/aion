@@ -21,10 +21,7 @@ defmodule Aion.RoomChannel.Monitor do
       nil ->
         {:error, :room_does_not_exist}
       room ->
-        IO.inspect room, label: "Room"
-        IO.inspect message, label: "Message"
         GenServer.call(room, message)
-      _ -> IO.inspect "WTF JUST HAPPENED"
     end
   end
 
