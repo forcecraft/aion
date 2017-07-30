@@ -100,7 +100,8 @@ defmodule Aion.RoomChannel.Monitor do
     evaluation = Room.evaluate_answer(state, answer)
 
     if evaluation == 1.0 do
-      {:reply, evaluation, Room.award_user(state, username)}
+      new_state = Room.award_user(state, username)
+      {:reply, evaluation, new_state}
     else
       {:reply, evaluation, state}
     end
