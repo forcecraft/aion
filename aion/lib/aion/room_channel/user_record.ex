@@ -7,7 +7,7 @@ defmodule Aion.RoomChannel.UserRecord do
   defstruct username: "anonymous",
             score: 0
 
-  def update_score(player_record, amount) do
-    Map.update!(player_record, :score, &(&1 + 1))
+  def update_score(user_record, amount \\ 1) do
+    Map.update!(user_record, :score, &(&1 + amount))
   end
 end
