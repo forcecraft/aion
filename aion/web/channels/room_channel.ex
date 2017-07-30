@@ -10,22 +10,21 @@ defmodule Aion.RoomChannel do
   def join("rooms:" <> room_id, _params, socket) do
     current_user = socket.assigns.current_user.name
 
-    """
-    Note: this is a temporary solution. In the future, this function should return an error
-    if a user wants to join a room that does not exist.
-    """
+    # Note: this is a temporary solution.
+    # In the future, this function should return an error if a user wants to join a room that does not exist.
+
     if not Monitor.exists?(room_id) do
         Monitor.create(room_id)
     end
 
     Monitor.user_joined(room_id, current_user)
-    send self, {:after_join, room_id}
+    send self(), {:after_join, room_id}
     {:ok, socket}
   end
 
   def handle_in("user_left", %{"room_id" => room_id}, socket) do
     current_user = socket.assigns.current_user.name
-    users = Monitor.user_left({room_id, current_user})
+    Monitor.user_left(room_id, current_user)
     :ok
   end
 
