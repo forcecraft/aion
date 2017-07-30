@@ -1,5 +1,8 @@
 ![Aion](https://user-images.githubusercontent.com/15965147/28745968-d496ca7a-7483-11e7-9b59-659100df5ba8.png)
 
+
+# Aion [![Build Status](https://travis-ci.org/pmrukot/aion.svg?branch=master)](https://travis-ci.org/pmrukot/aion)
+
 An e-learning platform written in Elixir and Elm based on real-time gameplay.
 
 ### Prerequisites
