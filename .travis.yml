@@ -1,7 +1,10 @@
 language: elixir
 
 elixir:
-- 1.4.1
+- 1.4.4
+
+otp_release:
+  - 20.0
 
 addons:
   postgresql: '9.4'
@@ -24,6 +27,7 @@ before_script:
 - gem install pronto-credo
 
 script:
+  - echo $PR_ID
   - if [ $PR_ID != false ]; then pronto run -f github_pr; fi
   - mix test
 
