@@ -4,6 +4,7 @@ defmodule Aion.Answer do
   """
   use Aion.Web, :model
   alias Aion.{Repo, Question, Answer}
+  alias Simetric.Jaro.Winkler, as: JaroWinkler
 
   schema "answers" do
     field :content, :string

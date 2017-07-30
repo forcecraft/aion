@@ -3,7 +3,6 @@ defmodule Aion.RoomChannel.Room do
   This module represents one game room, and fetches resources from the db
   """
 
-  alias Simetric.Jaro.Winkler, as: JaroWinkler
   alias Aion.{Repo, Question, Answer}
   alias Aion.RoomChannel.{Room, UserRecord}
 
@@ -15,8 +14,8 @@ defmodule Aion.RoomChannel.Room do
             question: nil,
             answers: []
 
-  def new(room_id, users \\ [], question \\ nil, answers \\ []) do
-    room = %Room{}
+  def new(room_id, users \\ %{}, question \\ nil, answers \\ []) do
+    room = %Room{users: users}
 
     if is_nil question && answers == [] do
       change_question(room, room_id)

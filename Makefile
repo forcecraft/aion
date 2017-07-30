@@ -36,6 +36,10 @@ populate_database:
 	cp fixtures/src/local_config.py fixtures/src/config.py
 	scripts/populate_database
 
+test:
+	cp aion/config/local_test.exs aion/config/test.exs
+	cd aion && mix test
+
 ##########
 # common #
 ##########

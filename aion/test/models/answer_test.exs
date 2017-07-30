@@ -1,6 +1,5 @@
 defmodule Aion.AnswerTest do
   use Aion.ModelCase
-
   alias Aion.Answer
 
   @valid_attrs %{content: "some content"}
