@@ -15,4 +15,14 @@ defmodule Aion.AnswerTest do
     changeset = Answer.changeset(%Answer{}, @invalid_attrs)
     refute changeset.valid?
   end
+
+  test "compare equal answers" do
+    [first, second] = ["ABC", "abc"]
+    assert Answer.compare_answers(first, second) == 1.0
+  end
+
+  test "compare totally different answers" do
+    [first, second] = ["a", "b"]
+    assert Answer.compare_answers(first, second) == 0.0
+  end
 end
