@@ -7,7 +7,7 @@ defmodule Aion.MonitorTest do
   @invalid_room_id 0
   @question %Question{content: "Content"}
   setup do
-    Monitor.create(@room_id, [question: @question])
+    Monitor.create(@room_id, question: @question)
     :ok
   end
 
@@ -20,7 +20,6 @@ defmodule Aion.MonitorTest do
   end
 
   test "room already exists" do
-    Monitor.create(@room_id)
     assert Monitor.create(@room_id) == {:error, :room_already_exists}
   end
 end
