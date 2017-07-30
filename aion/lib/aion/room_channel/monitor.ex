@@ -39,6 +39,7 @@ defmodule Aion.RoomChannel.Monitor do
   @doc """
     Checks if a given room exists
   """
+  @spec exists?(room_id :: integer) :: boolean
   def exists?(room_id) do
     left = GenServer.whereis(ref(room_id))
     left != nil
@@ -49,15 +50,15 @@ defmodule Aion.RoomChannel.Monitor do
   ###########################
 
   def user_joined(room_id, user) do
-    try_call(room_id, {:user_joined, room_id, user})
+    try_call(room_id, {:user_joined, user})
   end
 
   def user_left(room_id, user) do
-    try_call(room_id, {:user_left, room_id, user})
+    try_call(room_id, {:user_left, user})
   end
 
   def get_scores(room_id) do
-    try_call(room_id, {:get_scores, room_id})
+    try_call(room_id, {:get_scores})
   end
 
   def new_question(room_id) do
@@ -65,29 +66,28 @@ defmodule Aion.RoomChannel.Monitor do
   end
 
   def new_answer(room_id, answer, username) do
-    try_call(room_id, {:new_answer, room_id, answer, username})
+    try_call(room_id, {:new_answer, answer, username})
   end
 
   def get_current_question(room_id) do
-    try_call(room_id, {:get_current_question, room_id})
+    try_call(room_id, {:get_current_question})
   end
 
   #########################
   #     Implementation    #
   #########################
 
-  def handle_call({:user_joined, room_id, username}, _from, state) do
+  def handle_call({:user_joined, username}, _from, state) do
     new_user = %UserRecord{username: username}
     new_state = Room.add_user(state, new_user)
-
     {:reply, :ok, new_state}
   end
 
-  def handle_call({:user_left, room_id, user}, _from, state) do
+  def handle_call({:user_left, user}, _from, state) do
     {:reply, state, state}
   end
 
-  def handle_call({:get_scores, room_id}, _from, state) do
+  def handle_call({:get_scores}, _from, state) do
     users = Room.get_scores(state)
     {:reply, users, state}
   end
@@ -97,7 +97,7 @@ defmodule Aion.RoomChannel.Monitor do
     {:reply, new_state, new_state}
   end
 
-  def handle_call({:new_answer, _, answer, username}, _from, state) do
+  def handle_call({:new_answer, answer, username}, _from, state) do
     evaluation = Room.evaluate_answer(state, answer)
 
     if evaluation == 1.0 do
@@ -108,11 +108,7 @@ defmodule Aion.RoomChannel.Monitor do
     end
   end
 
-  def handle_call({:get_current_question, room_id}, _from, state) do
+  def handle_call({:get_current_question}, _from, state) do
     {:reply, Room.get_current_question(state), state}
-  end
-
-  def handle_call({:get_room_state, room_id}, _from, state) do
-    {:reply, state, state}
   end
 end

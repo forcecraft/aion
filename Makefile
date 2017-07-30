@@ -40,6 +40,9 @@ test:
 	cp aion/config/local_test.exs aion/config/test.exs
 	cd aion && mix test
 
+lint:
+	cd aion && mix credo --strict
+
 ##########
 # common #
 ##########

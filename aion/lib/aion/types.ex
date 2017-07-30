@@ -9,4 +9,5 @@ defmodule Aion.Types do
   @type room :: %{users: list(user_record), users_count: integer, question: question, answers: list(answer)}
   @type user_record :: %UserRecord{username: binary, score: integer}
 
+  @type process :: {pid, reference}
 end
