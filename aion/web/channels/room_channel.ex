@@ -66,7 +66,7 @@ defmodule Aion.RoomChannel do
   end
 
   defp send_current_question(socket, room_id) do
-    question = Monitor.get_room_state(room_id).question
+    question = Monitor.get_current_question(room_id)
     image_name = if question.image_name == nil, do: "", else: question.image_name
     broadcast! socket, "new:question", %{content: question.content, image_name: image_name}
   end

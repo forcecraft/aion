@@ -27,12 +27,8 @@ defmodule Aion.RoomChannel.Room do
     room
     |> Map.get(:answers)
     |> Enum.map(&(Map.get(&1, :content)))
-    |> Enum.map(fn correct_answer -> compare_answers(correct_answer, user_answer) end)
+    |> Enum.map(fn correct_answer -> Answer.compare_answers(correct_answer, user_answer) end)
     |> Enum.max
-  end
-
-  defp compare_answers(first, second) do
-    JaroWinkler.compare (String.capitalize first), (String.capitalize second)
   end
 
   def award_user(room, username, amount \\ 1) do
@@ -56,10 +52,14 @@ defmodule Aion.RoomChannel.Room do
     Map.values(room.users)
   end
 
+  def get_current_question(room) do
+    room.question
+  end
+
   defp get_new_question_with_answers(category_id) do
       question = Question.get_random_question(category_id)
       answers = Answer.get_answers(question.id)
-      Logger.debug fn -> "Answers: #{inspect(answers)}" end
+      Logger.debug fn -> "Answers: #{inspect(Enum.map(answers, fn answer -> answer.content end))}" end
 
       %{question: question, answers: answers}
     end

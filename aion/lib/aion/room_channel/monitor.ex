@@ -7,7 +7,7 @@ defmodule Aion.RoomChannel.Monitor do
   alias Aion.RoomChannel.Room
 
   #####################
-  # general interface #
+  # General interface #
   #####################
 
   def start_link(room_id) do
@@ -44,7 +44,7 @@ defmodule Aion.RoomChannel.Monitor do
   end
 
   ###########################
-  # game specific interface #
+  # Game specific interface #
   ###########################
 
   def user_joined(room_id, user) do
@@ -67,19 +67,19 @@ defmodule Aion.RoomChannel.Monitor do
     try_call(room_id, {:new_answer, room_id, answer, username})
   end
 
-  def get_room_state(room_id) do
-    try_call(room_id, {:get_room_state, room_id})
+  def get_current_question(room_id) do
+    try_call(room_id, {:get_current_question, room_id})
   end
 
   #########################
-  #     implementation    #
+  #     Implementation    #
   #########################
 
   def handle_call({:user_joined, room_id, username}, _from, state) do
     new_user = %UserRecord{username: username}
     new_state = Room.add_user(state, new_user)
 
-    {:reply, new_state, new_state}
+    {:reply, :ok, new_state}
   end
 
   def handle_call({:user_left, room_id, user}, _from, state) do
@@ -105,6 +105,10 @@ defmodule Aion.RoomChannel.Monitor do
     else
       {:reply, evaluation, state}
     end
+  end
+
+  def handle_call({:get_current_question, room_id}, _from, state) do
+    {:reply, Room.get_current_question(state), state}
   end
 
   def handle_call({:get_room_state, room_id}, _from, state) do

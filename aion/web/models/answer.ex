@@ -31,4 +31,7 @@ defmodule Aion.Answer do
     Repo.all(from a in Answer, where: a.question_id == ^question_id)
   end
 
+  def compare_answers(first, second) do
+    JaroWinkler.compare (String.capitalize first), (String.capitalize second)
+  end
 end
