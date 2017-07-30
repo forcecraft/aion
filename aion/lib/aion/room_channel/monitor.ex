@@ -40,7 +40,8 @@ defmodule Aion.RoomChannel.Monitor do
     Checks if a given room exists
   """
   def exists?(room_id) do
-    GenServer.whereis(ref(room_id)) != nil
+    left = GenServer.whereis(ref(room_id))
+    left != nil
   end
 
   ###########################
