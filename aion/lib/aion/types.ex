@@ -7,6 +7,7 @@ defmodule Aion.Types do
   @type answer :: %{content: binary}
   @type question :: %{content: binary, image_name: binary}
   @type room :: %{users: list(user_record), users_count: integer, question: question, answers: list(answer)}
+  @type room_id :: binary
   @type user_record :: %UserRecord{username: binary, score: integer}
 
   @type process :: {pid, reference}

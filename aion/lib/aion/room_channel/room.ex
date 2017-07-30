@@ -14,7 +14,7 @@ defmodule Aion.RoomChannel.Room do
             question: nil,
             answers: []
 
-  @spec new(room_id :: integer) :: Types.room
+  @spec new(room_id :: Types.room_id | room_id :: Types.room_id, question :: Types.question) :: Types.room
   def new(room_id, state \\ []) do
     case state do
       [] ->
@@ -43,13 +43,13 @@ defmodule Aion.RoomChannel.Room do
   @doc """
   Note: this function's signature will change as soon as we get rid of categories = subject_id = room_id mapping.
   """
-  @spec change_question(room :: Types.room, room_id :: integer) :: Types.room
+  @spec change_question(room :: Types.room, room_id :: Types.room_id) :: Types.room
   def change_question(room, room_id) do
     room
     |> struct(get_new_question_with_answers(room_id))
   end
 
-  @spec change_question(room :: Types.room, user :: Types.user_record) :: Types.room
+  @spec add_user(room :: Types.room, user :: Types.user_record) :: Types.room
   def add_user(room, user) do
     updated_users = Map.put(room.users, user.username, user)
     %Room{room | users: updated_users}
@@ -65,7 +65,7 @@ defmodule Aion.RoomChannel.Room do
     room.question
   end
 
-  @spec get_new_question_with_answers(category_id :: integer)
+  @spec get_new_question_with_answers(category_id :: binary)
   :: %{question: Types.question, answers: list(Types.answer)}
   defp get_new_question_with_answers(category_id) do
       question = Question.get_random_question(category_id)
