@@ -10,7 +10,7 @@ defmodule Aion.RoomChannel.Room do
   import Ecto.Query, only: [from: 2]
   require Logger
 
-  defstruct players: [],
+  defstruct players: %{},
             player_count: 0,
             question: nil,
             answers: []
@@ -36,7 +36,7 @@ defmodule Aion.RoomChannel.Room do
   end
 
   def award_player(room, username, amount \\ 1) do
-    update_in(room, [:users, username], &PlayerRecord.update_score(&1, amount))
+    update_in room, [Access.key!(:players), Access.key!(username)], &PlayerRecord.update_score(&1, amount)
   end
 
   @doc """
@@ -45,17 +45,15 @@ defmodule Aion.RoomChannel.Room do
   def change_question(room, room_id) do
     room
     |> struct(get_new_question_with_answers(room_id))
-    |> IO.inspect(label: "bo nie uwierze")
   end
 
   def add_player(room, player) do
-    %Room{room | players: [player | room.players]}
+    updated_players = Map.put(room.players, player.username, player)
+    %Room{room | players: updated_players}
   end
 
   def get_scores(room) do
-    room
-    |> Map.get(:players)
-    |> Enum.map(fn player -> %{player.username => player.score} end)
+    Map.values(room.players)
   end
 
   defp get_new_question_with_answers(category_id) do

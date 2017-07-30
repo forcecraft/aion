@@ -21,7 +21,7 @@ docker_stop:
 development: local_deps local_db local_config start_dev
 
 start_dev:
-	cd aion && mix phoenix.server
+	cd aion && iex -S mix phoenix.server
 
 local_db:
 	cd aion && mix ecto.create && mix ecto.migrate

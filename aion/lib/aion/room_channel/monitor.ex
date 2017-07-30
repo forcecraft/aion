@@ -83,7 +83,6 @@ defmodule Aion.RoomChannel.Monitor do
   end
 
   def handle_call({:user_left, room_id, user}, _from, state) do
-    # TODO implement
     {:reply, state, state}
   end
 

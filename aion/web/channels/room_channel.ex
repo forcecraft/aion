@@ -55,7 +55,6 @@ defmodule Aion.RoomChannel do
 
   defp send_scores(socket, room_id) do
     scores = Monitor.get_scores(room_id)
-    IO.inspect scores, label: "SCOAZZZ"
     broadcast! socket, "user:list", %{users: scores}
   end
 
