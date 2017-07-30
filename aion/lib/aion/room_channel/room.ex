@@ -5,17 +5,17 @@ defmodule Aion.RoomChannel.Room do
 
   alias Simetric.Jaro.Winkler, as: JaroWinkler
   alias Aion.{Repo, Question, Answer}
-  alias Aion.RoomChannel.{Room, PlayerRecord}
+  alias Aion.RoomChannel.{Room, UserRecord}
 
   import Ecto.Query, only: [from: 2]
   require Logger
 
-  defstruct players: %{},
-            player_count: 0,
+  defstruct users: %{},
+            users_count: 0,
             question: nil,
             answers: []
 
-  def new(room_id, players \\ [], question \\ nil, answers \\ []) do
+  def new(room_id, users \\ [], question \\ nil, answers \\ []) do
     room = %Room{}
 
     if is_nil question && answers == [] do
@@ -23,11 +23,11 @@ defmodule Aion.RoomChannel.Room do
     end
   end
 
-  def evaluate_answer(room, player_answer) do
+  def evaluate_answer(room, user_answer) do
     room
     |> Map.get(:answers)
     |> Enum.map(&(Map.get(&1, :content)))
-    |> Enum.map(fn correct_answer -> compare_answers(correct_answer, player_answer) end)
+    |> Enum.map(fn correct_answer -> compare_answers(correct_answer, user_answer) end)
     |> Enum.max
   end
 
@@ -35,8 +35,8 @@ defmodule Aion.RoomChannel.Room do
     JaroWinkler.compare (String.capitalize first), (String.capitalize second)
   end
 
-  def award_player(room, username, amount \\ 1) do
-    update_in room, [Access.key!(:players), Access.key!(username)], &PlayerRecord.update_score(&1, amount)
+  def award_user(room, username, amount \\ 1) do
+    update_in room, [Access.key!(:users), Access.key!(username)], &UserRecord.update_score(&1, amount)
   end
 
   @doc """
@@ -47,13 +47,13 @@ defmodule Aion.RoomChannel.Room do
     |> struct(get_new_question_with_answers(room_id))
   end
 
-  def add_player(room, player) do
-    updated_players = Map.put(room.players, player.username, player)
-    %Room{room | players: updated_players}
+  def add_user(room, user) do
+    updated_users = Map.put(room.users, user.username, user)
+    %Room{room | users: updated_users}
   end
 
   def get_scores(room) do
-    Map.values(room.players)
+    Map.values(room.users)
   end
 
   defp get_new_question_with_answers(category_id) do

@@ -3,7 +3,7 @@ defmodule Aion.RoomChannel.Monitor do
   This module represents a GenServer that holds current game state in certain Room.
   """
   use GenServer
-  alias Aion.RoomChannel.PlayerRecord
+  alias Aion.RoomChannel.UserRecord
   alias Aion.RoomChannel.Room
 
   #####################
@@ -76,8 +76,8 @@ defmodule Aion.RoomChannel.Monitor do
   #########################
 
   def handle_call({:user_joined, room_id, username}, _from, state) do
-    new_player = %PlayerRecord{username: username}
-    new_state = Room.add_player(state, new_player)
+    new_user = %UserRecord{username: username}
+    new_state = Room.add_user(state, new_user)
 
     {:reply, new_state, new_state}
   end
@@ -87,8 +87,8 @@ defmodule Aion.RoomChannel.Monitor do
   end
 
   def handle_call({:get_scores, room_id}, _from, state) do
-    players = Room.get_scores(state)
-    {:reply, players, state}
+    users = Room.get_scores(state)
+    {:reply, users, state}
   end
 
   def handle_call({:new_question, room_id}, _from, state) do
@@ -100,7 +100,7 @@ defmodule Aion.RoomChannel.Monitor do
     evaluation = Room.evaluate_answer(state, answer)
 
     if evaluation == 1.0 do
-      {:reply, evaluation, Room.award_player(state, username)}
+      {:reply, evaluation, Room.award_user(state, username)}
     else
       {:reply, evaluation, state}
     end
