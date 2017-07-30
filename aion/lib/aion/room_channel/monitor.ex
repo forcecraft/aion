@@ -10,14 +10,14 @@ defmodule Aion.RoomChannel.Monitor do
   # General interface #
   #####################
 
-  def start_link(room_id) do
-    GenServer.start_link(__MODULE__, Room.new(room_id), name: ref(room_id))
+  def start_link({:room_id, room_id}, state \\ []) do
+    GenServer.start_link(__MODULE__, Room.new(room_id, state), name: ref(room_id))
   end
 
-  def create(room_id) do
+  def create(room_id, opts \\ []) do
     case GenServer.whereis(ref(room_id)) do
       nil ->
-        Supervisor.start_child(Aion.RoomChannel.Supervisor, [room_id])
+        Supervisor.start_child(Aion.RoomChannel.Supervisor, [room_id: room_id] ++ opts)
       _board ->
         {:error, :room_already_exists}
     end

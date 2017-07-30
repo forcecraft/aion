@@ -1,12 +1,13 @@
 defmodule Aion.MonitorTest do
   use Aion.ModelCase
   alias Aion.RoomChannel.Monitor
+  alias Aion.Question
 
   @room_id 1
   @invalid_room_id 0
-
+  @question %Question{content: "Content"}
   setup do
-    Monitor.create(@room_id)
+    Monitor.create(@room_id, [question: @question])
     :ok
   end
 

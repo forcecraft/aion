@@ -14,11 +14,14 @@ defmodule Aion.RoomChannel.Room do
             question: nil,
             answers: []
 
-  def new(room_id, users \\ %{}, question \\ nil, answers \\ []) do
-    room = %Room{users: users}
+  def new(room_id, state \\ []) do
+    case state do
+      [] ->
+        %Room{}
+        |> change_question(room_id)
 
-    if is_nil question && answers == [] do
-      change_question(room, room_id)
+      {:question, question} ->
+        %Room{question: question}
     end
   end
 

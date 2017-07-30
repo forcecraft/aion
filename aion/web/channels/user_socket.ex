@@ -11,7 +11,7 @@ defmodule Aion.UserSocket do
   def connect(%{"token" => token}, socket) do
     case Token.verify(socket, "user", token, max_age: 86_400) do
       {:ok, user_id} ->
-        socket = assign(socket, :current_player, Repo.get!(User, user_id))
+        socket = assign(socket, :current_user, Repo.get!(User, user_id))
         {:ok, socket}
       {:error, _} ->
         :error
