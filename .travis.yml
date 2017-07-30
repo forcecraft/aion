@@ -9,10 +9,12 @@ otp_release:
 addons:
   postgresql: '9.6'
 
+sudo: false
+
 env:
   global:
     - MIX_ENV=test
-    - PR_ID=$TRAVIS_PULL_REQUEST
+    - PULL_REQUEST_ID=$TRAVIS_PULL_REQUEST
 
 before_install:
 - cd aion
@@ -25,7 +27,7 @@ before_script:
 
 script:
   - echo $PR_ID
-  - if [ $PR_ID != false ]; then pronto run -f github_pr; fi
+  - if [ $PULL_REQUEST_ID != false ]; then pronto run -f github_pr; fi
   - mix test
 
 notifications:
