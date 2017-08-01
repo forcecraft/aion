@@ -9,9 +9,10 @@ defmodule Aion.Room do
     field :name, :string
     field :description, :string
     many_to_many :subjects, Subject,
-      join_through: RoomSubject
+      join_through: RoomSubject,
+      on_delete: :delete_all
 
-    timestamps()
+      timestamps()
   end
 
   @doc """
