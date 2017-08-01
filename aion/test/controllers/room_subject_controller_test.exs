@@ -5,7 +5,9 @@ defmodule Aion.RoomSubjectControllerTest do
   @valid_attrs %{}
   @invalid_attrs %{}
 
-  setup %{conn: conn} do
+  setup do
+    user = %{ email: "test@example.com", name: "something" }
+    conn = Plug.Test. init_test_session(build_conn(), %{current_user: user})
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
   end
 
