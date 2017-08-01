@@ -7,8 +7,8 @@ defmodule Aion.Subject do
   schema "subjects" do
     field :name, :string
     many_to_many :rooms, Room,
-      join_through: RoomSubject,
-      on_delete: :delete_all
+      join_through: RoomSubject
+
     timestamps()
   end
 

@@ -1,4 +1,7 @@
 defmodule Aion.RoomSubject do
+  @moduledoc """
+    Join table between Room and Subject
+  """
   use Aion.Web, :model
 
   schema "room_subjects" do
