@@ -21,8 +21,7 @@ defmodule Aion.RoomControllerTest do
     conn = get conn, room_path(conn, :show, room)
     assert json_response(conn, 200)["data"] == %{"id" => room.id,
       "name" => room.name,
-      "description" => room.description,
-      "owner" => room.owner}
+      "description" => room.description}
   end
 
   test "renders page not found when id is nonexistent", %{conn: conn} do

@@ -12,7 +12,6 @@ defmodule Aion.RoomView do
   def render("room.json", %{room: room}) do
     %{id: room.id,
       name: room.name,
-      description: room.description,
-      owner: room.owner}
+      description: room.description}
   end
 end

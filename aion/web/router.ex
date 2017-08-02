@@ -30,7 +30,7 @@ defmodule Aion.Router do
     resources "/subjects", SubjectController, except: [:new, :edit]
     resources "/questions", QuestionController, except: [:new, :edit]
     resources "/answers", AnswerController, except: [:new, :edit]
-    resources "/rooms", Aion.RoomController, except: [:new, :edit]
+    resources "/rooms", RoomController, except: [:new, :edit]
     resources "/room_subjects", RoomSubjectController, except: [:new, :edit]
   end
 end

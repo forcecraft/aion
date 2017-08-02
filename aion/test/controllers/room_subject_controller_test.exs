@@ -3,7 +3,6 @@ defmodule Aion.RoomSubjectControllerTest do
 
   alias Aion.RoomSubject
   @valid_attrs %{}
-  @invalid_attrs %{}
 
   setup do
     user = %{ email: "test@example.com", name: "something" }
@@ -36,22 +35,11 @@ defmodule Aion.RoomSubjectControllerTest do
     assert Repo.get_by(RoomSubject, @valid_attrs)
   end
 
-  test "does not create resource and renders errors when data is invalid", %{conn: conn} do
-    conn = post conn, room_subject_path(conn, :create), room_subject: @invalid_attrs
-    assert json_response(conn, 422)["errors"] != %{}
-  end
-
   test "updates and renders chosen resource when data is valid", %{conn: conn} do
     room_subject = Repo.insert! %RoomSubject{}
     conn = put conn, room_subject_path(conn, :update, room_subject), room_subject: @valid_attrs
     assert json_response(conn, 200)["data"]["id"]
     assert Repo.get_by(RoomSubject, @valid_attrs)
-  end
-
-  test "does not update chosen resource and renders errors when data is invalid", %{conn: conn} do
-    room_subject = Repo.insert! %RoomSubject{}
-    conn = put conn, room_subject_path(conn, :update, room_subject), room_subject: @invalid_attrs
-    assert json_response(conn, 422)["errors"] != %{}
   end
 
   test "deletes chosen resource", %{conn: conn} do
