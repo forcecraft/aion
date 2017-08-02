@@ -43,9 +43,6 @@ To run the tests before pushing to the remote you can simply run:
 cd aion && mix test
 ```
 
-## Deployment
-
-TBD
 
 ## Built With
 
@@ -54,11 +51,7 @@ TBD
 
 ## Contributing
 
-Run 
-```
-make install-hooks
-```
-TBD
+Check out our [CONTRIBUTING.md -- insert link after it's merged]()
 
 ## Authors
 
