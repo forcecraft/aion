@@ -26,9 +26,8 @@ before_script:
 - gem install pronto-credo
 
 script:
-  - echo $PR_ID
-  - 'if [ "$TRAVIS_PULL_REQUEST" == false ]; then echo "TRAVIS_PULL_REQUEST is unset, skipping Pronto"; else PULL_REQUEST_ID=${TRAVIS_PULL_REQUEST} bundle exec pronto run -f github_pr; fi'
-  - if [ "$TRAVIS_PULL_REQUEST" == false ]; then echo "2.TRAVIS_PULL_REQUEST is unset, skipping Pronto"; else PULL_REQUEST_ID=${TRAVIS_PULL_REQUEST} bundle exec pronto run -f github_pr; fi
+  - echo $PRONTO_PULL_REQUEST_ID
+  - if [ "$TRAVIS_PULL_REQUEST" == false ]; then echo "TRAVIS_PULL_REQUEST is unset, skipping Pronto"; else pronto run -f github_pr; fi
   - mix test
   - echo "test echo"
 
