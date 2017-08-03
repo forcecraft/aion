@@ -14,7 +14,7 @@ sudo: false
 env:
   global:
     - MIX_ENV=test
-    - PULL_REQUEST_ID=$TRAVIS_PULL_REQUEST
+    - PRONTO_PULL_REQUEST_ID=$TRAVIS_PULL_REQUEST
 
 before_install:
 - cd aion
@@ -27,9 +27,12 @@ before_script:
 
 script:
   - echo $PR_ID
-  - if [ $PULL_REQUEST_ID != false ]; then pronto run -f github_pr; fi
+  - 'if [ "$TRAVIS_PULL_REQUEST" == false ]; then echo "TRAVIS_PULL_REQUEST is unset, skipping Pronto"; else PULL_REQUEST_ID=${TRAVIS_PULL_REQUEST} bundle exec pronto run -f github_pr; fi'
+  - if [ "$TRAVIS_PULL_REQUEST" == false ]; then echo "2.TRAVIS_PULL_REQUEST is unset, skipping Pronto"; else PULL_REQUEST_ID=${TRAVIS_PULL_REQUEST} bundle exec pronto run -f github_pr; fi
   - mix test
   - echo "test echo"
+
+
 
 notifications:
   email: false
