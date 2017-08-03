@@ -26,11 +26,9 @@ before_script:
 - gem install pronto-credo
 
 script:
-  - echo $PRONTO_PULL_REQUEST_ID
   - if [ "$TRAVIS_PULL_REQUEST" == false ]; then echo "TRAVIS_PULL_REQUEST is unset, skipping Pronto"; else pronto run -f github_pr; fi
   - mix test
-  - echo "test echo"
-
+  - mix help
 
 
 notifications:
