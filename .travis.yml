@@ -27,7 +27,7 @@ before_script:
 
 script:
   - if [ "$TRAVIS_PULL_REQUEST" == false ]; then echo "TRAVIS_PULL_REQUEST is unset, skipping Pronto"; cd $TRAVIS_BUILD_DIR/aion && pronto run -f github_pr --verbose; fi
-  - echo TRAVIS_BUILD_DIR && mix test
+  - echo $TRAVIS_BUILD_DIR && mix test
 
 notifications:
   email: false
