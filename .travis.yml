@@ -29,6 +29,7 @@ script:
   - echo $PR_ID
   - if [ $PULL_REQUEST_ID != false ]; then pronto run -f github_pr; fi
   - mix test
+  - echo "test echo"
 
 notifications:
   email: false
