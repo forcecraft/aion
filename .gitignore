@@ -3,5 +3,4 @@
 /postgres-data
 *.pyc
 aion/web/static/assets/images/
-.gitignore
 package-lock.json
