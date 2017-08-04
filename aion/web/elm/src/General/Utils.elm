@@ -2,6 +2,7 @@ module General.Utils exposing (..)
 
 import RemoteData exposing (WebData)
 import Room.Models exposing (RoomsData)
+import Array exposing (Array, fromList)
 
 
 getSubjectIdByName : WebData RoomsData -> String -> Int
