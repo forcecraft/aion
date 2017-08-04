@@ -2,6 +2,7 @@ module View exposing (..)
 
 import General.Models exposing (Model, Route(LoginRoute, NotFoundRoute, PanelRoute, RoomListRoute, RoomRoute))
 import General.View exposing (homeView, notFoundView, roomListView)
+import Html.Attributes exposing (style, class)
 import Html exposing (..)
 import Msgs exposing (Msg(..))
 import Panel.View exposing (panelView)
@@ -13,21 +14,30 @@ view model =
     div []
         [ page model ]
 
+layout : Html msg -> Html msg
+layout content =
+    div [ style [("font-family", "'Roboto', sans-serif")] ]
+        [ content ]
+
 
 page : Model -> Html Msg
 page model =
-    case model.route of
-        LoginRoute ->
-            homeView model
+    let
+        content =
+            case model.route of
+                LoginRoute ->
+                    homeView model
 
-        RoomListRoute ->
-            roomListView model
+                RoomListRoute ->
+                    roomListView model
 
-        RoomRoute id ->
-            roomView model id
+                RoomRoute id ->
+                    roomView model id
 
-        PanelRoute ->
-            panelView model
+                PanelRoute ->
+                    panelView model
 
-        NotFoundRoute ->
-            notFoundView
+                NotFoundRoute ->
+                    notFoundView
+    in
+        layout content
