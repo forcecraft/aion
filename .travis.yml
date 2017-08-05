@@ -17,7 +17,7 @@ env:
     - PRONTO_PULL_REQUEST_ID=$TRAVIS_PULL_REQUEST
 
 before_install:
-- cd aion
+- cp aion/* .
 
 before_script:
 - cp config/travis.exs config/test.exs
