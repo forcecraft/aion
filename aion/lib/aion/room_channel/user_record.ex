@@ -6,9 +6,6 @@ defmodule Aion.RoomChannel.UserRecord do
   defstruct username: "anonymous",
             score: 0
 
-  alias Aion.Types
-
-  @spec update_score(user_record :: Types.user_record, amount :: integer) :: Types.user_record
   def update_score(user_record, amount \\ 1) do
     Map.update!(user_record, :score, &(&1 + amount))
   end

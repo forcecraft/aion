@@ -39,7 +39,6 @@ defmodule Aion.RoomChannel.Monitor do
   @doc """
     Checks if a given room exists
   """
-  @spec exists?(room_id :: Types.room_id) :: boolean
   def exists?(room_id) do
     GenServer.whereis(ref(room_id)) != nil
   end

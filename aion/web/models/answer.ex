@@ -2,6 +2,7 @@ defmodule Aion.Answer do
   @moduledoc """
   This model represents one of the possible answers to certain question.
   """
+
   use Aion.Web, :model
   alias Aion.{Repo, Question, Answer}
   alias Simetric.Jaro.Winkler, as: JaroWinkler
