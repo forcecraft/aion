@@ -37,5 +37,3 @@ notifications:
 cache:
  directories:
   - /home/travis/.rvm/
-  - _build
-  - deps
