@@ -43,7 +43,7 @@ exports.config = {
         watched: [
             'web/static',
             'test/static',
-            'web/elm'
+            'elm'
         ],
 
         // Where to compile files to
@@ -53,10 +53,10 @@ exports.config = {
     // Configure your plugins
     plugins: {
         elmBrunch: {
-            executablePath: '../../node_modules/elm/binwrappers',
-            elmFolder: 'web/elm',
+            executablePath: '../node_modules/elm/binwrappers',
+            elmFolder: './elm',
             mainModules: ['src/App.elm'],
-            outputFolder: '../static/vendor',
+            outputFolder: '../web/static/vendor',
             makeParameters: ['--warn']
         },
         babel: {

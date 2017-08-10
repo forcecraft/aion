@@ -1,6 +1,7 @@
 sleep 2
 cp config/docker_dev.exs config/dev.exs
 cp fixtures/src/docker_config.py fixtures/src/config.py
+cd elm && ../node_modules/elm/binwrappers/elm-package install -y && cd ..
 mix deps.get
 mix ecto.migrate
 mix phoenix.server

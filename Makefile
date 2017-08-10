@@ -2,6 +2,9 @@
 # docker part #
 ###############
 
+docker_build_base:
+	docker build -t aion:latest -f Dockerfile.base .
+
 docker_build:
 	@docker-compose down
 	@docker-compose up --build -d
