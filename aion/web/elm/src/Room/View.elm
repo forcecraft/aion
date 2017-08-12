@@ -13,8 +13,9 @@ import Room.Models exposing (Answer, ImageName, RoomId, RoomsData, UserGameData,
 import Json.Decode exposing (map)
 import Room.Constants exposing (defaultImagePath, imagesPath)
 import Toasty
-import Room.Notifications exposing(myConfig)
+import Room.Notifications exposing (myConfig)
 import Toasty.Defaults
+
 
 roomView : Model -> RoomId -> Html Msg
 roomView model roomId =

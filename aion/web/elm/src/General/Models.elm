@@ -9,6 +9,7 @@ import User.Models exposing (CurrentUser)
 import Toasty.Defaults
 import Toasty
 
+
 type alias Model =
     { user : WebData CurrentUser
     , channelToken : String

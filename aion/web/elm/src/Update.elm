@@ -79,10 +79,17 @@ update msg model =
                     let
                         answerToast =
                             case answerFeedback.feedback of
-                                "incorrect" -> incorrectAnswerToast
-                                "close" -> closeAnswerToast
-                                "correct" -> correctAnswerToast
-                                _ -> Debug.crash "Unexpected Feedback"
+                                "incorrect" ->
+                                    incorrectAnswerToast
+
+                                "close" ->
+                                    closeAnswerToast
+
+                                "correct" ->
+                                    correctAnswerToast
+
+                                _ ->
+                                    Debug.crash "Unexpected Feedback"
                     in
                         answerToast (model ! [])
 
