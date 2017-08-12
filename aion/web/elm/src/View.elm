@@ -2,8 +2,8 @@ module View exposing (..)
 
 import General.Models exposing (Model, Route(LoginRoute, NotFoundRoute, PanelRoute, RoomListRoute, RoomRoute))
 import General.View exposing (homeView, notFoundView, roomListView)
-import Html.Attributes exposing (style, class)
 import Html exposing (..)
+import Html.Attributes exposing (style, class)
 import Msgs exposing (Msg(..))
 import Panel.View exposing (panelView)
 import Room.View exposing (roomView)
@@ -14,9 +14,10 @@ view model =
     div []
         [ page model ]
 
+
 layout : Html msg -> Html msg
 layout content =
-    div [ style [("font-family", "'Roboto', sans-serif")] ]
+    div [ style [ ( "font-family", "'Roboto', sans-serif" ) ] ]
         [ content ]
 
 

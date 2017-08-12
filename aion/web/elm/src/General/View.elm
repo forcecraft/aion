@@ -1,17 +1,17 @@
 module General.View exposing (..)
 
+import Array
+import Bootstrap.CDN as CDN
+import Bootstrap.Grid as Grid
+import Bootstrap.Grid.Col as Col
 import General.Models exposing (Model)
-import General.Utils exposing (sliceList, colorList, defaultColor)
+import General.Utils exposing (sliceList, roomsViewColorList, roomsDefaultColor)
 import Html exposing (Html, a, div, i, li, p, text, ul, h2, button)
 import Html.Attributes exposing (href, style, class)
 import Msgs exposing (Msg)
 import Routing exposing (panelPath, roomsPath)
 import RemoteData exposing (WebData)
 import Room.Models exposing (RoomsData, Room)
-import Bootstrap.Grid as Grid
-import Bootstrap.Grid.Col as Col
-import Bootstrap.CDN as CDN
-import Array
 
 
 notFoundView : Html Msg
@@ -36,7 +36,7 @@ roomListView : Model -> Html Msg
 roomListView model =
     div []
         [ CDN.stylesheet
-        , div [ class "room-select-title" ] [ h2 [ ] [ text "Select Room To Play:" ] ]
+        , div [ class "room-select-title" ] [ h2 [] [ text "Select Room To Play:" ] ]
         , listRooms model.rooms
         ]
 
@@ -60,8 +60,11 @@ listRooms response =
 listAvailableRooms : RoomsData -> Html Msg
 listAvailableRooms roomsData =
     let
-        sortedRooms = List.sortBy .name roomsData.data
-        slicedRooms = sliceList 6 sortedRooms
+        sortedRooms =
+            List.sortBy .name roomsData.data
+
+        slicedRooms =
+            sliceList 6 sortedRooms
     in
         Grid.container []
             (List.map listRoomsSlice slicedRooms)
@@ -72,28 +75,30 @@ listRoomsSlice rooms =
     Grid.row [] (List.map listSingleRoom rooms)
 
 
-
 listSingleRoom : Room -> Grid.Column Msg
 listSingleRoom room =
     Grid.col [ Col.lg2, Col.md4 ]
-             [
-               div [
-                     style [("backgroundColor", generateColor room)], class "tile"
-                   ]
-                   [
-                     a [ (href ("#rooms/" ++ (toString room.id))) ] [ text room.name ]
-                   ]
-             ]
+        [ div
+            [ style [ ( "backgroundColor", generateColor room ) ]
+            , class "tile"
+            ]
+            [ a [ (href ("#rooms/" ++ (toString room.id))) ] [ text room.name ]
+            ]
+        ]
 
 
 generateColor : Room -> String
 generateColor room =
     let
-        generatedIndex = room.id * String.length(room.name) % 7
-        pickedColor = Array.get generatedIndex colorList
+        generatedIndex =
+            room.id * String.length (room.name) % 7
+
+        pickedColor =
+            Array.get generatedIndex roomsViewColorList
     in
         case pickedColor of
             Just color ->
                 color
+
             Nothing ->
-                defaultColor
+                roomsDefaultColor

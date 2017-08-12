@@ -1,8 +1,8 @@
 module General.Utils exposing (..)
 
+import Array exposing (Array, fromList)
 import RemoteData exposing (WebData)
 import Room.Models exposing (RoomsData)
-import Array exposing (Array, fromList)
 
 
 getSubjectIdByName : WebData RoomsData -> String -> Int
@@ -21,21 +21,25 @@ getSubjectIdByName result roomName =
         _ ->
             0
 
-colorList : Array (String)
-colorList = fromList ["#1abc9c", "#2ecc71", "#9b59b6", "#34495e", "#f1c40f", "#e74c3c", "#d35400"]
 
-defaultColor : String
-defaultColor = "#1abc9c"
+roomsViewColorList : Array String
+roomsViewColorList =
+    fromList [ "#1abc9c", "#2ecc71", "#9b59b6", "#34495e", "#f1c40f", "#e74c3c", "#d35400" ]
+
+
+roomsDefaultColor : String
+roomsDefaultColor =
+    "#1abc9c"
 
 
 sliceList : Int -> List a -> List (List a)
 sliceList n list =
-    case (n, list) of
-        (0, list) ->
-            [list]
+    case ( n, list ) of
+        ( 0, list ) ->
+            [ list ]
 
-        (n, []) ->
+        ( n, [] ) ->
             []
 
-        (n, list) ->
+        ( n, list ) ->
             (List.take n list) :: (sliceList n (List.drop n list))
