@@ -10,7 +10,8 @@ defmodule Aion.QuestionController do
   end
 
   def create(conn, %{"question" => question, "answers" => answers, "subject" => subject_id}) do
-    case QuestionTransactions.create_question_with_answers(question, answers, subject_id) |> Repo.transaction do
+    transaction = QuestionTransactions.create_question_with_answers(question, answers, subject_id)
+    case transaction |> Repo.transaction do
       {:ok, %{insert_question: question}} ->
         conn
         |> put_status(:created)

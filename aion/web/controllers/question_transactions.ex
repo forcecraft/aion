@@ -1,4 +1,7 @@
 defmodule Aion.QuestionTransactions do
+  @moduledoc """
+  Implements transactions used by Aion.QuestionController
+  """
   use Aion.Web, :controller
 
   alias Aion.Question
