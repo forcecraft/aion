@@ -2,49 +2,23 @@ defmodule Aion.QuestionController do
   use Aion.Web, :controller
 
   alias Aion.Question
-  alias Aion.Answer
-  alias Aion.Subject
-
-  @answer_separator ","
+  alias Aion.QuestionTransactions
 
   def index(conn, _params) do
     questions = Repo.all(Question)
     render(conn, "index.json", questions: questions)
   end
 
-  def create(conn, %{"question" => question_params, "answers" => answers_content, "subject" => subject_id}) do
-    question_subject = Repo.get(Subject, subject_id)
-
-    transaction_result = Repo.transaction(fn ->
-      question_changeset = Question.changeset(%Question{}, Map.put(question_params, "belongs_to", question_subject))
-      case Repo.insert(question_changeset) do
-        {:ok, question} ->
-          insert_asnwers =
-            answers_content
-            |> String.split(@answer_separator)
-            |> Enum.map(fn answer_content -> Answer.changeset(%Answer{}, %{"content" => answer_content, "belongs_to" => question}) end)
-            |> Enum.map(fn answer_changeset -> Repo.insert(answer_changeset) end)
-
-          if Enum.all?(insert_asnwers, fn {insert_result, _} -> insert_result == :ok end) do
-            question #TODO: change to return also answers and subject to a client?
-          else
-            Repo.rollback(:error)
-          end
-        {:error, error_question_changeset} ->
-          Repo.rollback(error_question_changeset)
-      end
-    end)
-
-    case transaction_result do
-      {:ok, question} ->
+  def create(conn, %{"question" => question, "answers" => answers, "subject" => subject_id}) do
+    case QuestionTransactions.create_question_with_answers(question, answers, subject_id) |> Repo.transaction do
+      {:ok, %{insert_question: question}} ->
         conn
-          |> put_status(:created)
-          |> put_resp_header("location", question_path(conn, :show, question))
-          |> render("show.json", question: question)
-      {:error, changeset} ->
+        |> put_status(:created)
+        |> put_resp_header("location", question_path(conn, :show, question))
+        |> render("show.json", question: question)
+      {:error, _, _, _} ->
         conn
-          |> put_status(:unprocessable_entity)
-          |> render(Aion.ChangesetView, "error.json", changeset: changeset)
+        |> send_resp(500, "error processing entity")
     end
   end
 
