@@ -27,7 +27,7 @@ local_db:
 	cd aion && mix ecto.create && mix ecto.migrate
 
 local_deps:
-	cd aion && mix deps.get && npm install
+	cd aion && mix deps.get && npm install && cd web/elm && elm-package install -y
 
 local_config:
 	cp aion/config/local_dev.exs aion/config/dev.exs

@@ -25,4 +25,4 @@ type Msg
     | NoOperation
     | ReceiveAnswerFeedback Encode.Value
     | CreateNewQuestionWithAnswers
-    | UpdateCreateQuestionForm String String
+    | UpdateQuestionForm String String

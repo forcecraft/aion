@@ -7,6 +7,7 @@ import Json.Decode as Decode
 import Json.Encode as Encode
 import Msgs exposing (Msg(..))
 import Panel.Api exposing (createQuestionWithAnswers)
+import Panel.Models exposing (questionFormPossibleFields)
 import RemoteData
 import Room.Constants exposing (enterKeyCode)
 import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, usersListDecoder)
@@ -34,16 +35,16 @@ update msg model =
                         oldPanelData =
                             model.panelData
 
-                        oldCreateQuestionForm =
-                            model.panelData.createQuestionForm
+                        oldQuestionForm =
+                            model.panelData.questionForm
 
-                        newCreateQuestionForm =
-                            Forms.updateFormInput oldCreateQuestionForm "question" ""
+                        newQuestionForm =
+                            Forms.updateFormInput oldQuestionForm "question" ""
 
-                        evenNewerCreateQuestionForm =
-                            Forms.updateFormInput newCreateQuestionForm "answers" ""
+                        evenNewerQuestionForm =
+                            Forms.updateFormInput newQuestionForm "answers" ""
                     in
-                        { model | panelData = { oldPanelData | createQuestionForm = evenNewerCreateQuestionForm } } ! []
+                        { model | panelData = { oldPanelData | questionForm = evenNewerQuestionForm } } ! []
 
                 _ ->
                     model ! []
@@ -140,30 +141,33 @@ update msg model =
             else
                 model ! []
 
-        UpdateCreateQuestionForm name value ->
+        UpdateQuestionForm name value ->
             let
                 oldPanelData =
                     model.panelData
+
+                questionForm =
+                    oldPanelData.questionForm
             in
                 { model
                     | panelData =
-                        { oldPanelData | createQuestionForm = Forms.updateFormInput oldPanelData.createQuestionForm name value }
+                        { oldPanelData | questionForm = Forms.updateFormInput questionForm name value }
                 }
                     ! []
 
         CreateNewQuestionWithAnswers ->
             let
-                possibleFields =
-                    [ "question", "answers", "subject" ]
+                questionForm =
+                    model.panelData.questionForm
 
                 validationErrors =
-                    possibleFields
-                        |> List.map (\name -> Forms.errorList model.panelData.createQuestionForm name)
+                    questionFormPossibleFields
+                        |> List.map (\name -> Forms.errorList questionForm name)
                         |> List.foldr (++) []
                         |> List.filter (\validations -> validations /= Nothing)
             in
                 if List.isEmpty validationErrors then
-                    ( model, createQuestionWithAnswers model )
+                    ( model, createQuestionWithAnswers model.panelData.questionForm model.rooms )
                 else
                     model ! []
 

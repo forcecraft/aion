@@ -5,16 +5,20 @@ import Panel.Validators exposing (answersValidations, questionValidations, subje
 
 
 type alias PanelData =
-    { createQuestionForm : CreateQuestionForm
+    { questionForm : QuestionForm
     }
 
 
-type alias CreateQuestionForm =
+type alias QuestionForm =
     Forms.Form
 
 
-createQuestionForm : List ( String, List Forms.FieldValidator )
-createQuestionForm =
+questionFormPossibleFields =
+    [ "question", "answers", "subject" ]
+
+
+questionForm : List ( String, List Forms.FieldValidator )
+questionForm =
     [ ( "question", questionValidations )
     , ( "answers", answersValidations )
     , ( "subject", subjectValidations )

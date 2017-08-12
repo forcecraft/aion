@@ -16,9 +16,9 @@ panelView model =
     div []
         [ h3 [] [ text "Create new question for certain category:" ]
         , form []
-            [ questionFormElement model.panelData.createQuestionForm
-            , answersFormElement model.panelData.createQuestionForm
-            , subjectFormElement model.panelData.createQuestionForm (listRooms model.rooms)
+            [ questionFormElement model.panelData.questionForm
+            , answersFormElement model.panelData.questionForm
+            , subjectFormElement model.panelData.questionForm (listRooms model.rooms)
             , input [ type_ "button", value "submit", onClick CreateNewQuestionWithAnswers ] []
             ]
         ]
@@ -30,7 +30,7 @@ questionFormElement form =
         [ p [] [ text "Enter question content below:" ]
         , input
             [ placeholder "How much is 2+2?"
-            , onInput (UpdateCreateQuestionForm "question")
+            , onInput (UpdateQuestionForm "question")
             , value (Forms.formValue form "question")
             ]
             []
@@ -43,8 +43,8 @@ answersFormElement form =
     div []
         [ p [] [ text "Enter answer below, separate all posibilities with comma:" ]
         , input
-            [ placeholder "4,cztery"
-            , onInput (UpdateCreateQuestionForm "answers")
+            [ placeholder "4,four"
+            , onInput (UpdateQuestionForm "answers")
             , value (Forms.formValue form "answers")
             ]
             []
@@ -56,7 +56,7 @@ subjectFormElement : Forms.Form -> List String -> Html Msg
 subjectFormElement form roomList =
     div []
         [ p [] [ text "Select the category to which to add the question:" ]
-        , Select.from roomList (UpdateCreateQuestionForm "subject")
+        , Select.from roomList (UpdateQuestionForm "subject")
         , small [] [ text (Forms.errorString form "subject") ]
         ]
 
@@ -65,7 +65,7 @@ listRooms : WebData RoomsData -> List String
 listRooms result =
     case result of
         RemoteData.Success roomsData ->
-            "" :: List.map (\room -> room.name) roomsData.data
+            "--pick a category--" :: List.map (\room -> room.name) roomsData.data
 
         _ ->
             []

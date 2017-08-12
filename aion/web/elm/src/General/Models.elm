@@ -2,7 +2,7 @@ module General.Models exposing (..)
 
 import Forms
 import Msgs exposing (Msg)
-import Panel.Models exposing (PanelData, createQuestionForm)
+import Panel.Models exposing (PanelData, questionForm)
 import Phoenix.Socket
 import RemoteData exposing (WebData)
 import Room.Models exposing (RoomId, RoomsData, UsersInRoom, QuestionInRoom, UserGameData)
@@ -53,6 +53,6 @@ initialModel flags route =
         }
     , roomId = 0
     , panelData =
-        { createQuestionForm = Forms.initForm createQuestionForm
+        { questionForm = Forms.initForm questionForm
         }
     }
