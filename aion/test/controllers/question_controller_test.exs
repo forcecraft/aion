@@ -41,9 +41,9 @@ defmodule Aion.QuestionControllerTest do
     assert Repo.get_by(Question, @valid_attrs)
   end
 
-  test "does not create resource and renders errors when data is invalid", %{conn: conn} do
+  test "does not create resource and returns 500 when data is invalid", %{conn: conn} do
     conn = post conn, question_path(conn, :create), question: @invalid_attrs, answers: @answers, subject: @subject
-    assert json_response(conn, 422)["errors"] != %{}
+    assert response(conn, 500)
   end
 
   test "updates and renders chosen resource when data is valid", %{conn: conn} do
