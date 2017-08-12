@@ -5,9 +5,9 @@ import Panel.Models exposing (PanelData)
 import Phoenix.Socket
 import RemoteData exposing (WebData)
 import Room.Models exposing (RoomId, RoomsData, UsersInRoom, QuestionInRoom, UserGameData)
-import User.Models exposing (CurrentUser)
-import Toasty.Defaults
 import Toasty
+import Toasty.Defaults
+import User.Models exposing (CurrentUser)
 
 
 type alias Model =

@@ -1,9 +1,9 @@
 module Room.Notifications exposing (..)
 
-import Toasty.Defaults
-import Toasty
-import Msgs exposing (Msg(..))
 import General.Models exposing (Model)
+import Msgs exposing (Msg(..))
+import Toasty
+import Toasty.Defaults
 
 
 myConfig : Toasty.Config Msg
