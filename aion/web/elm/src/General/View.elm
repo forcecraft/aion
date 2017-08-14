@@ -1,10 +1,10 @@
 module General.View exposing (..)
 
 import General.Models exposing (Model)
-import Html exposing (Html, a, div, i, li, p, text, ul)
+import Html exposing (Html, a, div, h3, i, li, p, text, ul)
 import Html.Attributes exposing (href)
 import Msgs exposing (Msg)
-import Routing exposing (panelPath, roomsPath)
+import Routing exposing (panelPath, roomsPath, userPath)
 import RemoteData exposing (WebData)
 import Room.Models exposing (RoomsData)
 
@@ -19,10 +19,11 @@ notFoundView =
 homeView : Model -> Html Msg
 homeView model =
     div []
-        [ p [] [ text "Welcome to Aion!" ]
+        [ h3 [] [ text "Welcome to Aion!" ]
         , ul []
             [ li [] [ a [ href roomsPath ] [ text "Rooms" ] ]
             , li [] [ a [ href panelPath ] [ text "Panel" ] ]
+            , li [] [ a [ href userPath ] [ text "Profile" ] ]
             ]
         ]
 

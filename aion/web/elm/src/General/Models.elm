@@ -35,6 +35,7 @@ type Route
     | RoomListRoute
     | RoomRoute RoomId
     | PanelRoute
+    | UserRoute
     | NotFoundRoute
 
 
