@@ -33,13 +33,4 @@ defmodule Aion do
     Endpoint.config_change(changed, removed)
     :ok
   end
-  
-  def trigger_pronto() do
-    %Aion.Question{}
-    # comment it
-    # again
-    #
-    x = "test"
-        |> IO.inspect
-  end
 end
