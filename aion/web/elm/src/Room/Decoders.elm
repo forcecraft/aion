@@ -27,7 +27,7 @@ usersListDecoder =
 userRecordDecoder : Decode.Decoder UserInRoomRecord
 userRecordDecoder =
     Decode.map2 UserInRoomRecord
-        (field "name" Decode.string)
+        (field "username" Decode.string)
         (field "score" Decode.int)
 
 
