@@ -64,9 +64,9 @@ defmodule Aion.SubjectChannel do
 
   defp send_feedback(socket, evaluation) do
     feedback = cond do
-      evaluation == 1.0 -> "Correct!"
-      evaluation > 0.8 -> "Close one!"
-      true -> "Wrong answer."
+      evaluation == 1.0 -> :correct
+      evaluation > 0.8 -> :close
+      true -> :incorrect
     end
 
     push socket, "answer:feedback", %{"feedback" => feedback}
