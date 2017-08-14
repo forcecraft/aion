@@ -51,7 +51,7 @@ cd aion && mix test
 
 ## Contributing
 
-Check out our [CONTRIBUTING.md -- insert link after it's merged]()
+Check out our [CONTRIBUTING.md](CONTRIBUTING.md) 
 
 ## Authors
 
