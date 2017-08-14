@@ -1,11 +1,10 @@
-defmodule Aion.RoomChannel.Room do
+    defmodule Aion.RoomChannel.Room do
   @moduledoc """
   This module represents one game room, and fetches resources from the db
   """
 
-  alias Aion.{Repo, Question, Answer}
+  alias Aion.{Question, Answer}
   alias Aion.RoomChannel.{Room, UserRecord}
-  import Ecto.Query, only: [from: 2]
   require Logger
 
   defstruct users: %{},
@@ -29,7 +28,7 @@ defmodule Aion.RoomChannel.Room do
     |> Map.get(:answers)
     |> Enum.map(&(Map.get(&1, :content)))
     |> Enum.map(fn correct_answer -> Answer.compare_answers(correct_answer, user_answer) end)
-    |> Enum.max
+    |> Enum.max()
   end
 
   def award_user(room, username, amount \\ 1) do
