@@ -22,12 +22,10 @@ before_install:
 before_script:
 - cp config/travis.exs config/test.exs
 - mix do ecto.create, ecto.migrate
-- rvm install ruby-2.3.1
-- gem install pronto-credo
 
 script:
-  - if [ "$TRAVIS_PULL_REQUEST" == false ]; then echo "TRAVIS_PULL_REQUEST is unset, skipping Pronto"; else cd $TRAVIS_BUILD_DIR/aion && pronto run -f github_pr --verbose; fi
-  - echo $TRAVIS_BUILD_DIR && mix test
+  - mix credo --strict
+  - mix test
 
 notifications:
   email: false
