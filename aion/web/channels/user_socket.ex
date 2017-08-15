@@ -1,10 +1,10 @@
 defmodule Aion.UserSocket do
   use Phoenix.Socket
 
-  alias Aion.{SubjectChannel, Repo, User}
+  alias Aion.{RoomChannel, Repo, User}
   alias Phoenix.Token
 
-  channel "rooms:*", SubjectChannel
+  channel "rooms:*", RoomChannel
 
   transport :websocket, Phoenix.Transports.WebSocket
 

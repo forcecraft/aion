@@ -1,6 +1,6 @@
 module Routing exposing (..)
 
-import General.Models exposing (Route(LoginRoute, NotFoundRoute, PanelRoute, RoomListRoute, RoomRoute))
+import General.Models exposing (Route(LoginRoute, NotFoundRoute, PanelRoute, RoomListRoute, RoomRoute, UserRoute))
 import Navigation exposing (Location)
 import UrlParser exposing (..)
 
@@ -12,6 +12,7 @@ matchers =
         , map RoomRoute (s "rooms" </> int)
         , map RoomListRoute (s "rooms")
         , map PanelRoute (s "panel")
+        , map UserRoute (s "profile")
         ]
 
 
@@ -33,3 +34,8 @@ roomsPath =
 panelPath : String
 panelPath =
     "#panel"
+
+
+userPath : String
+userPath =
+    "#profile"
