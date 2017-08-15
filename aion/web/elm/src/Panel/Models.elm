@@ -1,11 +1,29 @@
 module Panel.Models exposing (..)
 
+import Forms
+import Panel.Validators exposing (answersValidations, questionValidations, subjectValidations)
+
 
 type alias PanelData =
-    { newQuestionContent : String
-    , newAnswerContent : String
-    , newAnswerCategory : Int
+    { questionForm : QuestionForm
     }
+
+
+type alias QuestionForm =
+    Forms.Form
+
+
+questionFormPossibleFields : List String
+questionFormPossibleFields =
+    [ "question", "answers", "subject" ]
+
+
+questionForm : List ( String, List Forms.FieldValidator )
+questionForm =
+    [ ( "question", questionValidations )
+    , ( "answers", answersValidations )
+    , ( "subject", subjectValidations )
+    ]
 
 
 type alias QuestionCreatedData =

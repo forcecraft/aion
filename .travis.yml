@@ -1,5 +1,7 @@
 dist: trusty
+
 language: elixir
+
 elixir:
   - 1.4
 otp_release:
@@ -7,17 +9,15 @@ otp_release:
   - 19.3
 
 addons:
-  postgresql: '9.6'
+  postgresql: '9.4'
 
 sudo: false
 
-env:
-  global:
-    - MIX_ENV=test
-    - PRONTO_PULL_REQUEST_ID=$TRAVIS_PULL_REQUEST
+services:
+- postgresql
 
 before_install:
-- cp -a aion/* .
+- cd aion
 
 before_script:
 - cp config/travis.exs config/test.exs
@@ -34,4 +34,4 @@ notifications:
 
 cache:
  directories:
-  - /home/travis/.rvm/
+  - aion/deps

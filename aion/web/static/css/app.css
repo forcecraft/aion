@@ -1,1 +1,36 @@
-/* This file is for your main application css. */
+.tile:hover {
+    cursor: pointer;
+    opacity: 1;
+    text-decoration: underline;
+    -webkit-transform: scale(1.2);
+}
+
+.room-select-title {
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+.room-select-title h2 {
+    text-align: center;
+}
+
+.tile {
+    transition: 0.5s ease;
+    opacity: 0.65;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 17px;
+    border-radius: 3px;
+}
+
+.tile a {
+    cursor: pointer;
+    line-height: 50px;
+    color: white;
+    display: block;
+}
+
+.tile a:hover {
+    text-decoration: none;
+    color: white;
+}

@@ -27,7 +27,5 @@ type Msg
     | NoOperation
     | ReceiveAnswerFeedback Encode.Value
     | ToastyMsg (Toasty.Msg Toasty.Defaults.Toast)
-    | SetNewQuestionContent String
-    | SetNewAnswerContent String
-    | SetNewAnswerCategory String
     | CreateNewQuestionWithAnswers
+    | UpdateQuestionForm String String
