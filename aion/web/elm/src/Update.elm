@@ -3,7 +3,6 @@ module Update exposing (..)
 import Dom exposing (focus)
 import Forms
 import General.Models exposing (Model, Route(RoomRoute))
-import General.Utils exposing (getSubjectIdByName)
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Msgs exposing (Msg(..))
@@ -185,6 +184,9 @@ update msg model =
                     ( model, createQuestionWithAnswers model.panelData.questionForm model.rooms )
                 else
                     model ! []
+
+        ToastyMsg subMsg ->
+            Toasty.update myConfig ToastyMsg subMsg model
 
         NoOperation ->
             model ! []
