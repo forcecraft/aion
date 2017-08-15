@@ -13,6 +13,7 @@ type alias QuestionForm =
     Forms.Form
 
 
+questionFormPossibleFields : List String
 questionFormPossibleFields =
     [ "question", "answers", "subject" ]
 
