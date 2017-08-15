@@ -6,10 +6,10 @@ import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Col as Col
 import General.Models exposing (Model)
 import General.Utils exposing (sliceList, roomsViewColorList, roomsDefaultColor)
-import Html exposing (Html, a, div, i, li, p, text, ul, h2, button)
+import Html exposing (Html, a, div, h3, i, li, p, text, ul, h2, button)
 import Html.Attributes exposing (href, style, class)
 import Msgs exposing (Msg)
-import Routing exposing (panelPath, roomsPath)
+import Routing exposing (panelPath, roomsPath, userPath)
 import RemoteData exposing (WebData)
 import Room.Models exposing (RoomsData, Room)
 
@@ -24,10 +24,11 @@ notFoundView =
 homeView : Model -> Html Msg
 homeView model =
     div []
-        [ p [] [ text "Welcome to Aion!" ]
+        [ h3 [] [ text "Welcome to Aion!" ]
         , ul []
             [ li [] [ a [ href roomsPath ] [ text "Rooms" ] ]
             , li [] [ a [ href panelPath ] [ text "Panel" ] ]
+            , li [] [ a [ href userPath ] [ text "Profile" ] ]
             ]
         ]
 
