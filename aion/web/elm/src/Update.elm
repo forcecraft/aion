@@ -1,20 +1,23 @@
 module Update exposing (..)
 
 import Dom exposing (focus)
+import Forms
 import General.Models exposing (Model, Route(RoomRoute))
 import General.Utils exposing (getSubjectIdByName)
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Msgs exposing (Msg(..))
 import Panel.Api exposing (createQuestionWithAnswers)
-import Phoenix.Channel
-import Phoenix.Push
-import Phoenix.Socket
+import Panel.Models exposing (questionFormPossibleFields)
+import RemoteData
 import Room.Constants exposing (enterKeyCode)
 import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, usersListDecoder)
 import Room.Models exposing (RoomsData, answerInputFieldId)
 import Room.Notifications exposing (..)
 import Routing exposing (parseLocation)
+import Phoenix.Socket
+import Phoenix.Channel
+import Phoenix.Push
 import Task
 import Toasty
 
@@ -29,7 +32,25 @@ update msg model =
             { model | user = response } ! []
 
         OnQuestionCreated response ->
-            model ! []
+            case response of
+                RemoteData.Success responseData ->
+                    let
+                        oldPanelData =
+                            model.panelData
+
+                        oldQuestionForm =
+                            model.panelData.questionForm
+
+                        newQuestionForm =
+                            Forms.updateFormInput oldQuestionForm "question" ""
+
+                        evenNewerQuestionForm =
+                            Forms.updateFormInput newQuestionForm "answers" ""
+                    in
+                        { model | panelData = { oldPanelData | questionForm = evenNewerQuestionForm } } ! []
+
+                _ ->
+                    model ! []
 
         OnLocationChange location ->
             let
@@ -135,35 +156,35 @@ update msg model =
             else
                 model ! []
 
-        NoOperation ->
-            model ! []
-
-        ToastyMsg subMsg ->
-            Toasty.update myConfig ToastyMsg subMsg model
-
-        SetNewQuestionContent questionContent ->
+        UpdateQuestionForm name value ->
             let
                 oldPanelData =
                     model.panelData
-            in
-                { model | panelData = { oldPanelData | newQuestionContent = questionContent } } ! []
 
-        SetNewAnswerContent answerContent ->
-            let
-                oldPanelData =
-                    model.panelData
+                questionForm =
+                    oldPanelData.questionForm
             in
-                { model | panelData = { oldPanelData | newAnswerContent = answerContent } } ! []
-
-        SetNewAnswerCategory answerCategoryName ->
-            let
-                answerCategoryToId =
-                    getSubjectIdByName model.rooms answerCategoryName
-
-                oldPanelData =
-                    model.panelData
-            in
-                { model | panelData = { oldPanelData | newAnswerCategory = answerCategoryToId } } ! []
+                { model
+                    | panelData =
+                        { oldPanelData | questionForm = Forms.updateFormInput questionForm name value }
+                }
+                    ! []
 
         CreateNewQuestionWithAnswers ->
-            ( model, createQuestionWithAnswers model.panelData )
+            let
+                questionForm =
+                    model.panelData.questionForm
+
+                validationErrors =
+                    questionFormPossibleFields
+                        |> List.map (\name -> Forms.errorList questionForm name)
+                        |> List.foldr (++) []
+                        |> List.filter (\validations -> validations /= Nothing)
+            in
+                if List.isEmpty validationErrors then
+                    ( model, createQuestionWithAnswers model.panelData.questionForm model.rooms )
+                else
+                    model ! []
+
+        NoOperation ->
+            model ! []
