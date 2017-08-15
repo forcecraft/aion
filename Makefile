@@ -21,7 +21,7 @@ docker_stop:
 development: local_deps local_db local_config start_dev
 
 start_dev:
-	cd aion && mix phoenix.server
+	cd aion && iex -S mix phoenix.server
 
 local_db:
 	cd aion && mix ecto.create && mix ecto.migrate
@@ -33,7 +33,15 @@ local_config:
 	cp aion/config/local_dev.exs aion/config/dev.exs
 
 populate_database:
+	cp fixtures/src/local_config.py fixtures/src/config.py
 	scripts/populate_database
+
+test:
+	cp aion/config/local_test.exs aion/config/test.exs
+	cd aion && mix test
+
+lint:
+	cd aion && mix credo --strict
 
 ##########
 # common #

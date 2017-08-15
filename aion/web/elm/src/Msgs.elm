@@ -7,6 +7,8 @@ import RemoteData exposing (WebData)
 import Phoenix.Socket
 import Json.Encode as Encode
 import Room.Models exposing (RoomId, RoomsData)
+import Toasty
+import Toasty.Defaults
 import User.Models exposing (CurrentUser)
 
 
@@ -24,5 +26,6 @@ type Msg
     | KeyDown Int
     | NoOperation
     | ReceiveAnswerFeedback Encode.Value
+    | ToastyMsg (Toasty.Msg Toasty.Defaults.Toast)
     | CreateNewQuestionWithAnswers
     | UpdateQuestionForm String String

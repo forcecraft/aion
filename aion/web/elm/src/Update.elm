@@ -3,6 +3,7 @@ module Update exposing (..)
 import Dom exposing (focus)
 import Forms
 import General.Models exposing (Model, Route(RoomRoute))
+import General.Utils exposing (getSubjectIdByName)
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Msgs exposing (Msg(..))
@@ -12,11 +13,13 @@ import RemoteData
 import Room.Constants exposing (enterKeyCode)
 import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, usersListDecoder)
 import Room.Models exposing (RoomsData, answerInputFieldId)
+import Room.Notifications exposing (..)
 import Routing exposing (parseLocation)
 import Phoenix.Socket
 import Phoenix.Channel
 import Phoenix.Push
 import Task
+import Toasty
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -71,7 +74,7 @@ update msg model =
                                         |> Phoenix.Socket.on "answer:feedback" ("rooms:" ++ roomIdToString) ReceiveAnswerFeedback
                                     )
                         in
-                            { model | socket = socket, route = newRoute, roomId = roomId } ! [ Cmd.map PhoenixMsg cmd ]
+                            { model | socket = socket, route = newRoute, roomId = roomId, toasties = Toasty.initialState } ! [ Cmd.map PhoenixMsg cmd ]
 
                     _ ->
                         { model | route = newRoute } ! []
@@ -95,10 +98,21 @@ update msg model =
             case Decode.decodeValue answerFeedbackDecoder rawFeedback of
                 Ok answerFeedback ->
                     let
-                        x =
-                            Debug.log "feedback" answerFeedback.feedback
+                        answerToast =
+                            case answerFeedback.feedback of
+                                "incorrect" ->
+                                    incorrectAnswerToast
+
+                                "close" ->
+                                    closeAnswerToast
+
+                                "correct" ->
+                                    correctAnswerToast
+
+                                _ ->
+                                    Debug.crash "Unexpected Feedback"
                     in
-                        model ! []
+                        answerToast (model ! [])
 
                 Err error ->
                     model ! []
@@ -118,6 +132,7 @@ update msg model =
                 push_ =
                     Phoenix.Push.init "new:answer" ("rooms:" ++ (toString model.roomId))
                         |> Phoenix.Push.withPayload payload
+                        |> Phoenix.Push.onOk (\rawFeedback -> ReceiveAnswerFeedback rawFeedback)
 
                 ( socket, cmd ) =
                     Phoenix.Socket.push push_ model.socket

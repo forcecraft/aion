@@ -1,22 +1,30 @@
-defmodule Aion.SubjectChannel do
+defmodule Aion.RoomChannel do
   @moduledoc """
   This module is responsible for providing a commucation between Elixir and Elm. It describes how the backend part
   should react to new messages or events.
   """
 
   use Phoenix.Channel
-  alias Aion.ChannelMonitor
+  alias Aion.RoomChannel.Monitor
 
   def join("rooms:" <> room_id, _params, socket) do
     current_user = socket.assigns.current_user.name
-    %{users: users, question: question} = ChannelMonitor.user_joined(room_id, current_user)
-    send self, {:after_join, room_id}
+
+    # Note: this is a temporary solution.
+    # In the future, this function should return an error if a user wants to join a room that does not exist.
+
+    if not Monitor.exists?(room_id) do
+        Monitor.create(room_id)
+    end
+
+    Monitor.user_joined(room_id, current_user)
+    send self(), {:after_join, room_id}
     {:ok, socket}
   end
 
   def handle_in("user_left", %{"room_id" => room_id}, socket) do
     current_user = socket.assigns.current_user.name
-    users = ChannelMonitor.user_left({room_id, current_user})
+    Monitor.user_left(room_id, current_user)
     :ok
   end
 
@@ -27,11 +35,11 @@ defmodule Aion.SubjectChannel do
 
   def handle_in("new:answer", %{"room_id" => room_id, "answer" => answer}, socket) do
     username = socket.assigns.current_user.name
-    evaluation = ChannelMonitor.new_answer(room_id, answer, username)
+    evaluation = Monitor.new_answer(room_id, answer, username)
     send_feedback socket, evaluation
 
     if evaluation == 1.0 do
-      send_user_list(socket, room_id)
+      send_scores(socket, room_id)
       send_new_question(socket, room_id)
     end
 
@@ -39,34 +47,34 @@ defmodule Aion.SubjectChannel do
   end
 
   def handle_info({:after_join, room_id}, socket) do
-    send_user_list(socket, room_id)
+    send_scores(socket, room_id)
     send_current_question(socket, room_id)
     {:noreply, socket}
   end
 
-  defp send_user_list(socket, room_id) do
-    users = ChannelMonitor.list_users(room_id)
-    broadcast! socket, "user:list", %{users: users}
+  defp send_scores(socket, room_id) do
+    scores = Monitor.get_scores(room_id)
+    broadcast! socket, "user:list", %{users: scores}
   end
 
   defp send_new_question(socket, room_id) do
-    ChannelMonitor.new_question(room_id)
-    question = ChannelMonitor.get_room_state(room_id).question
+    Monitor.new_question(room_id)
+    question = Monitor.get_current_question(room_id)
     image_name = if question.image_name == nil, do: "", else: question.image_name
     broadcast! socket, "new:question", %{content: question.content, image_name: image_name}
   end
 
   defp send_current_question(socket, room_id) do
-    question = ChannelMonitor.get_room_state(room_id).question
+    question = Monitor.get_current_question(room_id)
     image_name = if question.image_name == nil, do: "", else: question.image_name
     broadcast! socket, "new:question", %{content: question.content, image_name: image_name}
   end
 
   defp send_feedback(socket, evaluation) do
     feedback = cond do
-      evaluation == 1.0 -> "Correct!"
-      evaluation > 0.8 -> "Close one!"
-      true -> "Wrong answer."
+      evaluation == 1.0 -> :correct
+      evaluation > 0.8 -> :close
+      true -> :incorrect
     end
 
     push socket, "answer:feedback", %{"feedback" => feedback}
