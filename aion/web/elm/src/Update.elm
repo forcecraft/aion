@@ -3,11 +3,13 @@ module Update exposing (..)
 import Dom exposing (focus)
 import Forms
 import General.Models exposing (Model, Route(RoomRoute))
+import General.Notifications exposing (toastsConfig)
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Msgs exposing (Msg(..))
-import Panel.Api exposing (createQuestionWithAnswers)
-import Panel.Models exposing (questionFormPossibleFields)
+import Panel.Api exposing (createCategory, createQuestionWithAnswers)
+import Panel.Models exposing (categoryNamePossibleFields, questionFormPossibleFields)
+import Panel.Notifications exposing (categoryCreationErrorToast, categoryCreationSuccessfulToast, categoryFormValidationErrorToast)
 import RemoteData
 import Room.Constants exposing (answerInputFieldId, enterKeyCode)
 import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, userJoinedInfoDecoder, usersListDecoder)
@@ -49,6 +51,24 @@ update msg model =
 
                 _ ->
                     model ! []
+
+        OnCategoryCreated response ->
+            case response of
+                RemoteData.Success responseData ->
+                    let
+                        oldPanelData =
+                            model.panelData
+
+                        oldCategoryForm =
+                            model.panelData.categoryForm
+
+                        newCategoryForm =
+                            Forms.updateFormInput oldCategoryForm "name" ""
+                    in
+                        categoryCreationSuccessfulToast ({ model | panelData = { oldPanelData | categoryForm = newCategoryForm } } ! [])
+
+                _ ->
+                    categoryCreationErrorToast (model ! [])
 
         OnLocationChange location ->
             let
@@ -189,6 +209,20 @@ update msg model =
                 }
                     ! []
 
+        UpdateCategoryForm name value ->
+            let
+                oldPanelData =
+                    model.panelData
+
+                categoryForm =
+                    oldPanelData.categoryForm
+            in
+                { model
+                    | panelData =
+                        { oldPanelData | categoryForm = Forms.updateFormInput categoryForm name value }
+                }
+                    ! []
+
         CreateNewQuestionWithAnswers ->
             let
                 questionForm =
@@ -205,8 +239,24 @@ update msg model =
                 else
                     model ! []
 
+        CreateNewCategory ->
+            let
+                categoryForm =
+                    model.panelData.categoryForm
+
+                validationErrors =
+                    categoryNamePossibleFields
+                        |> List.map (\name -> Forms.errorList categoryForm name)
+                        |> List.foldr (++) []
+                        |> List.filter (\validations -> validations /= Nothing)
+            in
+                if List.isEmpty validationErrors then
+                    ( model, createCategory model.panelData.categoryForm )
+                else
+                    categoryFormValidationErrorToast (model ! [])
+
         ToastyMsg subMsg ->
-            Toasty.update myConfig ToastyMsg subMsg model
+            Toasty.update toastsConfig ToastyMsg subMsg model
 
         NoOperation ->
             model ! []

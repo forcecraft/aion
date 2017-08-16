@@ -6,10 +6,13 @@ import General.Utils exposing (getSubjectIdByName)
 import Http
 import Msgs exposing (Msg)
 import RemoteData exposing (WebData)
-import Panel.Decoders exposing (questionCreatedDecoder)
+import Panel.Decoders exposing (categoryCreatedDecoder, questionCreatedDecoder)
 import Json.Encode as Encode
-import Panel.Models exposing (QuestionForm)
+import Panel.Models exposing (CategoryForm, QuestionForm)
 import Room.Models exposing (RoomsData)
+
+
+-- create question section
 
 
 createQuestionUrl : String
@@ -48,6 +51,39 @@ questionCreationEncoder form rooms =
             , ( "answers", Encode.string answersValue )
             , ( "subject", Encode.int subjectId )
             ]
+    in
+        payload
+            |> Encode.object
+            |> Http.jsonBody
+
+
+
+-- create category section
+
+
+createCategoryUrl : String
+createCategoryUrl =
+    hostname ++ "api/subjects"
+
+
+createCategory : CategoryForm -> Cmd Msg
+createCategory form =
+    Http.post createCategoryUrl (categoryCreationEncoder form) categoryCreatedDecoder
+        |> RemoteData.sendRequest
+        |> Cmd.map Msgs.OnCategoryCreated
+
+
+categoryCreationEncoder : QuestionForm -> Http.Body
+categoryCreationEncoder form =
+    let
+        categoryName =
+            Forms.formValue form "name"
+
+        questionContent =
+            [ ( "name", Encode.string categoryName ) ]
+
+        payload =
+            [ ( "subject", Encode.object questionContent ) ]
     in
         payload
             |> Encode.object

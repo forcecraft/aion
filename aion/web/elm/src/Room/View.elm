@@ -1,6 +1,7 @@
 module Room.View exposing (..)
 
 import General.Models exposing (Model)
+import General.Notifications exposing (toastsConfig)
 import Html exposing (Attribute, Html, a, button, div, form, input, li, text, ul)
 import Html.Attributes exposing (href, src, id, type_, value)
 import Html.Events exposing (keyCode, on, onClick, onInput, onWithOptions)
@@ -10,7 +11,6 @@ import Html exposing (Html, a, div, img, li, p, text, ul)
 import Room.Constants exposing (answerInputFieldId, defaultImagePath, imagesPath)
 import Room.Models exposing (Answer, ImageName, RoomId, RoomsData, UserGameData, UserInRoomRecord)
 import Room.Utils exposing (getRoomList, getRoomNameById)
-import Room.Notifications exposing (myConfig)
 import Toasty
 import Toasty.Defaults
 
@@ -33,7 +33,7 @@ roomView model roomId =
             , p [] [ text model.questionInChannel.content ]
             , displayQuestionImage imageName
             , displayAnswerInput currentAnswer
-            , Toasty.view myConfig Toasty.Defaults.view ToastyMsg model.toasties
+            , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
             ]
 
 

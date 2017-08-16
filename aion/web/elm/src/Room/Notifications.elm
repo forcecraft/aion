@@ -1,20 +1,9 @@
 module Room.Notifications exposing (..)
 
 import General.Models exposing (Model)
+import General.Notifications exposing (addToast)
 import Msgs exposing (Msg(..))
-import Toasty
 import Toasty.Defaults
-
-
-myConfig : Toasty.Config Msg
-myConfig =
-    Toasty.Defaults.config
-        |> Toasty.delay 5000
-
-
-addToast : Toasty.Defaults.Toast -> ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
-addToast toast ( model, cmd ) =
-    Toasty.addToast myConfig ToastyMsg toast ( model, cmd )
 
 
 incorrectAnswerToast : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
