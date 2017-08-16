@@ -1,14 +1,17 @@
 defmodule Aion.UserSocket do
   use Phoenix.Socket
 
-  channel "rooms:*", Aion.SubjectChannel
+  alias Aion.{RoomChannel, Repo, User}
+  alias Phoenix.Token
+
+  channel "rooms:*", RoomChannel
 
   transport :websocket, Phoenix.Transports.WebSocket
 
   def connect(%{"token" => token}, socket) do
-    case Phoenix.Token.verify(socket, "user", token, max_age: 86400) do
+    case Token.verify(socket, "user", token, max_age: 86_400) do
       {:ok, user_id} ->
-        socket = assign(socket, :current_user, Aion.Repo.get!(Aion.User, user_id))
+        socket = assign(socket, :current_user, Repo.get!(User, user_id))
         {:ok, socket}
       {:error, _} ->
         :error

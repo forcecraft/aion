@@ -2,8 +2,11 @@ defmodule Aion.QuestionControllerTest do
   use Aion.ConnCase
 
   alias Aion.Question
+
   @valid_attrs %{content: "some content", image_name: "some content"}
   @invalid_attrs %{}
+  @answers "some content"
+  @subject 1
 
   setup %{conn: _} do
     user = %{ email: "test@example.com", name: "something" }
@@ -32,14 +35,14 @@ defmodule Aion.QuestionControllerTest do
   end
 
   test "creates and renders resource when data is valid", %{conn: conn} do
-    conn = post conn, question_path(conn, :create), question: @valid_attrs
+    conn = post conn, question_path(conn, :create), question: @valid_attrs, answers: @answers, subject: @subject
     assert json_response(conn, 201)["data"]["id"]
     assert Repo.get_by(Question, @valid_attrs)
   end
 
-  test "does not create resource and renders errors when data is invalid", %{conn: conn} do
-    conn = post conn, question_path(conn, :create), question: @invalid_attrs
-    assert json_response(conn, 422)["errors"] != %{}
+  test "does not create resource and returns 500 when data is invalid", %{conn: conn} do
+    conn = post conn, question_path(conn, :create), question: @invalid_attrs, answers: @answers, subject: @subject
+    assert response(conn, 500)
   end
 
   test "updates and renders chosen resource when data is valid", %{conn: conn} do

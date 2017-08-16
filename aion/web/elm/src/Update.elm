@@ -1,18 +1,24 @@
 module Update exposing (..)
 
 import Dom exposing (focus)
+import Forms
 import General.Models exposing (Model, Route(RoomRoute))
 import Json.Decode as Decode
+import Json.Encode as Encode
 import Msgs exposing (Msg(..))
+import Panel.Api exposing (createQuestionWithAnswers)
+import Panel.Models exposing (questionFormPossibleFields)
 import RemoteData
+import Room.Constants exposing (enterKeyCode)
 import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, userJoinedInfoDecoder, usersListDecoder)
-import Room.Constants exposing (answerInputFieldId, enterKeyCode)
+import Room.Models exposing (RoomsData, answerInputFieldId)
+import Room.Notifications exposing (..)
 import Routing exposing (parseLocation)
 import Phoenix.Socket
 import Phoenix.Channel
 import Phoenix.Push
-import Json.Encode as Encode
 import Task
+import Toasty
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -23,6 +29,27 @@ update msg model =
 
         OnFetchCurrentUser response ->
             { model | user = response } ! []
+
+        OnQuestionCreated response ->
+            case response of
+                RemoteData.Success responseData ->
+                    let
+                        oldPanelData =
+                            model.panelData
+
+                        oldQuestionForm =
+                            model.panelData.questionForm
+
+                        newQuestionForm =
+                            Forms.updateFormInput oldQuestionForm "question" ""
+
+                        evenNewerQuestionForm =
+                            Forms.updateFormInput newQuestionForm "answers" ""
+                    in
+                        { model | panelData = { oldPanelData | questionForm = evenNewerQuestionForm } } ! []
+
+                _ ->
+                    model ! []
 
         OnLocationChange location ->
             let
@@ -47,7 +74,7 @@ update msg model =
                                         |> Phoenix.Socket.on "room:user:joined" ("rooms:" ++ roomIdToString) ReceiveUserJoined
                                     )
                         in
-                            { model | socket = socket, route = newRoute, roomId = roomId } ! [ Cmd.map PhoenixMsg cmd ]
+                            { model | socket = socket, route = newRoute, roomId = roomId, toasties = Toasty.initialState } ! [ Cmd.map PhoenixMsg cmd ]
 
                     _ ->
                         { model | route = newRoute } ! []
@@ -71,10 +98,21 @@ update msg model =
             case Decode.decodeValue answerFeedbackDecoder rawFeedback of
                 Ok answerFeedback ->
                     let
-                        log =
-                            Debug.log "feedback" answerFeedback.feedback
+                        answerToast =
+                            case answerFeedback.feedback of
+                                "incorrect" ->
+                                    incorrectAnswerToast
+
+                                "close" ->
+                                    closeAnswerToast
+
+                                "correct" ->
+                                    correctAnswerToast
+
+                                _ ->
+                                    Debug.crash "Unexpected Feedback"
                     in
-                        model ! []
+                        answerToast (model ! [])
 
                 Err error ->
                     model ! []
@@ -105,11 +143,16 @@ update msg model =
         SubmitAnswer ->
             let
                 payload =
-                    (Encode.object [ ( "answer", Encode.string model.userGameData.currentAnswer ), ( "room_id", Encode.string (toString model.roomId) ) ])
+                    (Encode.object
+                        [ ( "answer", Encode.string model.userGameData.currentAnswer )
+                        , ( "room_id", Encode.string (toString model.roomId) )
+                        ]
+                    )
 
                 push_ =
                     Phoenix.Push.init "new:answer" ("rooms:" ++ (toString model.roomId))
                         |> Phoenix.Push.withPayload payload
+                        |> Phoenix.Push.onOk (\rawFeedback -> ReceiveAnswerFeedback rawFeedback)
 
                 ( socket, cmd ) =
                     Phoenix.Socket.push push_ model.socket
@@ -132,6 +175,39 @@ update msg model =
                 update SubmitAnswer model
             else
                 model ! []
+
+        UpdateQuestionForm name value ->
+            let
+                oldPanelData =
+                    model.panelData
+
+                questionForm =
+                    oldPanelData.questionForm
+            in
+                { model
+                    | panelData =
+                        { oldPanelData | questionForm = Forms.updateFormInput questionForm name value }
+                }
+                    ! []
+
+        CreateNewQuestionWithAnswers ->
+            let
+                questionForm =
+                    model.panelData.questionForm
+
+                validationErrors =
+                    questionFormPossibleFields
+                        |> List.map (\name -> Forms.errorList questionForm name)
+                        |> List.foldr (++) []
+                        |> List.filter (\validations -> validations /= Nothing)
+            in
+                if List.isEmpty validationErrors then
+                    ( model, createQuestionWithAnswers model.panelData.questionForm model.rooms )
+                else
+                    model ! []
+
+        ToastyMsg subMsg ->
+            Toasty.update myConfig ToastyMsg subMsg model
 
         NoOperation ->
             model ! []

@@ -1,0 +1,3 @@
+#!/bin/bash
+postgres_id=`docker ps | grep postgres | awk '{print $1}'`
+docker exec -it $postgres_id psql aion

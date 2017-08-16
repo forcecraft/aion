@@ -14,7 +14,7 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - db
-    command: bash /scripts/run_migrations.sh
+    command: bash /scripts/run_server
     volumes:
       - ./aion/:/aion
       - /aion/deps

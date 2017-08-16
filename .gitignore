@@ -2,3 +2,5 @@
 .DS_Store
 /postgres-data
 *.pyc
+aion/web/static/assets/images/
+package-lock.json
