@@ -2,7 +2,7 @@ module Msgs exposing (..)
 
 import Dom exposing (Error)
 import Navigation exposing (Location)
-import Panel.Models exposing (QuestionCreatedData)
+import Panel.Models exposing (CategoryCreatedData, QuestionCreatedData)
 import RemoteData exposing (WebData)
 import Phoenix.Socket
 import Json.Encode as Encode
@@ -17,6 +17,7 @@ type Msg
     | OnFetchRooms (WebData RoomsData)
     | OnFetchCurrentUser (WebData CurrentUser)
     | OnQuestionCreated (WebData QuestionCreatedData)
+    | OnCategoryCreated (WebData CategoryCreatedData)
     | PhoenixMsg (Phoenix.Socket.Msg Msg)
     | ReceiveUserList Encode.Value
     | SetAnswer String
@@ -29,4 +30,6 @@ type Msg
     | ReceiveUserJoined Encode.Value
     | ToastyMsg (Toasty.Msg Toasty.Defaults.Toast)
     | CreateNewQuestionWithAnswers
+    | CreateNewCategory
     | UpdateQuestionForm String String
+    | UpdateCategoryForm String String

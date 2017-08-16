@@ -3,7 +3,6 @@ module Room.Notifications exposing (..)
 import General.Models exposing (Model)
 import General.Notifications exposing (addToast)
 import Msgs exposing (Msg(..))
-import Toasty
 import Toasty.Defaults
 
 
