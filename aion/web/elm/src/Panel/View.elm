@@ -2,13 +2,17 @@ module Panel.View exposing (..)
 
 import Forms
 import General.Models exposing (Model)
+import General.Notifications exposing (toastsConfig)
 import Html exposing (..)
 import Html.Attributes exposing (placeholder, type_, value)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick, onInput, onWithOptions)
+import Json.Decode
 import Msgs exposing (Msg(..))
 import RemoteData exposing (WebData)
 import Room.Models exposing (RoomsData)
 import Select
+import Toasty
+import Toasty.Defaults
 
 
 panelView : Model -> Html Msg
@@ -20,6 +24,7 @@ panelView model =
             , answersFormElement model.panelData.questionForm
             , subjectFormElement model.panelData.questionForm (listRooms model.rooms)
             , input [ type_ "button", value "submit", onClick CreateNewQuestionWithAnswers ] []
+            , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
             ]
         ]
 

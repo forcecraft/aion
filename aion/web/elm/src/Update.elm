@@ -3,11 +3,13 @@ module Update exposing (..)
 import Dom exposing (focus)
 import Forms
 import General.Models exposing (Model, Route(RoomRoute))
+import General.Notifications exposing (toastsConfig)
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Msgs exposing (Msg(..))
 import Panel.Api exposing (createQuestionWithAnswers)
 import Panel.Models exposing (questionFormPossibleFields)
+import Panel.Notifications exposing (..)
 import RemoteData
 import Room.Constants exposing (answerInputFieldId, enterKeyCode)
 import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, userJoinedInfoDecoder, usersListDecoder)
@@ -45,10 +47,10 @@ update msg model =
                         evenNewerQuestionForm =
                             Forms.updateFormInput newQuestionForm "answers" ""
                     in
-                        { model | panelData = { oldPanelData | questionForm = evenNewerQuestionForm } } ! []
+                        questionCreationSuccessfulToast ({ model | panelData = { oldPanelData | questionForm = evenNewerQuestionForm } } ! [])
 
                 _ ->
-                    model ! []
+                    questionCreationErrorToast (model ! [])
 
         OnLocationChange location ->
             let
@@ -203,10 +205,10 @@ update msg model =
                 if List.isEmpty validationErrors then
                     ( model, createQuestionWithAnswers model.panelData.questionForm model.rooms )
                 else
-                    model ! []
+                    questionFormValidationErrorToast (model ! [])
 
         ToastyMsg subMsg ->
-            Toasty.update myConfig ToastyMsg subMsg model
+            Toasty.update toastsConfig ToastyMsg subMsg model
 
         NoOperation ->
             model ! []
