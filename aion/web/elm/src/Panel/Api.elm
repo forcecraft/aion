@@ -1,7 +1,7 @@
 module Panel.Api exposing (..)
 
 import Forms
-import General.Constants exposing (hostname)
+import General.Constants exposing (createCategoryUrl, createQuestionUrl, hostname)
 import General.Utils exposing (getSubjectIdByName)
 import Http
 import Msgs exposing (Msg)
@@ -13,11 +13,6 @@ import Room.Models exposing (RoomsData)
 
 
 -- create question section
-
-
-createQuestionUrl : String
-createQuestionUrl =
-    hostname ++ "api/questions"
 
 
 createQuestionWithAnswers : QuestionForm -> WebData RoomsData -> Cmd Msg
@@ -59,11 +54,6 @@ questionCreationEncoder form rooms =
 
 
 -- create category section
-
-
-createCategoryUrl : String
-createCategoryUrl =
-    hostname ++ "api/subjects"
 
 
 createCategory : CategoryForm -> Cmd Msg

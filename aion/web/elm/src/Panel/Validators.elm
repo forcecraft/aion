@@ -33,13 +33,9 @@ subjectValidations =
 
 categoryNameValidations : List Forms.FieldValidator
 categoryNameValidations =
-    let
-        categoryNameRegex =
-            "\\b([A-Z][a-z]+)\\b"
-    in
-        [ Forms.validateExistence
-        , validateRegularExpression categoryNameRegex
-        ]
+    [ Forms.validateExistence
+    , Forms.validateMaxLength 24
+    ]
 
 
 validateRegularExpression : String -> String -> Maybe String

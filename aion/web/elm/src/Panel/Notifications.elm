@@ -5,7 +5,9 @@ import General.Notifications exposing (addToast)
 import Msgs exposing (Msg(..))
 import Toasty.Defaults
 
+
 -- question form notifications
+
 
 questionFormValidationErrorToast : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 questionFormValidationErrorToast =
@@ -21,7 +23,10 @@ questionCreationSuccessfulToast : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 questionCreationSuccessfulToast =
     addToast (Toasty.Defaults.Success "Success!" "Question created successfully.")
 
+
+
 -- category form notifications
+
 
 categoryFormValidationErrorToast : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 categoryFormValidationErrorToast =
