@@ -4,22 +4,27 @@ import Forms
 import General.Models exposing (Model)
 import Html exposing (..)
 import Html.Attributes exposing (placeholder, type_, value)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick, onInput, onWithOptions)
+import Json.Decode
 import Msgs exposing (Msg(..))
 import RemoteData exposing (WebData)
 import Room.Models exposing (RoomsData)
+import Room.Notifications exposing (myConfig)
 import Select
+import Toasty
+import Toasty.Defaults
 
 
 panelView : Model -> Html Msg
 panelView model =
     div []
         [ h3 [] [ text "Create new question for certain category:" ]
-        , form []
+        , form [ onWithOptions "submit" { preventDefault = True, stopPropagation = False } (Json.Decode.succeed (NoOperation)) ]
             [ questionFormElement model.panelData.questionForm
             , answersFormElement model.panelData.questionForm
             , subjectFormElement model.panelData.questionForm (listRooms model.rooms)
             , input [ type_ "button", value "submit", onClick CreateNewQuestionWithAnswers ] []
+            , Toasty.view myConfig Toasty.Defaults.view ToastyMsg model.toasties
             ]
         ]
 

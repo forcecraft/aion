@@ -45,10 +45,10 @@ update msg model =
                         evenNewerQuestionForm =
                             Forms.updateFormInput newQuestionForm "answers" ""
                     in
-                        { model | panelData = { oldPanelData | questionForm = evenNewerQuestionForm } } ! []
+                        questionCreationSuccessfulToast ({ model | panelData = { oldPanelData | questionForm = evenNewerQuestionForm } } ! [])
 
                 _ ->
-                    model ! []
+                    questionCreationErrorToast (model ! [])
 
         OnLocationChange location ->
             let
@@ -203,7 +203,7 @@ update msg model =
                 if List.isEmpty validationErrors then
                     ( model, createQuestionWithAnswers model.panelData.questionForm model.rooms )
                 else
-                    model ! []
+                    questionFormValidationErrorToast (model ! [])
 
         ToastyMsg subMsg ->
             Toasty.update myConfig ToastyMsg subMsg model
