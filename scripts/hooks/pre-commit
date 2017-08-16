@@ -1,9 +1,21 @@
 #!/bin/sh
+TMP="precommithookerrorfile"
 
 cd aion
-mix credo
-CREDO_RES=$?
-if [ $CREDO_RES -ne 0 ]
-then
-  exit $CREDO_RES
-fi
+
+mix credo --strict >"$TMP" 2>/dev/null || {
+  echo "[PRE-COMMIT] Elixir linter has failed:"
+  cat "$TMP"
+  rm -f "$TMP"
+  exit 1
+}
+
+elm-format --yes --validate web/elm/src >"$TMP" 2>/dev/null || {
+  echo '[PRE-COMMIT HOOK] elm-format has failed:'
+  cat "$TMP"
+  rm -f "$TMP"
+  exit 1
+}
+
+
+rm -f "$TMP"
