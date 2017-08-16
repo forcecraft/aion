@@ -26,6 +26,7 @@ type Msg
     | KeyDown Int
     | NoOperation
     | ReceiveAnswerFeedback Encode.Value
+    | ReceiveUserJoined Encode.Value
     | ToastyMsg (Toasty.Msg Toasty.Defaults.Toast)
     | CreateNewQuestionWithAnswers
     | UpdateQuestionForm String String

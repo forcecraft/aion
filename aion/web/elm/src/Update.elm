@@ -9,9 +9,8 @@ import Msgs exposing (Msg(..))
 import Panel.Api exposing (createQuestionWithAnswers)
 import Panel.Models exposing (questionFormPossibleFields)
 import RemoteData
-import Room.Constants exposing (enterKeyCode)
-import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, usersListDecoder)
-import Room.Models exposing (RoomsData, answerInputFieldId)
+import Room.Constants exposing (answerInputFieldId, enterKeyCode)
+import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, userJoinedInfoDecoder, usersListDecoder)
 import Room.Notifications exposing (..)
 import Routing exposing (parseLocation)
 import Phoenix.Socket
@@ -71,6 +70,7 @@ update msg model =
                                         |> Phoenix.Socket.on "user:list" ("rooms:" ++ roomIdToString) ReceiveUserList
                                         |> Phoenix.Socket.on "new:question" ("rooms:" ++ roomIdToString) ReceiveQuestion
                                         |> Phoenix.Socket.on "answer:feedback" ("rooms:" ++ roomIdToString) ReceiveAnswerFeedback
+                                        |> Phoenix.Socket.on "room:user:joined" ("rooms:" ++ roomIdToString) ReceiveUserJoined
                                     )
                         in
                             { model | socket = socket, route = newRoute, roomId = roomId, toasties = Toasty.initialState } ! [ Cmd.map PhoenixMsg cmd ]
@@ -112,6 +112,26 @@ update msg model =
                                     Debug.crash "Unexpected Feedback"
                     in
                         answerToast (model ! [])
+
+                Err error ->
+                    model ! []
+
+        ReceiveUserJoined rawUserJoinedInfo ->
+            case Decode.decodeValue userJoinedInfoDecoder rawUserJoinedInfo of
+                Ok userJoinedInfo ->
+                    let
+                        log =
+                            case model.user of
+                                RemoteData.Success currentUser ->
+                                    if currentUser.name == userJoinedInfo.user then
+                                        Debug.log currentUser.name "you have successfully joined the room!"
+                                    else
+                                        Debug.log userJoinedInfo.user "user joined."
+
+                                _ ->
+                                    ""
+                    in
+                        model ! []
 
                 Err error ->
                     model ! []
