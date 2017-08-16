@@ -27,44 +27,44 @@ test: ## Run tests
 lint: ## Run elixir linter
 	cd aion && mix credo --strict
 
-reinstall_elm: ## Remove and reinstall elm dependencies
+reinstall-elm: ## Remove and reinstall elm dependencies
 	cd aion/web/elm && rm -rf elm-stuff && elm-package install -y
 
 #######################
 ## ~> DOCKER PART <~ ##
 #######################
 
-docker_build: ## Build docker image
+docker-build: ## Build docker image
 	@docker-compose down
 	@docker-compose up --build -d
 	@docker-compose run aion mix ecto.create
 	@docker-compose run aion mix ecto.migrate
 
-docker_start: ## Run docker container
+docker-start: ## Run docker container
 	@docker-compose up
 
-docker_stop: ## Stop docker container
+docker-stop: ## Stop docker container
 	@docker-compose down
 
 ##################################
 ## ~> LOCAL DEVELOPMENT PART <~ ##
 ##################################
 
-development: local_config local_deps local_db start_dev
+development: local-config local-deps local-db start-dev
 development: ## Setup and run the whole project
 
-start_dev: ## Start the phoenix server
+start-dev: ## Start the phoenix server
 	cd aion && iex -S mix phoenix.server
 
-local_db: ## Create and migrate db locally
+local-db: ## Create and migrate db locally
 	cd aion && mix ecto.create && mix ecto.migrate
 
-local_deps: ## Download all needed dependencies
+local-deps: ## Download all needed dependencies
 	cd aion && mix deps.get && npm install && cd web/elm && elm-package install -y
 
-local_config: ## Switch config file to
-	ln -s aion/config/local_dev.exs aion/config/dev.exs
+local-config: ## Switch config file to
+	ln -s aion/config/local-dev.exs aion/config/dev.exs
 
-populate_database: ## Seed database with fixtures prepared in fixtures/jpks/
-	ln -f -s fixtures/src/local_config.py fixtures/src/config.py
-	scripts/populate_database
+populate-database: ## Seed database with fixtures prepared in fixtures/jpks/
+	ln -f -s fixtures/src/local-config.py fixtures/src/config.py
+	scripts/populate-database
