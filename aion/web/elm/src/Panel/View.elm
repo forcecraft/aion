@@ -23,6 +23,7 @@ panelView model =
             , answersFormElement model.panelData.questionForm
             , subjectFormElement model.panelData.questionForm (listRooms model.rooms)
             , input [ type_ "button", value "submit", onClick CreateNewQuestionWithAnswers ] []
+            , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
             ]
         , h3 [] [ text "Create new category:" ]
         , form []

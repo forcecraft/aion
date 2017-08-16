@@ -9,7 +9,7 @@ import Json.Encode as Encode
 import Msgs exposing (Msg(..))
 import Panel.Api exposing (createCategory, createQuestionWithAnswers)
 import Panel.Models exposing (categoryNamePossibleFields, questionFormPossibleFields)
-import Panel.Notifications exposing (categoryCreationErrorToast, categoryCreationSuccessfulToast, categoryFormValidationErrorToast)
+import Panel.Notifications exposing (..)
 import RemoteData
 import Room.Constants exposing (answerInputFieldId, enterKeyCode)
 import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, userJoinedInfoDecoder, usersListDecoder)
@@ -47,10 +47,10 @@ update msg model =
                         evenNewerQuestionForm =
                             Forms.updateFormInput newQuestionForm "answers" ""
                     in
-                        { model | panelData = { oldPanelData | questionForm = evenNewerQuestionForm } } ! []
+                        questionCreationSuccessfulToast ({ model | panelData = { oldPanelData | questionForm = evenNewerQuestionForm } } ! [])
 
                 _ ->
-                    model ! []
+                    questionCreationErrorToast (model ! [])
 
         OnCategoryCreated response ->
             case response of
@@ -237,7 +237,7 @@ update msg model =
                 if List.isEmpty validationErrors then
                     ( model, createQuestionWithAnswers model.panelData.questionForm model.rooms )
                 else
-                    model ! []
+                    questionFormValidationErrorToast (model ! [])
 
         CreateNewCategory ->
             let
