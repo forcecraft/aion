@@ -9,9 +9,8 @@ import Msgs exposing (Msg(..))
 import Panel.Api exposing (createQuestionWithAnswers)
 import Panel.Models exposing (questionFormPossibleFields)
 import RemoteData
-import Room.Constants exposing (enterKeyCode)
+import Room.Constants exposing (answerInputFieldId, enterKeyCode)
 import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, userJoinedInfoDecoder, usersListDecoder)
-import Room.Models exposing (RoomsData, answerInputFieldId)
 import Room.Notifications exposing (..)
 import Routing exposing (parseLocation)
 import Phoenix.Socket

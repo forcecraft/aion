@@ -49,7 +49,7 @@ defmodule Aion.RoomChannel do
   def handle_info({:after_join, room_id, current_user}, socket) do
     broadcast! socket, "room:user:joined", %{user: current_user}
 
-    send_user_list(socket, room_id)
+    send_scores(socket, room_id)
     send_current_question(socket, room_id)
     {:noreply, socket}
   end
