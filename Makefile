@@ -63,7 +63,7 @@ local-deps: ## Download all needed dependencies
 	cd aion && mix deps.get && npm install && cd web/elm && elm-package install -y
 
 local-config: ## Switch config file to
-	ln -s aion/config/local-dev.exs aion/config/dev.exs
+	cp aion/config/local_dev.exs aion/config/dev.exs
 
 populate-database: ## Seed database with fixtures prepared in fixtures/jpks/
 	ln -f -s fixtures/src/local-config.py fixtures/src/config.py
