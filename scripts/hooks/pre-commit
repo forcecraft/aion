@@ -10,7 +10,7 @@ mix credo --strict >"$TMP" 2>/dev/null || {
   exit 1
 }
 
-elm-format --yes --validate web/elm/src >"$TMP" 2>/dev/null || {
+node-modules/elm-format/bin/elm-format --yes --validate web/elm/src >"$TMP" 2>/dev/null || {
   echo '[PRE-COMMIT HOOK] elm-format has failed:'
   cat "$TMP"
   rm -f "$TMP"
