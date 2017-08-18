@@ -1,21 +1,46 @@
 #!/bin/sh
-TMP="precommithookerrorfile"
+TMP="pre_commit_hook_error_file"
+
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+function print_success {
+  printf "${GREEN}$1${NC}\n"
+}
+
+function print_error {
+  printf "${RED}$1${NC}\n"
+}
 
 cd aion
 
+printf "Running credo...\n"
 mix credo --strict >"$TMP" 2>/dev/null || {
-  echo "[PRE-COMMIT] Elixir linter has failed:"
+  print_error "${RED}[PRE-COMMIT] Elixir linter has failed:\n"
   cat "$TMP"
   rm -f "$TMP"
   exit 1
 }
 
-node-modules/elm-format/bin/elm-format --yes --validate web/elm/src >"$TMP" 2>/dev/null || {
-  echo '[PRE-COMMIT HOOK] elm-format has failed:'
+
+ELM_FORMAT_PATH="node_modules/elm-format/bin/elm-format"
+if [ -x $ELM_FORMAT_PATH ]
+then
+  print_success "Found elm-format in $ELM_FORMAT_PATH" 
+else
+  print_error "[PRE-COMMIT] elm-format not found in $ELM_FORMAT_PATH. Please make sure you've run make local-deps"
+  rm -f "$TMP"
+  exit 1
+fi
+
+printf "Running elm-format...\n"
+$ELM_FORMAT_PATH --yes --validate web/elm/src >"$TMP" 2>/dev/null || {
+  print_error '[PRE-COMMIT] elm-format has failed:'
   cat "$TMP"
   rm -f "$TMP"
   exit 1
 }
-
 
 rm -f "$TMP"
+print_success "All pre-commit hooks have succeeded, good job!"
