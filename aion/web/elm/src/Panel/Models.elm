@@ -1,12 +1,17 @@
 module Panel.Models exposing (..)
 
 import Forms
-import Panel.Validators exposing (answersValidations, questionValidations, subjectValidations)
+import Panel.Validators exposing (answersValidations, categoryNameValidations, questionValidations, subjectValidations)
 
 
 type alias PanelData =
     { questionForm : QuestionForm
+    , categoryForm : CategoryForm
     }
+
+
+
+-- question form section
 
 
 type alias QuestionForm =
@@ -35,4 +40,32 @@ type alias QuestionCreatedContent =
     , image_name : String
     , id : Int
     , content : String
+    }
+
+
+
+-- category form section
+
+
+type alias CategoryForm =
+    Forms.Form
+
+
+categoryNamePossibleFields : List String
+categoryNamePossibleFields =
+    [ "name" ]
+
+
+categoryForm : List ( String, List Forms.FieldValidator )
+categoryForm =
+    [ ( "name", categoryNameValidations ) ]
+
+
+type alias CategoryCreatedData =
+    { data : CategoryCreatedContent }
+
+
+type alias CategoryCreatedContent =
+    { id : Int
+    , name : String
     }

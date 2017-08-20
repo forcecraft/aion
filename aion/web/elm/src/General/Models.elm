@@ -2,7 +2,7 @@ module General.Models exposing (..)
 
 import Forms
 import Msgs exposing (Msg)
-import Panel.Models exposing (PanelData, questionForm)
+import Panel.Models exposing (PanelData, categoryForm, questionForm)
 import Phoenix.Socket
 import RemoteData exposing (WebData)
 import Room.Models exposing (RoomId, RoomsData, UsersInRoom, QuestionInRoom, UserGameData)
@@ -59,5 +59,6 @@ initialModel flags route =
     , toasties = Toasty.initialState
     , panelData =
         { questionForm = Forms.initForm questionForm
+        , categoryForm = Forms.initForm categoryForm
         }
     }

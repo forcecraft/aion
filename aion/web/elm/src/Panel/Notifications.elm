@@ -6,6 +6,9 @@ import Msgs exposing (Msg(..))
 import Toasty.Defaults
 
 
+-- question form notifications
+
+
 questionFormValidationErrorToast : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 questionFormValidationErrorToast =
     addToast (Toasty.Defaults.Error "Error!" "Submission form is not valid!")
@@ -19,3 +22,22 @@ questionCreationErrorToast =
 questionCreationSuccessfulToast : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 questionCreationSuccessfulToast =
     addToast (Toasty.Defaults.Success "Success!" "Question created successfully.")
+
+
+
+-- category form notifications
+
+
+categoryFormValidationErrorToast : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+categoryFormValidationErrorToast =
+    addToast (Toasty.Defaults.Error "Error!" "Category submission form is not valid!")
+
+
+categoryCreationErrorToast : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+categoryCreationErrorToast =
+    addToast (Toasty.Defaults.Error "Error!" "Failed to create a category.")
+
+
+categoryCreationSuccessfulToast : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+categoryCreationSuccessfulToast =
+    addToast (Toasty.Defaults.Success "Success!" "Category created successfully.")

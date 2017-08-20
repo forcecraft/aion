@@ -31,6 +31,13 @@ subjectValidations =
     [ Forms.validateExistence ]
 
 
+categoryNameValidations : List Forms.FieldValidator
+categoryNameValidations =
+    [ Forms.validateExistence
+    , Forms.validateMaxLength 24
+    ]
+
+
 validateRegularExpression : String -> String -> Maybe String
 validateRegularExpression regex string =
     let
