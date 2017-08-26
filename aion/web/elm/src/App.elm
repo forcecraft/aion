@@ -24,7 +24,9 @@ init flags location =
         getInitialModel =
             initialModel flags currentRoute
     in
-        ( { getInitialModel | navbarState = navbarState }, Cmd.batch [ fetchRooms, fetchCurrentUser, navbarCmd ] )
+        ( { getInitialModel | navbarState = navbarState }
+        , Cmd.batch [ fetchRooms, fetchCurrentUser, navbarCmd ]
+        )
 
 
 subscriptions : Model -> Sub Msg

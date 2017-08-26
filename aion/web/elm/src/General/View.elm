@@ -5,13 +5,12 @@ import Bootstrap.Button as Button
 import Bootstrap.Card as Card
 import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Col as Col
-import General.Constants exposing (hostname)
-import General.Models exposing (Model)
+import General.Constants exposing (gameCardConfig, hostname, panelCardConfig, profileCardConfig)
+import General.Models exposing (Model, SimpleCardConfig)
 import General.Utils exposing (sliceList, roomsViewColorList, roomsDefaultColor)
 import Html exposing (Html, a, button, div, h2, h3, i, img, li, p, text, ul)
 import Html.Attributes exposing (class, href, src, style)
 import Msgs exposing (Msg)
-import Routing exposing (panelPath, roomsPath, userPath)
 import RemoteData exposing (WebData)
 import Room.Models exposing (RoomsData, Room)
 
@@ -29,24 +28,28 @@ homeView model =
         [ h3 [ class "welcome-title" ] [ text "Welcome to Aion!" ]
         , Grid.container [ style [ ( "padding-top", "60px" ) ] ]
             [ Grid.row []
-                [ Grid.col [] [ simpleCard (hostname ++ "svg/trophy.svg") "Play a game" "Find a room for yourself and check your knowledge versus other players." "#/rooms" "Browse rooms" ]
-                , Grid.col [] [ simpleCard (hostname ++ "svg/tasks.svg") "Panel" "Create new rooms, new categories and new questions." "#/panel" "Visit panel" ]
-                , Grid.col [] [ simpleCard (hostname ++ "svg/diploma.svg") "Profile" "Check your profile, gaming history and statistics." "#/profile" "Go to profile" ]
+                [ Grid.col [] [ simpleCard gameCardConfig ]
+                , Grid.col [] [ simpleCard panelCardConfig ]
+                , Grid.col [] [ simpleCard profileCardConfig ]
                 ]
             ]
         ]
 
 
-simpleCard : String -> String -> String -> String -> String -> Html Msg
-simpleCard image cardTitle cardText cardLink buttonText =
+simpleCard : SimpleCardConfig -> Html Msg
+simpleCard cardConfig =
     Card.config []
         |> Card.header [ class "text-center" ]
-            [ img [ src image ] [] ]
+            [ img [ src cardConfig.svgImage ] [] ]
         |> Card.block []
-            [ Card.titleH4 [] [ text cardTitle ]
-            , Card.text [] [ text cardText ]
+            [ Card.titleH4 [] [ text cardConfig.title ]
+            , Card.text [] [ text cardConfig.description ]
             , Card.custom <|
-                Button.linkButton [ Button.success, Button.attrs [ href cardLink ] ] [ text buttonText ]
+                Button.linkButton
+                    [ Button.success
+                    , Button.attrs [ href cardConfig.url ]
+                    ]
+                    [ text cardConfig.buttonText ]
             ]
         |> Card.view
 

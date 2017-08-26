@@ -9,6 +9,7 @@ import Html.Attributes exposing (class, href, src, style)
 import Msgs exposing (Msg(..))
 import Panel.View exposing (panelView)
 import Room.View exposing (roomView)
+import Routing exposing (panelPath, roomsPath, userPath)
 import User.View exposing (userView)
 
 
@@ -18,8 +19,8 @@ view model =
         [ page model ]
 
 
-layout : Html Msg -> Model -> Html Msg
-layout content model =
+layout : Html Msg -> Navbar.State -> Html Msg
+layout content navbarState =
     div
         [ style
             [ ( "font-family", "'Roboto', sans-serif" )
@@ -27,13 +28,13 @@ layout content model =
             , ( "padding-bottom", "60px" )
             ]
         ]
-        [ navbar model
+        [ navbar navbarState
         , content
         ]
 
 
-navbar : Model -> Html Msg
-navbar model =
+navbar : Navbar.State -> Html Msg
+navbar navbarState =
     Navbar.config NavbarMsg
         |> Navbar.withAnimation
         |> Navbar.success
@@ -48,11 +49,11 @@ navbar model =
             , text "Aion"
             ]
         |> Navbar.items
-            [ Navbar.itemLink [ href "#/rooms" ] [ text "Rooms" ]
-            , Navbar.itemLink [ href "#/panel" ] [ text "Panel" ]
-            , Navbar.itemLink [ href "#/profile" ] [ text "Profile" ]
+            [ Navbar.itemLink [ href roomsPath ] [ text "Rooms" ]
+            , Navbar.itemLink [ href panelPath ] [ text "Panel" ]
+            , Navbar.itemLink [ href userPath ] [ text "Profile" ]
             ]
-        |> Navbar.view model.navbarState
+        |> Navbar.view navbarState
 
 
 page : Model -> Html Msg
@@ -78,4 +79,4 @@ page model =
                 NotFoundRoute ->
                     notFoundView
     in
-        layout content model
+        layout content model.navbarState

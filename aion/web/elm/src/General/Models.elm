@@ -42,10 +42,19 @@ type Route
     | NotFoundRoute
 
 
+type alias SimpleCardConfig =
+    { svgImage : String
+    , title : String
+    , description : String
+    , url : String
+    , buttonText : String
+    }
+
+
 initialModel : Flags -> Route -> Model
 initialModel flags route =
     let
-        ( navbarState, navbarCmd ) =
+        ( navbarState, _ ) =
             Navbar.initialState NavbarMsg
     in
         { user = RemoteData.Loading
