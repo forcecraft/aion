@@ -23,6 +23,10 @@ defmodule Aion.RoomChannel.Monitor do
     end
   end
 
+  def shutdown(room_id) do
+    try_call(room_id, :terminate)
+  end
+
   defp try_call(room_id, message) do
     case GenServer.whereis(ref(room_id)) do
       nil ->
@@ -74,6 +78,16 @@ defmodule Aion.RoomChannel.Monitor do
   #########################
   #     Implementation    #
   #########################
+
+  def terminate(reason, _) do
+    #TODO Fix termination
+    IO.inspect(reason)
+  end
+
+  def handle_call(:terminate, _from, _state) do
+    IO.inspect("Stopping myself")
+    GenServer.stop(self())
+  end
 
   def handle_call({:user_joined, username}, _from, state) do
     new_user = %UserRecord{username: username}

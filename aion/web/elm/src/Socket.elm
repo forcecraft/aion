@@ -2,7 +2,6 @@ module Socket exposing (..)
 
 import Msgs exposing (Msg(ReceiveAnswerFeedback, ReceiveQuestion, ReceiveUserJoined, ReceiveUserList))
 import Phoenix.Channel
-import Phoenix.Push
 import Phoenix.Socket
 
 
@@ -23,8 +22,13 @@ initializeRoom socket roomIdToString =
 
 leaveRoom : String -> Phoenix.Socket.Socket Msg -> ( Phoenix.Socket.Socket Msg, Cmd (Phoenix.Socket.Msg Msg) )
 leaveRoom roomId socket =
-    let
-        push_ =
-            Phoenix.Push.init "user:left" ("rooms:" ++ roomId)
-    in
-        Phoenix.Socket.push push_ socket
+    Phoenix.Socket.leave ("rooms:" ++ roomId) socket
+
+
+
+--
+-- let
+--     push_ =
+--         Phoenix.Push.init "user:left" ("rooms:" ++ roomId)
+-- in
+--     Phoenix.Socket.push push_ socket

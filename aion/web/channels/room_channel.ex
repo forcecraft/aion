@@ -4,32 +4,41 @@ defmodule Aion.RoomChannel do
   should react to new messages or events.
   """
 
-  use Phoenix.Channel
+  use Phoenix.Channel, log_join: false, log_handle_in: :info
   alias Aion.RoomChannel.Monitor
   alias Aion.Presence
+  require Logger
 
   def join("rooms:" <> room_id, _params, socket) do
     current_user = get_user(socket)
-
     # Note: this is a temporary solution.
     # In the future, this function should return an error if a user wants to join a room that does not exist.
     if not Monitor.exists?(room_id) do
         Monitor.create(room_id)
     end
 
-    send self(), {:after_join, room_id, current_user}
+    Monitor.user_joined(room_id, current_user)
+    Logger.info("JOIN #{current_user} joined room #{room_id}")
+
+    Presence.track(socket, current_user, %{
+          online_at: inspect(System.system_time(:seconds))
+    })
+
+    send self(), :after_join
     {:ok, socket}
   end
 
-  def handle_in("user:left", %{}, socket) do
-    "rooms:" <> room_id = socket.topic
+  def terminate(msg, socket) do
     current_user = get_user(socket)
+    room_id = get_room_id(socket)
 
-    # Note: the following user_left function is used when player joins another room
-    # As for now, we only allow player to be present in one room at a time
     Monitor.user_left(room_id, current_user)
     Presence.untrack(socket, current_user)
-    {:noreply, socket}
+    Logger.info("LEAVE #{current_user} left: " <> Kernel.inspect(msg))
+
+    if Monitor.get_scores(room_id) == [] do
+        Monitor.shutdown(room_id)
+    end
   end
 
   def handle_in("new:msg", %{"body" => body}, socket) do
@@ -50,37 +59,34 @@ defmodule Aion.RoomChannel do
     {:noreply, socket}
   end
 
-  def handle_info({:after_join, room_id, current_user}, socket) do
-    Presence.track(socket, current_user, %{
-          online_at: inspect(System.system_time(:seconds))
-    })
+  def handle_info(:after_join, socket) do
+    room_id = get_room_id(socket)
 
+    # send self(), :vacuum
     send_current_question(socket, room_id)
     {:noreply, socket}
   end
 
+  def handle_info(:after_leave, _) do
+    IO.inspect("Possibly destroy game room now")
+  end
+
+  # def handle_info(:vacuum, socket) do
+  #   IO.inspect(Presence.list(socket), label: "Vacuum")
+  #   :timer.send_after(2000, :vacuum)
+  #   {:noreply, socket}
+  # end
+
   intercept ["presence_diff"]
 
-  def handle_out("presence_diff", %{joins: joins, leaves: leaves}, socket) do
+  def handle_out("presence_diff", %{joins: _, leaves: _}, socket) do
+      # NOTE: This function currently sends scores.
+      # We may update it later to only send the presence diff and handle it
+      # properly on the frontend side
       room_id = get_room_id(socket)
-
-      handle_joins(joins, room_id)
-      handle_leaves(leaves, room_id)
       send_scores(socket, room_id)
 
       {:noreply, socket}
-  end
-
-  defp handle_joins(joins, _) when joins == %{}, do: nil
-  defp handle_joins(joins, room_id) do
-    [user] = Map.keys(joins)
-    Monitor.user_joined(room_id, user)
-  end
-
-  defp handle_leaves(leaves, _) when leaves == %{}, do: nil
-  defp handle_leaves(leaves, room_id) do
-    [user] = Map.keys(leaves)
-    Monitor.user_left(room_id, user)
   end
 
   defp send_scores(socket, room_id) do
