@@ -60,12 +60,6 @@ defmodule Aion.RoomChannel do
     {:noreply, socket}
   end
 
-  # def handle_info(:vacuum, socket) do
-  #   # IO.inspect(Presence.list(socket), label: "Takie presence")
-  #   :timer.send_after(1000, :vacuum)
-  #   {:noreply, socket}
-  # end
-
   intercept ["presence_diff"]
 
   def handle_out("presence_diff", msg, socket) do
