@@ -1,7 +1,7 @@
 ![Aion](https://user-images.githubusercontent.com/15965147/28745968-d496ca7a-7483-11e7-9b59-659100df5ba8.png)
 
 
-# Aion [![Build Status](https://travis-ci.org/pmrukot/aion.svg?branch=master)](https://travis-ci.org/pmrukot/aion)
+# Aion [![Build Status](https://travis-ci.org/forcecraft/aion.svg?branch=master)](https://travis-ci.org/forcecraft/aion)
 
 An e-learning platform written in Elixir and Elm based on real-time gameplay.
 
@@ -30,7 +30,7 @@ make && make docker-start
 To run locally:
 
 ```
-make development && make start-dev
+make development
 ```
 
 In both cases the platform should be accessible at [localhost:4000](localhost:4000)
@@ -40,7 +40,7 @@ In both cases the platform should be accessible at [localhost:4000](localhost:40
 To run the tests before pushing to the remote you can simply run:
 
 ```
-cd aion && mix test
+make test
 ```
 
 
