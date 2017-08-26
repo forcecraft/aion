@@ -2,6 +2,7 @@ defmodule Aion.User do
   @moduledoc """
   User model, necessary for authentication.
   """
+  @type t :: %__MODULE__{name: String.t, email: String.t, encrypted_password: String.t}
   use Aion.Web, :model
 
   schema "users" do

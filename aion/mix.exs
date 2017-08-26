@@ -10,7 +10,9 @@ defmodule Aion.Mixfile do
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      aliases: aliases(),
-     deps: deps()]
+     deps: deps(),
+     dialyzer: [ignore_warnings: "dialyzer.ignore_warnings"]
+   ]
   end
 
   # Configuration for the OTP application.
@@ -43,6 +45,7 @@ defmodule Aion.Mixfile do
      {:simetric, "~> 0.1.0"},
      {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
      {:plug, "~>1.3.5", override: true},
+     {:dialyxir, "~> 0.5", only: [:dev], runtime: false}
   ]
   end
 
