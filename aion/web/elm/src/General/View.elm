@@ -26,19 +26,20 @@ notFoundView =
 homeView : Model -> Html Msg
 homeView model =
     div []
-        -- use grid columns you feggit
         [ h3 [ class "welcome-title" ] [ text "Welcome to Aion!" ]
-        , ul [ style [ ( "padding-top", "60px" ) ] ]
-            [ simpleCard (hostname ++ "svg/trophy.svg") "Play a game" "Find a room for yourself and check your knowledge versus other players." "#/rooms" "Browse rooms"
-            , simpleCard (hostname ++ "svg/tasks.svg") "Panel" "Create new rooms, new categories and new questions." "#/panel" "Visit panel"
-            , simpleCard (hostname ++ "svg/diploma.svg") "Profile" "Check your profile, gaming history and statistics." "#/profile" "Go to profile"
+        , Grid.container [ style [ ( "padding-top", "60px" ) ] ]
+            [ Grid.row []
+                [ Grid.col [] [ simpleCard (hostname ++ "svg/trophy.svg") "Play a game" "Find a room for yourself and check your knowledge versus other players." "#/rooms" "Browse rooms" ]
+                , Grid.col [] [ simpleCard (hostname ++ "svg/tasks.svg") "Panel" "Create new rooms, new categories and new questions." "#/panel" "Visit panel" ]
+                , Grid.col [] [ simpleCard (hostname ++ "svg/diploma.svg") "Profile" "Check your profile, gaming history and statistics." "#/profile" "Go to profile" ]
+                ]
             ]
         ]
 
 
 simpleCard : String -> String -> String -> String -> String -> Html Msg
 simpleCard image cardTitle cardText cardLink buttonText =
-    Card.config [ Card.attrs [ style [ ( "width", "21.5rem" ), ( "float", "left" ) ] ] ]
+    Card.config []
         |> Card.header [ class "text-center" ]
             [ img [ src image ] [] ]
         |> Card.block []

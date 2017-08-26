@@ -1,7 +1,6 @@
 module View exposing (..)
 
 import Bootstrap.Navbar as Navbar
-import Color exposing (lightGreen)
 import General.Constants exposing (hostname)
 import General.Models exposing (Model, Route(LoginRoute, NotFoundRoute, PanelRoute, RoomListRoute, RoomRoute, UserRoute))
 import General.View exposing (homeView, notFoundView, roomListView)
@@ -21,7 +20,13 @@ view model =
 
 layout : Html Msg -> Model -> Html Msg
 layout content model =
-    div [ style [ ( "font-family", "'Roboto', sans-serif" ) ] ]
+    div
+        [ style
+            [ ( "font-family", "'Roboto', sans-serif" )
+            , ( "background-color", "#e6ffec" )
+            , ( "padding-bottom", "60px" )
+            ]
+        ]
         [ navbar model
         , content
         ]
