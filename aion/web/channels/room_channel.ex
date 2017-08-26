@@ -25,7 +25,6 @@ defmodule Aion.RoomChannel do
     "rooms:" <> room_id = socket.topic
     current_user = get_user(socket)
 
-    IO.puts "USER LEFT"
     # Note: the following user_left function is used when player joins another room
     # As for now, we only allow player to be present in one room at a time
     Monitor.user_left(room_id, current_user)
