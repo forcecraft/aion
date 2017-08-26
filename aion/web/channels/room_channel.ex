@@ -9,26 +9,27 @@ defmodule Aion.RoomChannel do
   alias Aion.Presence
 
   def join("rooms:" <> room_id, _params, socket) do
-    current_user = socket.assigns.current_user.name
+    current_user = get_user(socket)
+
     # Note: this is a temporary solution.
     # In the future, this function should return an error if a user wants to join a room that does not exist.
-
     if not Monitor.exists?(room_id) do
         Monitor.create(room_id)
     end
 
-    Monitor.user_joined(room_id, current_user)
     send self(), {:after_join, room_id, current_user}
     {:ok, socket}
   end
 
   def handle_in("user:left", %{}, socket) do
     "rooms:" <> room_id = socket.topic
-    current_user = socket.assigns.current_user.name
+    current_user = get_user(socket)
 
+    IO.puts "USER LEFT"
+    # Note: the following user_left function is used when player joins another room
+    # As for now, we only allow player to be present in one room at a time
     Monitor.user_left(room_id, current_user)
-    # broadcast! socket, ""
-    send_scores(socket, room_id)
+    Presence.untrack(socket, current_user)
     {:noreply, socket}
   end
 
@@ -38,7 +39,7 @@ defmodule Aion.RoomChannel do
   end
 
   def handle_in("new:answer", %{"room_id" => room_id, "answer" => answer}, socket) do
-    username = socket.assigns.current_user.name
+    username = get_user(socket)
     evaluation = Monitor.new_answer(room_id, answer, username)
     send_feedback socket, evaluation
 
@@ -55,18 +56,32 @@ defmodule Aion.RoomChannel do
           online_at: inspect(System.system_time(:seconds))
     })
 
-    send_scores(socket, room_id)
     send_current_question(socket, room_id)
     {:noreply, socket}
   end
 
   intercept ["presence_diff"]
 
-  def handle_out("presence_diff", msg, socket) do
-      # broadcast! socket, "room:user:joined", %{user: current_user}
+  def handle_out("presence_diff", %{joins: joins, leaves: leaves}, socket) do
+      room_id = get_room_id(socket)
 
-      IO.inspect(msg, label: "HANDLE OUT THEM MESSAGES")
+      handle_joins(joins, room_id)
+      handle_leaves(leaves, room_id)
+      send_scores(socket, room_id)
+
       {:noreply, socket}
+  end
+
+  defp handle_joins(joins, _) when joins == %{}, do: nil
+  defp handle_joins(joins, room_id) do
+    [user] = Map.keys(joins)
+    Monitor.user_joined(room_id, user)
+  end
+
+  defp handle_leaves(leaves, _) when leaves == %{}, do: nil
+  defp handle_leaves(leaves, room_id) do
+    [user] = Map.keys(leaves)
+    Monitor.user_left(room_id, user)
   end
 
   defp send_scores(socket, room_id) do
@@ -95,4 +110,12 @@ defmodule Aion.RoomChannel do
     push socket, "answer:feedback", %{"feedback" => feedback}
   end
 
+  defp get_room_id(socket) do
+    "rooms:" <> room_id = socket.topic
+    room_id
+  end
+
+  defp get_user(socket) do
+    socket.assigns.current_user.name
+  end
 end
