@@ -48,6 +48,11 @@
     %Room{room | users: updated_users}
   end
 
+  def remove_user(room, username) do
+    updated_users = Map.delete(room.users, username)
+    %Room{room | users: updated_users}
+  end
+
   def get_scores(room) do
     Map.values(room.users)
   end

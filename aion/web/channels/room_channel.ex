@@ -6,10 +6,10 @@ defmodule Aion.RoomChannel do
 
   use Phoenix.Channel
   alias Aion.RoomChannel.Monitor
+  alias Aion.Presence
 
   def join("rooms:" <> room_id, _params, socket) do
     current_user = socket.assigns.current_user.name
-
     # Note: this is a temporary solution.
     # In the future, this function should return an error if a user wants to join a room that does not exist.
 
@@ -22,10 +22,14 @@ defmodule Aion.RoomChannel do
     {:ok, socket}
   end
 
-  def handle_in("user_left", %{"room_id" => room_id}, socket) do
+  def handle_in("user:left", %{}, socket) do
+    "rooms:" <> room_id = socket.topic
     current_user = socket.assigns.current_user.name
+
     Monitor.user_left(room_id, current_user)
-    :ok
+    # broadcast! socket, ""
+    send_scores(socket, room_id)
+    {:noreply, socket}
   end
 
   def handle_in("new:msg", %{"body" => body}, socket) do
@@ -47,11 +51,28 @@ defmodule Aion.RoomChannel do
   end
 
   def handle_info({:after_join, room_id, current_user}, socket) do
-    broadcast! socket, "room:user:joined", %{user: current_user}
+    Presence.track(socket, current_user, %{
+          online_at: inspect(System.system_time(:seconds))
+    })
 
     send_scores(socket, room_id)
     send_current_question(socket, room_id)
     {:noreply, socket}
+  end
+
+  # def handle_info(:vacuum, socket) do
+  #   # IO.inspect(Presence.list(socket), label: "Takie presence")
+  #   :timer.send_after(1000, :vacuum)
+  #   {:noreply, socket}
+  # end
+
+  intercept ["presence_diff"]
+
+  def handle_out("presence_diff", msg, socket) do
+      # broadcast! socket, "room:user:joined", %{user: current_user}
+
+      IO.inspect(msg, label: "HANDLE OUT THEM MESSAGES")
+      {:noreply, socket}
   end
 
   defp send_scores(socket, room_id) do
@@ -61,9 +82,7 @@ defmodule Aion.RoomChannel do
 
   defp send_new_question(socket, room_id) do
     Monitor.new_question(room_id)
-    question = Monitor.get_current_question(room_id)
-    image_name = if question.image_name == nil, do: "", else: question.image_name
-    broadcast! socket, "new:question", %{content: question.content, image_name: image_name}
+    send_current_question(socket, room_id)
   end
 
   defp send_current_question(socket, room_id) do
@@ -81,4 +100,5 @@ defmodule Aion.RoomChannel do
 
     push socket, "answer:feedback", %{"feedback" => feedback}
   end
+
 end

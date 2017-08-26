@@ -81,8 +81,9 @@ defmodule Aion.RoomChannel.Monitor do
     {:reply, :ok, new_state}
   end
 
-  def handle_call({:user_left, user}, _from, state) do
-    {:reply, state, state}
+  def handle_call({:user_left, username}, _from, state) do
+    new_state = Room.remove_user(state, username)
+    {:reply, :ok, new_state}
   end
 
   def handle_call({:get_scores}, _from, state) do
