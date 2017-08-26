@@ -1,13 +1,15 @@
 module General.View exposing (..)
 
 import Array
-import Bootstrap.CDN as CDN
+import Bootstrap.Button as Button
+import Bootstrap.Card as Card
 import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Col as Col
+import General.Constants exposing (hostname)
 import General.Models exposing (Model)
 import General.Utils exposing (sliceList, roomsViewColorList, roomsDefaultColor)
-import Html exposing (Html, a, div, h3, i, li, p, text, ul, h2, button)
-import Html.Attributes exposing (href, style, class)
+import Html exposing (Html, a, button, div, h2, h3, i, img, li, p, text, ul)
+import Html.Attributes exposing (class, href, src, style)
 import Msgs exposing (Msg)
 import Routing exposing (panelPath, roomsPath, userPath)
 import RemoteData exposing (WebData)
@@ -24,20 +26,34 @@ notFoundView =
 homeView : Model -> Html Msg
 homeView model =
     div []
-        [ h3 [] [ text "Welcome to Aion!" ]
-        , ul []
-            [ li [] [ a [ href roomsPath ] [ text "Rooms" ] ]
-            , li [] [ a [ href panelPath ] [ text "Panel" ] ]
-            , li [] [ a [ href userPath ] [ text "Profile" ] ]
+        -- use grid columns you feggit
+        [ h3 [ class "welcome-title" ] [ text "Welcome to Aion!" ]
+        , ul [ style [ ( "padding-top", "60px" ) ] ]
+            [ simpleCard (hostname ++ "svg/trophy.svg") "Play a game" "Find a room for yourself and check your knowledge versus other players." "#/rooms" "Browse rooms"
+            , simpleCard (hostname ++ "svg/tasks.svg") "Panel" "Create new rooms, new categories and new questions." "#/panel" "Visit panel"
+            , simpleCard (hostname ++ "svg/diploma.svg") "Profile" "Check your profile, gaming history and statistics." "#/profile" "Go to profile"
             ]
         ]
+
+
+simpleCard : String -> String -> String -> String -> String -> Html Msg
+simpleCard image cardTitle cardText cardLink buttonText =
+    Card.config [ Card.attrs [ style [ ( "width", "21.5rem" ), ( "float", "left" ) ] ] ]
+        |> Card.header [ class "text-center" ]
+            [ img [ src image ] [] ]
+        |> Card.block []
+            [ Card.titleH4 [] [ text cardTitle ]
+            , Card.text [] [ text cardText ]
+            , Card.custom <|
+                Button.linkButton [ Button.success, Button.attrs [ href cardLink ] ] [ text buttonText ]
+            ]
+        |> Card.view
 
 
 roomListView : Model -> Html Msg
 roomListView model =
     div []
-        [ CDN.stylesheet
-        , div [ class "room-select-title" ] [ h2 [] [ text "Select Room To Play:" ] ]
+        [ div [ class "room-select-title" ] [ h2 [] [ text "Select Room To Play:" ] ]
         , listRooms model.rooms
         ]
 

@@ -258,5 +258,8 @@ update msg model =
         ToastyMsg subMsg ->
             Toasty.update toastsConfig ToastyMsg subMsg model
 
+        NavbarMsg state ->
+            ( { model | navbarState = state }, Cmd.none )
+
         NoOperation ->
             model ! []

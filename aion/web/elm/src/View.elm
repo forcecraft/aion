@@ -1,9 +1,12 @@
 module View exposing (..)
 
+import Bootstrap.Navbar as Navbar
+import Color exposing (lightGreen)
+import General.Constants exposing (hostname)
 import General.Models exposing (Model, Route(LoginRoute, NotFoundRoute, PanelRoute, RoomListRoute, RoomRoute, UserRoute))
 import General.View exposing (homeView, notFoundView, roomListView)
 import Html exposing (..)
-import Html.Attributes exposing (style, class)
+import Html.Attributes exposing (class, href, src, style)
 import Msgs exposing (Msg(..))
 import Panel.View exposing (panelView)
 import Room.View exposing (roomView)
@@ -16,10 +19,35 @@ view model =
         [ page model ]
 
 
-layout : Html msg -> Html msg
-layout content =
+layout : Html Msg -> Model -> Html Msg
+layout content model =
     div [ style [ ( "font-family", "'Roboto', sans-serif" ) ] ]
-        [ content ]
+        [ navbar model
+        , content
+        ]
+
+
+navbar : Model -> Html Msg
+navbar model =
+    Navbar.config NavbarMsg
+        |> Navbar.withAnimation
+        |> Navbar.success
+        |> Navbar.container
+        |> Navbar.brand
+            [ href "#" ]
+            [ img
+                [ src (hostname ++ "svg/hemp.svg")
+                , class "header-aion-logo"
+                ]
+                []
+            , text "Aion"
+            ]
+        |> Navbar.items
+            [ Navbar.itemLink [ href "#/rooms" ] [ text "Rooms" ]
+            , Navbar.itemLink [ href "#/panel" ] [ text "Panel" ]
+            , Navbar.itemLink [ href "#/profile" ] [ text "Profile" ]
+            ]
+        |> Navbar.view model.navbarState
 
 
 page : Model -> Html Msg
@@ -45,4 +73,4 @@ page model =
                 NotFoundRoute ->
                     notFoundView
     in
-        layout content
+        layout content model

@@ -20,7 +20,13 @@ exports.config = {
             // }
         },
         stylesheets: {
-            joinTo: 'css/app.css',
+            joinTo: {
+                'css/app.css': [
+                    'web/static/css/app.css',
+                    'web/elm/elm-stuff/packages/pablen/toasty/1.0.4/examples/src/main.css',
+                    'web/elm/elm-stuff/packages/pablen/toasty/1.0.4/src/Toasty/Defaults.css'
+                ]
+            },
             order: {
                 after: ['web/static/css/app.css'] // concat app.css last
             }
