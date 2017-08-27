@@ -13,14 +13,24 @@ function print_error {
   printf "${RED}$1${NC}\n"
 }
 
-cd aion
-
-printf "Running credo...\n"
-mix credo --strict >"$TMP" 2>/dev/null || {
-  print_error "${RED}[PRE-COMMIT] Elixir linter has failed:\n"
+function exit_with_errors {
   cat "$TMP"
   rm -f "$TMP"
   exit 1
+}
+
+cd aion
+
+printf "Running dialyzer, may take a while if PLT compilation is needed...\n"
+mix dialyzer --halt-exit-status >"$TMP" 2>/dev/null || {
+  print_error "[PRE-COMMIT] Dialyzer has failed with the following result:"
+  exit_with_errors
+}
+
+printf "Running credo...\n"
+mix credo --strict >"$TMP" 2>/dev/null || {
+  print_error "[PRE-COMMIT] Elixir linter has failed:"
+  exit_with_errors
 }
 
 
@@ -30,16 +40,13 @@ then
   print_success "Found elm-format in $ELM_FORMAT_PATH" 
 else
   print_error "[PRE-COMMIT] elm-format not found in $ELM_FORMAT_PATH. Please make sure you've run make local-deps"
-  rm -f "$TMP"
-  exit 1
+  exit_with_errors
 fi
 
 printf "Running elm-format...\n"
 $ELM_FORMAT_PATH --yes --validate web/elm/src >"$TMP" 2>/dev/null || {
   print_error '[PRE-COMMIT] elm-format has failed:'
-  cat "$TMP"
-  rm -f "$TMP"
-  exit 1
+  exit_with_errors
 }
 
 rm -f "$TMP"
