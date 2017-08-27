@@ -5,6 +5,7 @@ defmodule Aion.RoomChannel.Monitor do
   use GenServer
   alias Aion.RoomChannel.UserRecord
   alias Aion.RoomChannel.Room
+  require Logger
 
   #####################
   # General interface #
@@ -17,14 +18,18 @@ defmodule Aion.RoomChannel.Monitor do
   def create(room_id, opts \\ []) do
     case GenServer.whereis(ref(room_id)) do
       nil ->
-        Supervisor.start_child(Aion.RoomChannel.Supervisor, [room_id: room_id] ++ opts)
+        {:ok, pid} = Supervisor.start_child(Aion.RoomChannel.Supervisor, [room_id: room_id] ++ opts)
+        Logger.info("[monitor] Spawned room GenServer " <> Kernel.inspect(pid))
       _board ->
         {:error, :room_already_exists}
     end
   end
 
+  @doc """
+  This function is responsible for commanding certain room's GenServer to shut down
+  """
   def shutdown(room_id) do
-    try_call(room_id, :terminate)
+    try_call(room_id, :stop)
   end
 
   defp try_call(room_id, message) do
@@ -79,14 +84,13 @@ defmodule Aion.RoomChannel.Monitor do
   #     Implementation    #
   #########################
 
-  def terminate(reason, _) do
-    #TODO Fix termination
-    IO.inspect(reason)
+  def terminate(reason, _state) do
+    Logger.info("[monitor] One of the room GenServers has been stopped with a following reason: #{reason}")
   end
 
-  def handle_call(:terminate, _from, _state) do
-    IO.inspect("Stopping myself")
-    GenServer.stop(self())
+  def handle_call(:stop, _from, state) do
+    Logger.info("[monitor] Stopping GenServer " <> Kernel.inspect(self()))
+    {:stop, :normal, :ok, state}
   end
 
   def handle_call({:user_joined, username}, _from, state) do
