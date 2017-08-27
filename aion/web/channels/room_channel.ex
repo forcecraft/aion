@@ -7,8 +7,10 @@ defmodule Aion.RoomChannel do
   use Phoenix.Channel, log_join: false, log_handle_in: :info
   alias Aion.RoomChannel.Monitor
   alias Aion.Presence
+  alias Aion.UserSocket
   require Logger
 
+  @spec join(String.t, %{}, UserSocket.t) :: {:ok, UserSocket.t}
   def join("rooms:" <> room_id, _params, socket) do
     current_user = get_user(socket)
     # Note: this is a temporary solution.
