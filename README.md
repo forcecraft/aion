@@ -19,13 +19,13 @@ If you want to run it locally:
 
 ### Installing
 
-You can run the project both in a docker container or locally. 
+You can run the project both in a docker container or locally.
 
 To run in a docker container:
 
 ```
-make && make docker-start
-``` 
+make docker-build && make docker-start
+```
 
 To run locally:
 
@@ -51,20 +51,20 @@ make test
 
 ## Contributing
 
-Check out our [CONTRIBUTING.md](CONTRIBUTING.md) 
+Check out our [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Authors
 
-* **[Piotr Jatkowski](http://github.com/jtkpiotr)** 
-* **[Patryk Mrukot](http://github.com/pmrukot)** 
+* **[Piotr Jatkowski](http://github.com/jtkpiotr)**
+* **[Patryk Mrukot](http://github.com/pmrukot)**
 * **[Maciej Rapacz](http://github.com/mrapacz)**
- 
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Acknowledgments
 
-Initial database was provided by 5th August Witkowski High School in Kraków. One of the main goals of the project was 
-to rebuild *JPKS*, a simple system with similar functionality, which was once a source of entertainment and knowledge 
+Initial database was provided by 5th August Witkowski High School in Kraków. One of the main goals of the project was
+to rebuild *JPKS*, a simple system with similar functionality, which was once a source of entertainment and knowledge
 for many High School students.
