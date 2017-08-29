@@ -79,17 +79,17 @@ displayQuestion question =
 displayQuestionImage : ImageName -> Html Msg
 displayQuestionImage imageName =
     let
-        styles =
+        imageStyles =
             [ ( "max-width", "100%" )
             , ( "height", "300px" )
             ]
     in
         case imageName of
             "" ->
-                img [ style styles, src defaultImagePath ] []
+                img [ style imageStyles, src defaultImagePath ] []
 
             imageName ->
-                img [ style styles, src (imagesPath ++ imageName) ] []
+                img [ style imageStyles, src (imagesPath ++ imageName) ] []
 
 
 displayAnswerInput : Answer -> Html Msg

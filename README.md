@@ -1,7 +1,7 @@
 ![Aion](https://user-images.githubusercontent.com/15965147/28745968-d496ca7a-7483-11e7-9b59-659100df5ba8.png)
 
 
-# Aion [![Build Status](https://travis-ci.org/pmrukot/aion.svg?branch=master)](https://travis-ci.org/pmrukot/aion)
+# Aion [![Build Status](https://travis-ci.org/forcecraft/aion.svg?branch=master)](https://travis-ci.org/forcecraft/aion)
 
 An e-learning platform written in Elixir and Elm based on real-time gameplay.
 
@@ -19,18 +19,18 @@ If you want to run it locally:
 
 ### Installing
 
-You can run the project both in a docker container or locally. 
+You can run the project both in a docker container or locally.
 
 To run in a docker container:
 
 ```
-make && make docker-start
-``` 
+make docker-build && make docker-start
+```
 
 To run locally:
 
 ```
-make development && make start-dev
+make development
 ```
 
 In both cases the platform should be accessible at [localhost:4000](localhost:4000)
@@ -40,7 +40,7 @@ In both cases the platform should be accessible at [localhost:4000](localhost:40
 To run the tests before pushing to the remote you can simply run:
 
 ```
-cd aion && mix test
+make test
 ```
 
 
@@ -51,20 +51,20 @@ cd aion && mix test
 
 ## Contributing
 
-Check out our [CONTRIBUTING.md](CONTRIBUTING.md) 
+Check out our [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Authors
 
-* **[Piotr Jatkowski](http://github.com/jtkpiotr)** 
-* **[Patryk Mrukot](http://github.com/pmrukot)** 
+* **[Piotr Jatkowski](http://github.com/jtkpiotr)**
+* **[Patryk Mrukot](http://github.com/pmrukot)**
 * **[Maciej Rapacz](http://github.com/mrapacz)**
- 
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Acknowledgments
 
-Initial database was provided by 5th August Witkowski High School in Kraków. One of the main goals of the project was 
-to rebuild *JPKS*, a simple system with similar functionality, which was once a source of entertainment and knowledge 
+Initial database was provided by 5th August Witkowski High School in Kraków. One of the main goals of the project was
+to rebuild *JPKS*, a simple system with similar functionality, which was once a source of entertainment and knowledge
 for many High School students.

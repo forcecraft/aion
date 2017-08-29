@@ -35,3 +35,4 @@ type Msg
     | UpdateQuestionForm String String
     | UpdateCategoryForm String String
     | NavbarMsg Navbar.State
+    | LeaveRoom RoomId

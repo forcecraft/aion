@@ -1,4 +1,5 @@
 exports.config = {
+    notifications: false,
     files: {
         javascripts: {
             joinTo: 'js/app.js'

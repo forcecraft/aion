@@ -5,6 +5,7 @@ defmodule Aion.RoomChannel.Monitor do
   use GenServer
   alias Aion.RoomChannel.UserRecord
   alias Aion.RoomChannel.Room
+  require Logger
 
   #####################
   # General interface #
@@ -17,10 +18,18 @@ defmodule Aion.RoomChannel.Monitor do
   def create(room_id, opts \\ []) do
     case GenServer.whereis(ref(room_id)) do
       nil ->
-        Supervisor.start_child(Aion.RoomChannel.Supervisor, [room_id: room_id] ++ opts)
+        {:ok, pid} = Supervisor.start_child(Aion.RoomChannel.Supervisor, [room_id: room_id] ++ opts)
+        Logger.info("[monitor] Spawned room GenServer " <> Kernel.inspect(pid))
       _board ->
         {:error, :room_already_exists}
     end
+  end
+
+  @doc """
+  This function is responsible for commanding certain room's GenServer to shut down
+  """
+  def shutdown(room_id) do
+    try_call(room_id, :stop)
   end
 
   defp try_call(room_id, message) do
@@ -39,6 +48,7 @@ defmodule Aion.RoomChannel.Monitor do
   @doc """
     Checks if a given room exists
   """
+  @spec exists?(String.t) :: boolean
   def exists?(room_id) do
     GenServer.whereis(ref(room_id)) != nil
   end
@@ -75,14 +85,24 @@ defmodule Aion.RoomChannel.Monitor do
   #     Implementation    #
   #########################
 
+  def terminate(reason, _state) do
+    Logger.info("[monitor] One of the room GenServers has been stopped with a following reason: #{reason}")
+  end
+
+  def handle_call(:stop, _from, state) do
+    Logger.info("[monitor] Stopping GenServer " <> Kernel.inspect(self()))
+    {:stop, :normal, :ok, state}
+  end
+
   def handle_call({:user_joined, username}, _from, state) do
     new_user = %UserRecord{username: username}
     new_state = Room.add_user(state, new_user)
     {:reply, :ok, new_state}
   end
 
-  def handle_call({:user_left, user}, _from, state) do
-    {:reply, state, state}
+  def handle_call({:user_left, username}, _from, state) do
+    new_state = Room.remove_user(state, username)
+    {:reply, :ok, new_state}
   end
 
   def handle_call({:get_scores}, _from, state) do
