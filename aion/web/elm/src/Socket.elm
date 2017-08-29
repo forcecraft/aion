@@ -23,12 +23,3 @@ initializeRoom socket roomIdToString =
 leaveRoom : String -> Phoenix.Socket.Socket Msg -> ( Phoenix.Socket.Socket Msg, Cmd (Phoenix.Socket.Msg Msg) )
 leaveRoom roomId socket =
     Phoenix.Socket.leave ("rooms:" ++ roomId) socket
-
-
-
---
--- let
---     push_ =
---         Phoenix.Push.init "user:left" ("rooms:" ++ roomId)
--- in
---     Phoenix.Socket.push push_ socket
