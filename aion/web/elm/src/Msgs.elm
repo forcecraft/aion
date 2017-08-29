@@ -33,3 +33,4 @@ type Msg
     | CreateNewCategory
     | UpdateQuestionForm String String
     | UpdateCategoryForm String String
+    | LeaveRoom RoomId

@@ -1,8 +1,9 @@
 module App exposing (..)
 
+import General.Constants exposing (hostname)
 import General.Models exposing (Flags, Model, initialModel)
 import Msgs exposing (Msg)
-import Navigation exposing (Location)
+import Navigation exposing (Location, modifyUrl)
 import Phoenix.Socket
 import Room.Api exposing (fetchRooms)
 import Routing
@@ -17,7 +18,7 @@ init flags location =
         currentRoute =
             Routing.parseLocation location
     in
-        ( initialModel flags currentRoute, Cmd.batch [ fetchRooms, fetchCurrentUser ] )
+        ( initialModel flags currentRoute, Cmd.batch [ setHomeUrl, fetchRooms, fetchCurrentUser ] )
 
 
 subscriptions : Model -> Sub Msg
@@ -33,3 +34,8 @@ main =
         , update = update
         , subscriptions = subscriptions
         }
+
+
+setHomeUrl : Cmd Msg
+setHomeUrl =
+    modifyUrl hostname

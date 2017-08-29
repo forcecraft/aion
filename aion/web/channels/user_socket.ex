@@ -1,6 +1,8 @@
 defmodule Aion.UserSocket do
   use Phoenix.Socket
 
+  @type t :: %Phoenix.Socket{}
+
   alias Aion.{RoomChannel, Repo, User}
   alias Phoenix.Token
 
