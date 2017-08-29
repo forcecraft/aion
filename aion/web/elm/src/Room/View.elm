@@ -38,22 +38,28 @@ roomView model roomId =
             [ Grid.row []
                 [ Grid.col []
                     [ h4 [] [ text roomName ]
-                    , displayScores model
                     , displayQuestion model.questionInChannel.content
                     , displayQuestionImage imageName
                     , displayAnswerInput currentAnswer
                     , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
                     ]
-                , Grid.col
-                    []
-                    []
+                , Grid.col []
+                    [ h4 [] [ text "Scoreboard:" ]
+                    , displayScores model
+                    ]
                 ]
             ]
 
 
 displayScores : Model -> Html Msg
 displayScores model =
-    div [ style [ ( "padding-top", "20px" ) ] ]
+    div
+        [ style
+            [ ( "margin-top", "20px" )
+            , ( "position", "relative" )
+            , ( "z-index", "0" )
+            ]
+        ]
         [ ListGroup.ul (List.map displaySingleScore model.usersInChannel) ]
 
 
@@ -72,12 +78,18 @@ displayQuestion question =
 
 displayQuestionImage : ImageName -> Html Msg
 displayQuestionImage imageName =
-    case imageName of
-        "" ->
-            img [ src defaultImagePath ] []
+    let
+        styles =
+            [ ( "max-width", "100%" )
+            , ( "height", "300px" )
+            ]
+    in
+        case imageName of
+            "" ->
+                img [ style styles, src defaultImagePath ] []
 
-        imageName ->
-            img [ src (imagesPath ++ imageName) ] []
+            imageName ->
+                img [ style styles, src (imagesPath ++ imageName) ] []
 
 
 displayAnswerInput : Answer -> Html Msg
