@@ -1,7 +1,8 @@
 module General.Models exposing (..)
 
+import Bootstrap.Navbar as Navbar
 import Forms
-import Msgs exposing (Msg)
+import Msgs exposing (Msg(NavbarMsg))
 import Panel.Models exposing (PanelData, categoryForm, questionForm)
 import Phoenix.Socket
 import RemoteData exposing (WebData)
@@ -23,6 +24,7 @@ type alias Model =
     , roomId : RoomId
     , toasties : Toasty.Stack Toasty.Defaults.Toast
     , panelData : PanelData
+    , navbarState : Navbar.State
     }
 
 
@@ -40,25 +42,39 @@ type Route
     | NotFoundRoute
 
 
+type alias SimpleCardConfig =
+    { svgImage : String
+    , title : String
+    , description : String
+    , url : String
+    , buttonText : String
+    }
+
+
 initialModel : Flags -> Route -> Model
 initialModel flags route =
-    { user = RemoteData.Loading
-    , channelToken = flags.channelToken
-    , rooms = RemoteData.Loading
-    , route = route
-    , socket =
-        Phoenix.Socket.init ("ws://localhost:4000/socket/websocket?token=" ++ flags.channelToken)
-            |> Phoenix.Socket.withDebug
-    , usersInChannel = []
-    , userGameData = { currentAnswer = "" }
-    , questionInChannel =
-        { content = ""
-        , image_name = ""
+    let
+        ( navbarState, _ ) =
+            Navbar.initialState NavbarMsg
+    in
+        { user = RemoteData.Loading
+        , channelToken = flags.channelToken
+        , rooms = RemoteData.Loading
+        , route = route
+        , socket =
+            Phoenix.Socket.init ("ws://localhost:4000/socket/websocket?token=" ++ flags.channelToken)
+                |> Phoenix.Socket.withDebug
+        , usersInChannel = []
+        , userGameData = { currentAnswer = "" }
+        , questionInChannel =
+            { content = ""
+            , image_name = ""
+            }
+        , roomId = 0
+        , toasties = Toasty.initialState
+        , panelData =
+            { questionForm = Forms.initForm questionForm
+            , categoryForm = Forms.initForm categoryForm
+            }
+        , navbarState = navbarState
         }
-    , roomId = 0
-    , toasties = Toasty.initialState
-    , panelData =
-        { questionForm = Forms.initForm questionForm
-        , categoryForm = Forms.initForm categoryForm
-        }
-    }

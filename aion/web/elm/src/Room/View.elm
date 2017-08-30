@@ -1,9 +1,16 @@
 module Room.View exposing (..)
 
+import Bootstrap.Badge as Badge
+import Bootstrap.Button as Button
+import Bootstrap.Card as Card
+import Bootstrap.Form as Form
+import Bootstrap.Form.Input as Input
+import Bootstrap.Grid as Grid
+import Bootstrap.ListGroup as ListGroup
 import General.Models exposing (Model)
 import General.Notifications exposing (toastsConfig)
-import Html exposing (Attribute, Html, a, button, div, form, input, li, text, ul)
-import Html.Attributes exposing (href, src, id, type_, value)
+import Html exposing (Attribute, Html, a, button, div, form, h4, input, li, text, ul)
+import Html.Attributes exposing (class, for, href, id, src, value)
 import Html.Events exposing (keyCode, on, onClick, onInput, onWithOptions)
 import Json.Decode exposing (map)
 import Msgs exposing (Msg(..))
@@ -27,64 +34,81 @@ roomView model roomId =
         imageName =
             model.questionInChannel.image_name
     in
-        div []
-            [ text roomName
-            , displayScores model
-            , p [] [ text model.questionInChannel.content ]
-            , displayQuestionImage imageName
-            , displayAnswerInput currentAnswer
-            , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
+        Grid.container [ class "room-container" ]
+            [ Grid.row []
+                [ Grid.col []
+                    [ h4 [] [ text roomName ]
+                    , displayQuestion model.questionInChannel.content
+                    , displayQuestionImage imageName
+                    , displayAnswerInput currentAnswer
+                    , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
+                    ]
+                , Grid.col []
+                    [ h4 [] [ text "Scoreboard:" ]
+                    , displayScores model
+                    ]
+                ]
             ]
 
 
 displayScores : Model -> Html Msg
 displayScores model =
-    ul [] (List.map displaySingleScore model.usersInChannel)
+    div
+        [ class "room-scoreboard" ]
+        [ ListGroup.ul (List.map displaySingleScore model.usersInChannel) ]
 
 
-displaySingleScore : UserInRoomRecord -> Html Msg
+displaySingleScore : UserInRoomRecord -> ListGroup.Item msg
 displaySingleScore userRecord =
-    li [] [ text (userRecord.name ++ ": " ++ (toString userRecord.score)) ]
+    ListGroup.li [] [ text (userRecord.name ++ ": " ++ (toString userRecord.score)) ]
+
+
+displayQuestion : String -> Html Msg
+displayQuestion question =
+    Card.config [ Card.attrs [ class "room-question" ]
+        |> Card.block []
+            [ Card.text [] [ text question ] ]
+        |> Card.view
 
 
 displayQuestionImage : ImageName -> Html Msg
 displayQuestionImage imageName =
-    case imageName of
-        "" ->
-            img [ src defaultImagePath ] []
+      case imageName of
+          "" ->
+              img [ class "room-image", src defaultImagePath ] []
 
-        imageName ->
-            img [ src (imagesPath ++ imageName) ] []
+          imageName ->
+              img [ class "room-image", src (imagesPath ++ imageName) ] []
 
 
 displayAnswerInput : Answer -> Html Msg
 displayAnswerInput currentAnswer =
-    form
-        [ onWithOptions "submit" { preventDefault = True, stopPropagation = False } (Json.Decode.succeed (NoOperation)) ]
-        [ displayAnswerInputField currentAnswer
-        , displayAnswerSubmitButton
+    Form.form [ class "room-answer-input" ]
+        [ Form.group []
+            [ Form.label [ for "answer" ] [ Badge.badgeSuccess [] [ text "Put your answer below:" ] ]
+            , displayAnswerInputField currentAnswer
+            , displayAnswerSubmitButton
+            ]
         ]
 
 
 displayAnswerInputField : Answer -> Html Msg
 displayAnswerInputField currentAnswer =
-    input
-        [ id answerInputFieldId
-        , onInput SetAnswer
-        , onKeyDown KeyDown
-        , value currentAnswer
+    Input.text
+        [ Input.id answerInputFieldId
+        , Input.onInput SetAnswer
+        , Input.value currentAnswer
         ]
-        []
 
 
 displayAnswerSubmitButton : Html Msg
 displayAnswerSubmitButton =
-    input
-        [ type_ "button"
-        , value "submit"
-        , onClick SubmitAnswer
+    Button.button
+        [ Button.success
+        , Button.onClick SubmitAnswer
+        , Button.attrs [ class "room-answer-button" ]
         ]
-        []
+        [ text "submit" ]
 
 
 onKeyDown : (Int -> msg) -> Attribute msg
