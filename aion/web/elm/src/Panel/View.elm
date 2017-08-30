@@ -28,7 +28,7 @@ panelView model =
             , subjectFormElement model.panelData.questionForm (listRooms model.rooms)
             , Button.button
                 [ Button.success
-                , Button.attrs [ onClick CreateNewQuestionWithAnswers ]
+                , Button.onClick CreateNewQuestionWithAnswers
                 ]
                 [ text "submit" ]
             , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
@@ -38,7 +38,7 @@ panelView model =
             [ categoryNameFormElement model.panelData.categoryForm
             , Button.button
                 [ Button.success
-                , Button.attrs [ onClick CreateNewCategory ]
+                , Button.onClick CreateNewCategory
                 ]
                 [ text "submit" ]
             , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
