@@ -5,7 +5,7 @@ import General.Constants exposing (hostname)
 import General.Models exposing (Model, Route(LoginRoute, NotFoundRoute, PanelRoute, RoomListRoute, RoomRoute, UserRoute))
 import General.View exposing (homeView, notFoundView, roomListView)
 import Html exposing (..)
-import Html.Attributes exposing (class, href, src, style)
+import Html.Attributes exposing (class, href, src)
 import Msgs exposing (Msg(..))
 import Panel.View exposing (panelView)
 import Room.View exposing (roomView)
@@ -22,12 +22,7 @@ view model =
 layout : Html Msg -> Navbar.State -> Html Msg
 layout content navbarState =
     div
-        [ style
-            [ ( "font-family", "'Roboto', sans-serif" )
-            , ( "background-color", "#e6ffec" )
-            , ( "padding-bottom", "60px" )
-            ]
-        ]
+        [ class "layout" ]
         [ navbar navbarState
         , content
         ]

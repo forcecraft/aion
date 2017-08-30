@@ -9,7 +9,7 @@ import Forms
 import General.Models exposing (Model)
 import General.Notifications exposing (toastsConfig)
 import Html exposing (..)
-import Html.Attributes exposing (for, placeholder, type_, value)
+import Html.Attributes exposing (class, for, placeholder, type_, value)
 import Html.Events exposing (onClick, onInput, onWithOptions)
 import Msgs exposing (Msg(..))
 import RemoteData exposing (WebData)
@@ -20,7 +20,7 @@ import Toasty.Defaults
 
 panelView : Model -> Html Msg
 panelView model =
-    div []
+    div [ class "panel-container" ]
         [ h4 [] [ text "Create new question for certain category:" ]
         , Form.form []
             [ questionFormElement model.panelData.questionForm

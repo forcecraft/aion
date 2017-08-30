@@ -26,7 +26,7 @@ homeView : Model -> Html Msg
 homeView model =
     div []
         [ h3 [ class "welcome-title" ] [ text "Welcome to Aion!" ]
-        , Grid.container [ style [ ( "padding-top", "60px" ) ] ]
+        , Grid.container []
             [ Grid.row []
                 [ Grid.col [] [ simpleCard gameCardConfig ]
                 , Grid.col [] [ simpleCard panelCardConfig ]

@@ -3,7 +3,7 @@ module User.View exposing (..)
 import Bootstrap.Alert as Alert
 import General.Models exposing (Model)
 import Html exposing (..)
-import Html.Attributes exposing (style)
+import Html.Attributes exposing (class)
 import Msgs exposing (Msg(..))
 import RemoteData
 import User.Models exposing (CurrentUser)
@@ -27,7 +27,7 @@ userView model =
 
 renderUserView : CurrentUser -> Html Msg
 renderUserView user =
-    div [ style [ ( "padding", "60px 30px 0px 30px" ) ] ]
+    div [ class "profile-container" ]
         [ Alert.info [ text ("username: " ++ user.name) ]
         , Alert.info [ text ("e-mail: " ++ user.email) ]
         ]

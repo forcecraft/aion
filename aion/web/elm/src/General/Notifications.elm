@@ -1,7 +1,7 @@
 module General.Notifications exposing (..)
 
 import General.Models exposing (Model)
-import Html.Attributes exposing (style)
+import Html.Attributes exposing (class, style)
 import Msgs exposing (Msg(..))
 import Toasty
 import Toasty.Defaults
@@ -20,15 +20,4 @@ addToast toast ( model, cmd ) =
 
 
 containerAttrs =
-    [ style
-        [ ( "position", "fixed" )
-        , ( "top", "0" )
-        , ( "right", "0" )
-        , ( "width", "100%" )
-        , ( "max-width", "300px" )
-        , ( "list-style-type", "none" )
-        , ( "padding", "0" )
-        , ( "margin", "0" )
-        , ( "z-index", "5" )
-        ]
-    ]
+    [ class "toasty-notification" ]
