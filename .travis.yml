@@ -20,6 +20,7 @@ cache:
   directories:
     - sysconfcpus
     - aion/deps
+    - aion/web/elm/elm-stuff/build-artifacts
 
 install:
   - cd ..
