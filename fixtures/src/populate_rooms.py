@@ -24,4 +24,3 @@ def populate_all_subjects_rooms():
         room_id = get_or_insert_room("general {}".format(i), "room with all categories", conn)
         for subject_id in subjects_id_list:
             get_or_insert_rooms_to_subjects(room_id, subject_id, conn)
-
