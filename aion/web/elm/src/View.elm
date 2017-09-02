@@ -1,12 +1,15 @@
 module View exposing (..)
 
+import Bootstrap.Navbar as Navbar
+import General.Constants exposing (hostname)
 import General.Models exposing (Model, Route(LoginRoute, NotFoundRoute, PanelRoute, RoomListRoute, RoomRoute, UserRoute))
 import General.View exposing (homeView, notFoundView, roomListView)
 import Html exposing (..)
-import Html.Attributes exposing (style, class)
+import Html.Attributes exposing (class, href, src)
 import Msgs exposing (Msg(..))
 import Panel.View exposing (panelView)
 import Room.View exposing (roomView)
+import Routing exposing (panelPath, roomsPath, userPath)
 import User.View exposing (userView)
 
 
@@ -16,10 +19,36 @@ view model =
         [ page model ]
 
 
-layout : Html msg -> Html msg
-layout content =
-    div [ style [ ( "font-family", "'Roboto', sans-serif" ) ] ]
-        [ content ]
+layout : Html Msg -> Navbar.State -> Html Msg
+layout content navbarState =
+    div
+        [ class "layout" ]
+        [ navbar navbarState
+        , content
+        ]
+
+
+navbar : Navbar.State -> Html Msg
+navbar navbarState =
+    Navbar.config NavbarMsg
+        |> Navbar.withAnimation
+        |> Navbar.success
+        |> Navbar.container
+        |> Navbar.brand
+            [ href "#" ]
+            [ img
+                [ src (hostname ++ "svg/hemp.svg")
+                , class "header-aion-logo"
+                ]
+                []
+            , text "Aion"
+            ]
+        |> Navbar.items
+            [ Navbar.itemLink [ href roomsPath ] [ text "Rooms" ]
+            , Navbar.itemLink [ href panelPath ] [ text "Panel" ]
+            , Navbar.itemLink [ href userPath ] [ text "Profile" ]
+            ]
+        |> Navbar.view navbarState
 
 
 page : Model -> Html Msg
@@ -45,4 +74,4 @@ page model =
                 NotFoundRoute ->
                     notFoundView
     in
-        layout content
+        layout content model.navbarState

@@ -60,6 +60,12 @@ defmodule Aion.RoomChannel.Room do
     %Room{room | users: updated_users}
   end
 
+  @spec remove_user(__MODULE__.t, String.t) :: __MODULE__.t
+  def remove_user(room, username) do
+    updated_users = Map.delete(room.users, username)
+    %Room{room | users: updated_users}
+  end
+
   @spec get_scores(__MODULE__.t) :: list UserRecord.t
   def get_scores(room) do
     Map.values(room.users)

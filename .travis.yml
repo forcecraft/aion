@@ -3,7 +3,7 @@ dist: trusty
 language: elixir
 
 elixir:
-- 1.4.5
+  - 1.4.5
 
 otp_release:
 - 20.0
@@ -17,17 +17,44 @@ sudo: false
 services:
 - postgresql
 
+cache:
+  directories:
+    - sysconfcpus
+    - aion/deps
+    - aion/web/elm/elm-stuff/build-artifacts
+
+install:
+  - cd ..
+  - |
+    if [ ! -d sysconfcpus/bin ];
+    then
+      git clone https://github.com/obmarg/libsysconfcpus.git;
+      cd libsysconfcpus;
+      ./configure --prefix=$TRAVIS_BUILD_DIR/sysconfcpus;
+      make && make install;
+      cd ..;
+    fi
+  - cd aion
+  - mix local.rebar --force
+  - mix local.hex --force
+  - mix deps.get
+
 before_install:
 - cd aion
+- npm install
 
 before_script:
 - cp config/travis.exs config/test.exs
 - mix do ecto.create, ecto.migrate
 
 script:
-- mix credo --strict
-- mix test
-- cd ..
+  - cd web/elm &&
+    ../../node_modules/elm/binwrappers/elm-package install --yes &&
+    $TRAVIS_BUILD_DIR/sysconfcpus/bin/sysconfcpus -n 2 ../../node_modules/elm/binwrappers/elm-make --yes src/App.elm &&
+    rm -rf index.html &&
+    cd ../../
+  - mix credo --strict
+  - mix test
 
 notifications:
   email: false
@@ -44,3 +71,4 @@ deploy:
   after_deploy: "echo 'finished deploying'"
   api_key:
     secure: yiqUz5tTcdFOYOkvdmVKkKouXmyNJvoBWa+NCyNtTRRCq4I4Dw4fQ0jrp+zKV/YQboTSC/MbRpBJPHYJuEiEeCTmWaOB6l02MkanFrvW3EFI1D3/B+giZQyQGUZXN4o4cy6FVhvkdSDWJzpsRTgqYxQxKRSYPyILz9j4T1lTvitdStEiskAOKdlT2XTv1zFUpOHykKSpvrah8j3fwhdd/AGbCDXXTlu374nFviPZalTpwIAUIt4W7i4xVfElxUpmbZrSCw+4zqySQXJIJHs9LaWw8D4xaWF9V9oCfs4JQ2B1RaKg3qqov192nBh9yp3ZAV7yyZp1k6F7rBzP/HPpJM7EsAJV+sbYIuF2OkZ1+EdRlvNVsAbXJVSi38bTYxROtp3Z+MlvNhfPUCqJEdPbrm+hk17luNtFbgeRSNreHcqxPTbLA7Xgl0p3ZRnMF+TF7enDosPszpIBgq1paWQ2cLGAl6ZPUYmfTmE7zrYWgqw6kpyaeOMhNnsohuptl/55HRqb7afU7/1Fb1l8rPY9vRZqnvW12+meihBcCMcq+aEaC40K3JlyF9fR7J7oM91dwYAvyf9WMguG+V1wcsgRENovzHONiZc92+/8jXZT+8YchEKQSvA7vcMANFoGEfaS+bDdg//m23BHmYc3fxIOvuMB1JgO+l9b8d7tSa4h1RA=
+
