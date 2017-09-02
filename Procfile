@@ -1,2 +1,2 @@
-web: MIX_ENV=prod cd aion && mix phoenix.server
+web: MIX_ENV=prod mix phoenix.server
 

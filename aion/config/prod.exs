@@ -4,7 +4,8 @@ config :aion, Aion.Endpoint,
   http: [port: {:system, "PORT"}],
   url: [host: "aion-agh.herokuapps.com", port: 80],
   cache_static_manifest: "priv/static/manifest.json",
-  secret_key_base: Map.fetch!(System.get_env(), "SECRET_KEY_BASE")
+  secret_key_base: Map.fetch!(System.get_env(), "SECRET_KEY_BASE"),
+  hostname: "aion-agh.herokuapps.com"
 
 config :aion, Aion.Repo,
   adapter: Ecto.Adapters.Postgres,
