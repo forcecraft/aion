@@ -17,8 +17,7 @@ services:
 - postgresql
 
 before_install:
-- mix local.hex --force
-- make local-deps
+- npm install
 - cd aion
 
 before_script:
