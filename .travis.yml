@@ -17,7 +17,7 @@ services:
 - postgresql
 
 before_install:
-- make local_deps
+- make local-deps
 - cd aion
 
 before_script:
