@@ -17,6 +17,7 @@ services:
 - postgresql
 
 before_install:
+- make local_deps
 - cd aion
 
 before_script:
@@ -26,7 +27,10 @@ before_script:
 script:
   - mix credo --strict
   - mix test
-  - elm-make web/elm/src/App.elm && rm -rf elm-package.json
+  - cd web/elm && \
+    ../../node_modules/elm/binwrappers/elm-package install --yes && \
+    ../../node_modules/elm/binwrappers/elm-make --yes src/App.elm && \
+    rm -rf index.html
 
 notifications:
   email: false
