@@ -33,6 +33,9 @@ install:
       cd ..;
     fi
   - cd aion
+  - mix local.rebar --force
+  - mix local.hex --force
+  - mix deps.get
 
 before_install:
 - cd aion
