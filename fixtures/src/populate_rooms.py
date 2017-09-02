@@ -1,13 +1,9 @@
-import psycopg2
-
 from src.queries.room_subjects import get_or_insert_rooms_to_subjects
 from src.queries.rooms import get_or_insert_room
 from src.queries.subjects import get_subject_dict
-from src.config import dbname, user, password, host
 
 
-def populate_one_subject_rooms():
-    conn = psycopg2.connect("dbname={} user={} password={} host={}".format(dbname, user, password, host))
+def populate_one_subject_rooms(conn):
     subject_dict = get_subject_dict(conn)
 
     for subject_id, subject_name in subject_dict.items():
@@ -15,8 +11,7 @@ def populate_one_subject_rooms():
         get_or_insert_rooms_to_subjects(room_id, subject_id, conn)
 
 
-def populate_all_subjects_rooms():
-    conn = psycopg2.connect("dbname={} user={} password={} host={}".format(dbname, user, password, host))
+def populate_all_subjects_rooms(conn):
     subjects_id_list = list(get_subject_dict(conn).keys())
     rooms_number = 5
 
