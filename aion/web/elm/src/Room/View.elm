@@ -65,20 +65,19 @@ displaySingleScore userRecord =
 
 displayQuestion : String -> Html Msg
 displayQuestion question =
-    Card.config [ Card.attrs [ class "room-question" ]
-        |> Card.block []
-            [ Card.text [] [ text question ] ]
+    Card.config [ Card.attrs [ class "room-question" ] ]
+        |> Card.block [] [ Card.text [] [ text question ] ]
         |> Card.view
 
 
 displayQuestionImage : ImageName -> Html Msg
 displayQuestionImage imageName =
-      case imageName of
-          "" ->
-              img [ class "room-image", src defaultImagePath ] []
+    case imageName of
+        "" ->
+            img [ class "room-image", src defaultImagePath ] []
 
-          imageName ->
-              img [ class "room-image", src (imagesPath ++ imageName) ] []
+        imageName ->
+            img [ class "room-image", src (imagesPath ++ imageName) ] []
 
 
 displayAnswerInput : Answer -> Html Msg
