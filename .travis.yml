@@ -25,7 +25,11 @@ before_script:
 - mix do ecto.create, ecto.migrate
 
 script:
-  - cd web/elm && ../../node_modules/elm/binwrappers/elm-package install --yes && ../../node_modules/elm/binwrappers/elm-make --yes src/App.elm && rm -rf index.html && cd ../../
+  - cd web/elm &&
+    ../../node_modules/elm/binwrappers/elm-package install --yes &&
+    ../../node_modules/elm/binwrappers/elm-make --yes src/App.elm &&
+    rm -rf index.html &&
+    cd ../../
   - mix credo --strict
   - mix test
 
