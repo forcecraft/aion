@@ -3,7 +3,7 @@ dist: trusty
 language: elixir
 
 elixir:
-  - 1.4
+  - 1.4.5
 otp_release:
   - 20.0
   - 19.3
@@ -26,6 +26,7 @@ before_script:
 script:
   - mix credo --strict
   - mix test
+  - elm-make web/elm/src/App.elm && rm -rf elm-package.json
 
 notifications:
   email: false
