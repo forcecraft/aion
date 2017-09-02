@@ -17,8 +17,8 @@ services:
 - postgresql
 
 before_install:
-- npm install
 - cd aion
+- npm install
 
 before_script:
 - cp config/travis.exs config/test.exs
