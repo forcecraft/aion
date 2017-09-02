@@ -17,6 +17,7 @@ services:
 - postgresql
 
 before_install:
+- mix local.hex --force
 - make local-deps
 - cd aion
 
