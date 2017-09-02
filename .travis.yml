@@ -23,8 +23,12 @@ cache:
   - aion/deps
   - aion/web/elm/elm-stuff/build-artifacts
 
-install:
+before_install:
+- cd aion
+- npm install
 - cd ..
+
+install:
 - |
   if [ ! -d sysconfcpus/bin ];
   then
@@ -38,10 +42,6 @@ install:
 - mix local.rebar --force
 - mix local.hex --force
 - mix deps.get
-
-before_install:
-- cd aion
-- npm install
 
 before_script:
 - cp config/travis.exs config/test.exs
