@@ -1,4 +1,4 @@
-defmodule Aion.Repo.Migrations.ChangeSubjectToCategory do
+defmodule Aion.Repo.Migrations.RenameTableSubjectToCategory do
   use Ecto.Migration
 
   def change do

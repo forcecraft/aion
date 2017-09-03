@@ -1,4 +1,4 @@
-defmodule Aion.Repo.Migrations.ChangeSubjectIdToCategoryId do
+defmodule Aion.Repo.Migrations.ChangeSubjectIdToCategoryIdInQuestionsTable do
   use Ecto.Migration
 
   def change do
