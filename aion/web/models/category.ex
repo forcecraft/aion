@@ -3,11 +3,11 @@ defmodule Aion.Category do
   This model represents a category of questions.
   """
   use Aion.Web, :model
-  alias Aion.{Room, RoomSubject}
+  alias Aion.{Room, RoomCategory}
   schema "categories" do
     field :name, :string
     many_to_many :rooms, Room,
-      join_through: RoomSubject,
+      join_through: RoomCategory,
       on_delete: :delete_all
 
     timestamps()

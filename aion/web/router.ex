@@ -31,6 +31,6 @@ defmodule Aion.Router do
     resources "/questions", QuestionController, except: [:new, :edit]
     resources "/answers", AnswerController, except: [:new, :edit]
     resources "/rooms", RoomController, except: [:new, :edit]
-    resources "/room_subjects", RoomSubjectController, except: [:new, :edit]
+    resources "/room_categories", RoomCategoryController, except: [:new, :edit]
   end
 end

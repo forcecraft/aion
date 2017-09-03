@@ -1,7 +1,7 @@
 defmodule Aion.CategoryView do
   use Aion.Web, :view
 
-  def render("index.json", %{catagories: categories}) do
+  def render("index.json", %{categories: categories}) do
     %{data: render_many(categories, Aion.CategoryView, "category.json")}
   end
 
