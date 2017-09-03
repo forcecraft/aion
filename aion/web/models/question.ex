@@ -6,12 +6,12 @@ defmodule Aion.Question do
 
   use Aion.Web, :model
   alias Aion.Repo
-  alias Aion.{Question, Subject}
+  alias Aion.{Question, Category}
 
   schema "questions" do
     field :content, :string
     field :image_name, :string
-    belongs_to :subject, Subject
+    belongs_to :category, Category
 
     timestamps()
   end
@@ -21,10 +21,10 @@ defmodule Aion.Question do
   """
   def changeset(struct, params \\ %{}) do
     struct
-      |> Repo.preload(:subject)
+      |> Repo.preload(:category)
       |> cast(params, [:content, :image_name])
       |> validate_required([:content])
-      |> put_assoc(:subject, params["belongs_to"])
+      |> put_assoc(:category, params["belongs_to"])
   end
 
   #######
@@ -38,7 +38,7 @@ defmodule Aion.Question do
 
   @spec get_random_question(integer) :: Question.t
   def get_random_question(category_id) do
-    query = from q in Question, where: q.subject_id == ^category_id
+    query = from q in Question, where: q.category_id == ^category_id
     query
     |> Repo.all()
     |> Enum.random()

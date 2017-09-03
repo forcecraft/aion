@@ -9,8 +9,8 @@ defmodule Aion.QuestionController do
     render(conn, "index.json", questions: questions)
   end
 
-  def create(conn, %{"question" => question, "answers" => answers, "subject" => subject_id}) do
-    transaction = QuestionTransactions.create_question_with_answers(question, answers, subject_id)
+  def create(conn, %{"question" => question, "answers" => answers, "category" => category_id}) do
+    transaction = QuestionTransactions.create_question_with_answers(question, answers, category_id)
     transaction_result = Repo.transaction(transaction)
     case transaction_result do
       {:ok, %{insert_question: question}} ->

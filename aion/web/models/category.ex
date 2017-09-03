@@ -1,10 +1,10 @@
-defmodule Aion.Subject do
+defmodule Aion.Category do
   @moduledoc """
   This model represents a category of questions.
   """
   use Aion.Web, :model
   alias Aion.{Room, RoomSubject}
-  schema "subjects" do
+  schema "categories" do
     field :name, :string
     many_to_many :rooms, Room,
       join_through: RoomSubject,

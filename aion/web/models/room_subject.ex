@@ -6,7 +6,7 @@ defmodule Aion.RoomSubject do
 
   schema "room_subjects" do
     belongs_to :room, Aion.Room
-    belongs_to :subject, Aion.Subject
+    belongs_to :subject, Aion.Category
 
     timestamps()
   end
