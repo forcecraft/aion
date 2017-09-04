@@ -1,5 +1,6 @@
 module Msgs exposing (..)
 
+import Bootstrap.Navbar as Navbar
 import Dom exposing (Error)
 import Navigation exposing (Location)
 import Panel.Models exposing (CategoryCreatedData, QuestionCreatedData, RoomCreatedData)
@@ -38,3 +39,5 @@ type Msg
     | UpdateCategoryForm String String
     | UpdateRoomForm String String
     | MultiselectMsg Multiselect.Msg
+    | NavbarMsg Navbar.State
+    | LeaveRoom RoomId

@@ -15,3 +15,13 @@ def get_or_insert_subject(subject, conn):
         conn.commit()
 
     return get_subject_id(subject, conn)
+
+
+def get_subject_dict(conn):
+    subject_dict = {}
+    with conn.cursor() as cur:
+        cur.execute("""SELECT * FROM subjects""")
+        for record in cur:
+            subject_dict[record[0]] = record[1]  # mapping ids to subject names
+
+    return subject_dict

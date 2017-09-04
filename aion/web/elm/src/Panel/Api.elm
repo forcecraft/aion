@@ -2,7 +2,6 @@ module Panel.Api exposing (..)
 
 import Forms
 import General.Constants exposing (createCategoryUrl, createQuestionUrl, hostname, createRoomUrl)
-import General.Utils exposing (getSubjectIdByName)
 import Http
 import Msgs exposing (Msg)
 import RemoteData exposing (WebData)
@@ -34,9 +33,6 @@ questionCreationEncoder form rooms =
         subjectValue =
             Forms.formValue form "subject"
 
-        subjectId =
-            getSubjectIdByName rooms subjectValue
-
         questionContent =
             [ ( "content", Encode.string questionValue )
             ]
@@ -44,7 +40,7 @@ questionCreationEncoder form rooms =
         payload =
             [ ( "question", Encode.object questionContent )
             , ( "answers", Encode.string answersValue )
-            , ( "subject", Encode.int subjectId )
+            , ( "subject", Encode.int (String.toInt subjectValue |> Result.toMaybe |> Maybe.withDefault 0) )
             ]
     in
         payload

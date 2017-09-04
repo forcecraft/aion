@@ -1,15 +1,19 @@
 module Panel.View exposing (..)
 
+import Bootstrap.Badge as Badge
+import Bootstrap.Button as Button
+import Bootstrap.Form as Form
+import Bootstrap.Form.Input as Input
+import Bootstrap.Form.Select as Select
 import Forms
 import General.Models exposing (Model)
 import General.Notifications exposing (toastsConfig)
 import Html exposing (..)
-import Html.Attributes exposing (placeholder, type_, value)
+import Html.Attributes exposing (class, for, placeholder, type_, value)
 import Html.Events exposing (onClick, onInput, onWithOptions)
 import Msgs exposing (Msg(..))
 import RemoteData exposing (WebData)
-import Room.Models exposing (RoomsData)
-import Select
+import Room.Models exposing (Room, RoomsData)
 import Toasty
 import Toasty.Defaults
 import Multiselect
@@ -17,19 +21,27 @@ import Multiselect
 
 panelView : Model -> Html Msg
 panelView model =
-    div []
-        [ h3 [] [ text "Create new question for certain category:" ]
-        , form []
+    div [ class "panel-container" ]
+        [ h4 [] [ text "Create new question for certain category:" ]
+        , Form.form []
             [ questionFormElement model.panelData.questionForm
             , answersFormElement model.panelData.questionForm
             , subjectFormElement model.panelData.questionForm (listRooms model.rooms)
-            , input [ type_ "button", value "submit", onClick CreateNewQuestionWithAnswers ] []
+            , Button.button
+                [ Button.success
+                , Button.onClick CreateNewQuestionWithAnswers
+                ]
+                [ text "submit" ]
             , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
             ]
-        , h3 [] [ text "Create new category:" ]
-        , form []
+        , h4 [] [ text "Create new category:" ]
+        , Form.form []
             [ categoryNameFormElement model.panelData.categoryForm
-            , input [ type_ "button", value "submit", onClick CreateNewCategory ] []
+            , Button.button
+                [ Button.success
+                , Button.onClick CreateNewCategory
+                ]
+                [ text "submit" ]
             , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
             ]
         , h3 [] [ text "Create new Room:" ]
@@ -47,46 +59,50 @@ panelView model =
 
 questionFormElement : Forms.Form -> Html Msg
 questionFormElement form =
-    div []
-        [ p [] [ text "Enter question content below:" ]
-        , input
-            [ placeholder "How much is 2+2?"
-            , onInput (UpdateQuestionForm "question")
-            , value (Forms.formValue form "question")
+    Form.group []
+        [ Form.label [ for "question" ] [ text "Enter question content below:" ]
+        , Input.text
+            [ Input.placeholder "How much is 2+2?"
+            , Input.onInput (UpdateQuestionForm "question")
+            , Input.value (Forms.formValue form "question")
             ]
-            []
-        , small [] [ text (Forms.errorString form "question") ]
+        , Badge.pillInfo [] [ text (Forms.errorString form "question") ]
         ]
 
 
 answersFormElement : Forms.Form -> Html Msg
 answersFormElement form =
-    div []
-        [ p [] [ text "Enter answer below, separate all posibilities with comma:" ]
-        , input
-            [ placeholder "4,four"
-            , onInput (UpdateQuestionForm "answers")
-            , value (Forms.formValue form "answers")
+    Form.group []
+        [ Form.label [ for "answer" ] [ text "Enter answer below, separate all posibilities with comma:" ]
+        , Input.text
+            [ Input.placeholder "4,four"
+            , Input.onInput (UpdateQuestionForm "answers")
+            , Input.value (Forms.formValue form "answers")
             ]
-            []
-        , small [] [ text (Forms.errorString form "answers") ]
+        , Badge.pillInfo [] [ text (Forms.errorString form "answers") ]
         ]
 
 
-subjectFormElement : Forms.Form -> List String -> Html Msg
+subjectFormElement : Forms.Form -> List Room -> Html Msg
 subjectFormElement form roomList =
-    div []
-        [ p [] [ text "Select the category to which to add the question:" ]
-        , Select.from roomList (UpdateQuestionForm "subject")
-        , small [] [ text (Forms.errorString form "subject") ]
+    Form.group []
+        [ Form.label [ for "category" ] [ text "Select the category to which to add the question:" ]
+        , Select.select
+            [ Select.onChange (UpdateQuestionForm "subject") ]
+            (Select.item [ value "0" ] [ text "--Select a category--" ]
+                :: List.map
+                    (\room -> Select.item [ value (room.id |> toString) ] [ text room.name ])
+                    roomList
+            )
+        , Badge.pillInfo [] [ text (Forms.errorString form "subject") ]
         ]
 
 
-listRooms : WebData RoomsData -> List String
+listRooms : WebData RoomsData -> List Room
 listRooms result =
     case result of
         RemoteData.Success roomsData ->
-            "--pick a category--" :: List.map (\room -> room.name) roomsData.data
+            roomsData.data
 
         _ ->
             []
@@ -98,15 +114,14 @@ listRooms result =
 
 categoryNameFormElement : Forms.Form -> Html Msg
 categoryNameFormElement form =
-    div []
-        [ p [] [ text "Enter category name bellow, should be uppercase:" ]
-        , input
-            [ placeholder "for instance: History or Famous people"
-            , onInput (UpdateCategoryForm "name")
-            , value (Forms.formValue form "name")
+    Form.group []
+        [ Form.label [ for "category" ] [ text "Enter category name bellow, should be uppercase:" ]
+        , Input.text
+            [ Input.placeholder "for instance: History or Famous people"
+            , Input.onInput (UpdateCategoryForm "name")
+            , Input.value (Forms.formValue form "name")
             ]
-            []
-        , small [] [ text (Forms.errorString form "name") ]
+        , Badge.pillInfo [] [ text (Forms.errorString form "name") ]
         ]
 
 

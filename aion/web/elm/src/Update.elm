@@ -16,11 +16,11 @@ import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, userJoine
 import Room.Notifications exposing (..)
 import Routing exposing (parseLocation)
 import Phoenix.Socket
-import Phoenix.Channel
 import Phoenix.Push
 import Task
 import Toasty
 import Multiselect
+import Socket exposing (initializeRoom, leaveRoom)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -99,25 +99,33 @@ update msg model =
                 case newRoute of
                     RoomRoute roomId ->
                         let
-                            roomIdToString =
-                                toString roomId
+                            ( leaveRoomSocket, leaveRoomCmd ) =
+                                leaveRoom (toString roomId) model.socket
 
-                            channel =
-                                Phoenix.Channel.init ("rooms:" ++ roomIdToString)
-
-                            ( socket, cmd ) =
-                                Phoenix.Socket.join channel
-                                    (model.socket
-                                        |> Phoenix.Socket.on "user:list" ("rooms:" ++ roomIdToString) ReceiveUserList
-                                        |> Phoenix.Socket.on "new:question" ("rooms:" ++ roomIdToString) ReceiveQuestion
-                                        |> Phoenix.Socket.on "answer:feedback" ("rooms:" ++ roomIdToString) ReceiveAnswerFeedback
-                                        |> Phoenix.Socket.on "room:user:joined" ("rooms:" ++ roomIdToString) ReceiveUserJoined
-                                    )
+                            ( initializeRoomSocket, initializeRoomCmd ) =
+                                initializeRoom leaveRoomSocket (toString roomId)
                         in
-                            { model | socket = socket, route = newRoute, roomId = roomId, toasties = Toasty.initialState } ! [ Cmd.map PhoenixMsg cmd ]
+                            { model
+                                | socket = initializeRoomSocket
+                                , route = newRoute
+                                , roomId = roomId
+                                , toasties = Toasty.initialState
+                            }
+                                ! [ Cmd.map PhoenixMsg initializeRoomCmd
+                                  , Cmd.map PhoenixMsg leaveRoomCmd
+                                  ]
 
                     _ ->
-                        { model | route = newRoute } ! []
+                        case model.route of
+                            RoomRoute oldRoomId ->
+                                let
+                                    ( socket, cmd ) =
+                                        leaveRoom (toString oldRoomId) model.socket
+                                in
+                                    { model | route = newRoute } ! [ Cmd.map PhoenixMsg cmd ]
+
+                            _ ->
+                                { model | route = newRoute } ! []
 
         PhoenixMsg msg ->
             let
@@ -157,6 +165,10 @@ update msg model =
                 Err error ->
                     model ! []
 
+        LeaveRoom roomId ->
+            model ! []
+
+        -- room join/leave
         ReceiveUserJoined rawUserJoinedInfo ->
             case Decode.decodeValue userJoinedInfoDecoder rawUserJoinedInfo of
                 Ok userJoinedInfo ->
@@ -207,6 +219,7 @@ update msg model =
                 Err error ->
                     model ! []
 
+        -- HTML
         FocusResult result ->
             model ! []
 
@@ -216,6 +229,7 @@ update msg model =
             else
                 model ! []
 
+        -- Forms
         UpdateQuestionForm name value ->
             let
                 oldPanelData =
@@ -292,6 +306,7 @@ update msg model =
                 else
                     categoryFormValidationErrorToast (model ! [])
 
+
         CreateNewRoom ->
             let
                 roomForm =
@@ -306,9 +321,6 @@ update msg model =
                 else
                     roomFormValidationErrorToast (model ! [])
 
-        ToastyMsg subMsg ->
-            Toasty.update toastsConfig ToastyMsg subMsg model
-
 
         MultiselectMsg subMsg ->
             let
@@ -319,6 +331,17 @@ update msg model =
                     model.panelData
             in
                 { model | panelData = { oldPanelData | categoryMultiSelect = subModel } } ! [ Cmd.map MultiselectMsg subCmd ]
+
+
+        -- Toasty
+        ToastyMsg subMsg ->
+            Toasty.update toastsConfig ToastyMsg subMsg model
+
+        -- Navbar
+        NavbarMsg state ->
+            ( { model | navbarState = state }, Cmd.none )
+
+        -- NoOp
 
         NoOperation ->
             model ! []
