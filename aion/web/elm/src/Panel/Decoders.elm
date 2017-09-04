@@ -1,8 +1,8 @@
 module Panel.Decoders exposing (..)
 
 import Json.Decode as Decode exposing (field, map, null, oneOf)
-import Json.Decode.Pipeline exposing (decode, required)
-import Panel.Models exposing (CategoryCreatedContent, CategoryCreatedData, QuestionCreatedContent, QuestionCreatedData)
+import Json.Decode.Pipeline exposing (decode, required, optional)
+import Panel.Models exposing (CategoryCreatedContent, CategoryCreatedData, QuestionCreatedContent, QuestionCreatedData, RoomCreatedData, RoomCreatedContent)
 
 
 -- question creation section
@@ -38,3 +38,18 @@ categoryCreatedContendDecoder =
     decode CategoryCreatedContent
         |> required "id" Decode.int
         |> required "name" Decode.string
+
+
+roomCreatedDecoder : Decode.Decoder RoomCreatedData
+roomCreatedDecoder =
+    decode RoomCreatedData
+        |> required "data" roomCreatedContendDecoder
+
+
+roomCreatedContendDecoder : Decode.Decoder RoomCreatedContent
+roomCreatedContendDecoder =
+    decode RoomCreatedContent
+        |> required "id" Decode.int
+        |> required "name" Decode.string
+        |> required "description" Decode.string
+        |> optional "subject_ids" (Decode.list Decode.string) []
