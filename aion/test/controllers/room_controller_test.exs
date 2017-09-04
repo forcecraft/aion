@@ -36,6 +36,14 @@ defmodule Aion.RoomControllerTest do
     assert Repo.get_by(Room, @valid_attrs)
   end
 
+  test "creates room with associated subjects", %{conn: conn} do
+    subject1 = Repo.insert! %Aion.Subject{}
+    subject2 = Repo.insert! %Aion.Subject{}
+    room_params = Map.merge(@valid_attrs, %{subject_ids: [subject1.id, subject2.id]})
+    conn = post conn, room_path(conn, :create), room: room_params
+    assert length(Repo.all(Aion.RoomSubject)) == 2
+  end
+
   test "does not create resource and renders errors when data is invalid", %{conn: conn} do
     conn = post conn, room_path(conn, :create), room: @invalid_attrs
     assert json_response(conn, 422)["errors"] != %{}
