@@ -41,3 +41,22 @@ categoryCreationErrorToast =
 categoryCreationSuccessfulToast : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 categoryCreationSuccessfulToast =
     addToast (Toasty.Defaults.Success "Success!" "Category created successfully.")
+
+
+
+-- room form notifications
+
+
+roomFormValidationErrorToast : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+roomFormValidationErrorToast =
+    addToast (Toasty.Defaults.Error "Error!" "Room submission form is not valid!")
+
+
+roomCreationErrorToast : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+roomCreationErrorToast =
+    addToast (Toasty.Defaults.Error "Error!" "Failed to create a room.")
+
+
+roomCreationSuccessfulToast : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+roomCreationSuccessfulToast =
+    addToast (Toasty.Defaults.Success "Success!" "Room created successfully.")
