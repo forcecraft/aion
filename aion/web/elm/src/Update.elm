@@ -7,8 +7,8 @@ import General.Notifications exposing (toastsConfig)
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Msgs exposing (Msg(..))
-import Panel.Api exposing (createCategory, createQuestionWithAnswers)
-import Panel.Models exposing (categoryNamePossibleFields, questionFormPossibleFields)
+import Panel.Api exposing (createCategory, createQuestionWithAnswers, createRoom)
+import Panel.Models exposing (categoryNamePossibleFields, questionFormPossibleFields, roomNamePossibleFields)
 import Panel.Notifications exposing (..)
 import RemoteData
 import Room.Constants exposing (answerInputFieldId, enterKeyCode)
@@ -20,13 +20,25 @@ import Phoenix.Channel
 import Phoenix.Push
 import Task
 import Toasty
+import Multiselect
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         OnFetchRooms response ->
-            { model | rooms = response } ! []
+            let
+                newModel = { model | rooms = response }
+                categoryList =
+                    case newModel.rooms of
+                        RemoteData.Success roomsData ->
+                            List.map (\room -> (toString(room.id), room.name)) roomsData.data
+                        _ ->
+                            []
+
+                oldPanelData = model.panelData
+            in
+                { model | panelData = { oldPanelData | categoryMultiSelect = Multiselect.initModel categoryList "id" } } ! []
 
         OnFetchCurrentUser response ->
             { model | user = response } ! []
@@ -51,6 +63,15 @@ update msg model =
 
                 _ ->
                     questionCreationErrorToast (model ! [])
+
+        OnRoomCreated response ->
+            case response of
+                RemoteData.Success responseData ->
+                     roomCreationSuccessfulToast  (model ! [])
+
+                _ ->
+                    roomCreationErrorToast (model ! [])
+
 
         OnCategoryCreated response ->
             case response of
@@ -223,6 +244,21 @@ update msg model =
                 }
                     ! []
 
+
+        UpdateRoomForm name value ->
+            let
+                oldPanelData =
+                    model.panelData
+
+                roomForm =
+                    oldPanelData.roomForm
+            in
+                { model
+                    | panelData =
+                        { oldPanelData | roomForm = Forms.updateFormInput roomForm name value }
+                }
+                    ! []
+
         CreateNewQuestionWithAnswers ->
             let
                 questionForm =
@@ -249,14 +285,40 @@ update msg model =
                         |> List.map (\name -> Forms.errorList categoryForm name)
                         |> List.foldr (++) []
                         |> List.filter (\validations -> validations /= Nothing)
+
             in
                 if List.isEmpty validationErrors then
                     ( model, createCategory model.panelData.categoryForm )
                 else
                     categoryFormValidationErrorToast (model ! [])
 
+        CreateNewRoom ->
+            let
+                roomForm =
+                    model.panelData.roomForm
+
+                validationErrors = []
+
+                subjectIds = List.map (\(x, _) -> x) (Multiselect.getSelectedValues model.panelData.categoryMultiSelect)
+            in
+                if List.isEmpty validationErrors then
+                    ( model, createRoom model.panelData.roomForm subjectIds )
+                else
+                    roomFormValidationErrorToast (model ! [])
+
         ToastyMsg subMsg ->
             Toasty.update toastsConfig ToastyMsg subMsg model
+
+
+        MultiselectMsg subMsg ->
+            let
+                ( subModel, subCmd ) =
+                    Multiselect.update subMsg model.panelData.categoryMultiSelect
+
+                oldPanelData =
+                    model.panelData
+            in
+                { model | panelData = { oldPanelData | categoryMultiSelect = subModel } } ! [ Cmd.map MultiselectMsg subCmd ]
 
         NoOperation ->
             model ! []
