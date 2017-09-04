@@ -12,6 +12,7 @@ import Room.Models exposing (RoomsData)
 import Select
 import Toasty
 import Toasty.Defaults
+import Multiselect
 
 
 panelView : Model -> Html Msg
@@ -30,6 +31,12 @@ panelView model =
             [ categoryNameFormElement model.panelData.categoryForm
             , input [ type_ "button", value "submit", onClick CreateNewCategory ] []
             , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
+            ]
+        , h3 [] [ text "Create new Room:" ]
+        , form []
+            [ roomFormElement model.panelData.roomForm
+            , Html.map MultiselectMsg <| Multiselect.view model.panelData.categoryMultiSelect
+            , input [ type_ "button", value "submit", onClick CreateNewRoom ] []
             ]
         ]
 
@@ -100,4 +107,23 @@ categoryNameFormElement form =
             ]
             []
         , small [] [ text (Forms.errorString form "name") ]
+        ]
+
+
+
+-- room form section
+
+
+roomFormElement : Forms.Form -> Html Msg
+roomFormElement form =
+    div []
+        [ p [] [ text "Enter room name bellow, should be uppercase:" ]
+          , input
+              [ placeholder "Name..."
+              , onInput (UpdateRoomForm "name")
+              , value (Forms.formValue form "name")] []
+          , input
+              [ placeholder "Description..."
+              , onInput (UpdateRoomForm "description")
+              , value (Forms.formValue form "description")] []
         ]
