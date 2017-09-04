@@ -2,13 +2,14 @@ module General.Models exposing (..)
 
 import Forms
 import Msgs exposing (Msg)
-import Panel.Models exposing (PanelData, categoryForm, questionForm)
+import Panel.Models exposing (PanelData, categoryForm, questionForm, roomForm)
 import Phoenix.Socket
 import RemoteData exposing (WebData)
 import Room.Models exposing (RoomId, RoomsData, UsersInRoom, QuestionInRoom, UserGameData)
 import Toasty
 import Toasty.Defaults
 import User.Models exposing (CurrentUser)
+import Multiselect
 
 
 type alias Model =
@@ -60,5 +61,7 @@ initialModel flags route =
     , panelData =
         { questionForm = Forms.initForm questionForm
         , categoryForm = Forms.initForm categoryForm
+        , roomForm = Forms.initForm roomForm
+        , categoryMultiSelect = Multiselect.initModel [] "id"
         }
     }
