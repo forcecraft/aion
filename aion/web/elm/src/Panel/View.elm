@@ -10,7 +10,6 @@ import General.Models exposing (Model)
 import General.Notifications exposing (toastsConfig)
 import Html exposing (..)
 import Html.Attributes exposing (class, for, placeholder, type_, value)
-import Html.Events exposing (onClick, onInput, onWithOptions)
 import Msgs exposing (Msg(..))
 import RemoteData exposing (WebData)
 import Room.Models exposing (Room, RoomsData)
@@ -44,11 +43,15 @@ panelView model =
                 [ text "submit" ]
             , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
             ]
-        , h3 [] [ text "Create new Room:" ]
-        , form []
+        , h4 [] [ text "Create new Room:" ]
+        , Form.form []
             [ roomFormElement model.panelData.roomForm
-            , Html.map MultiselectMsg <| Multiselect.view model.panelData.categoryMultiSelect
-            , input [ type_ "button", value "submit", onClick CreateNewRoom ] []
+            , Form.group [] [ Html.map MultiselectMsg <| (Multiselect.view model.panelData.categoryMultiSelect) ]
+            , Button.button
+                [ Button.success
+                , Button.onClick CreateNewRoom
+                ]
+                [ text "submit" ]
             ]
         ]
 
@@ -131,14 +134,16 @@ categoryNameFormElement form =
 
 roomFormElement : Forms.Form -> Html Msg
 roomFormElement form =
-    div []
-        [ p [] [ text "Enter room name bellow, should be uppercase:" ]
-          , input
-              [ placeholder "Name..."
-              , onInput (UpdateRoomForm "name")
-              , value (Forms.formValue form "name")] []
-          , input
-              [ placeholder "Description..."
-              , onInput (UpdateRoomForm "description")
-              , value (Forms.formValue form "description")] []
+    Form.group []
+        [ Form.label [ for "room" ] [ text "Enter room name bellow, should be uppercase:" ]
+          , Input.text
+              [ Input.placeholder "Name..."
+              , Input.onInput (UpdateRoomForm "name")
+              , Input.value (Forms.formValue form "name")]
+          , Badge.pillInfo [] [ text (Forms.errorString form "name") ]
+          , Input.text
+              [ Input.placeholder "Description..."
+              , Input.onInput (UpdateRoomForm "description")
+              , Input.value (Forms.formValue form "description")]
+          , Badge.pillInfo [] [ text (Forms.errorString form "description") ]
         ]

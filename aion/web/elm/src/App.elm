@@ -11,6 +11,7 @@ import Routing
 import Update exposing (update)
 import User.Api exposing (fetchCurrentUser)
 import View exposing (view)
+import Multiselect
 
 
 init : Flags -> Location -> ( Model, Cmd Msg )
@@ -35,6 +36,7 @@ subscriptions model =
     Sub.batch
         [ Phoenix.Socket.listen model.socket Msgs.PhoenixMsg
         , Navbar.subscriptions model.navbarState NavbarMsg
+        , Sub.map Msgs.MultiselectMsg <| Multiselect.subscriptions model.panelData.categoryMultiSelect
         ]
 
 
