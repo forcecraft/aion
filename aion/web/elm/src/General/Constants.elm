@@ -14,3 +14,8 @@ createCategoryUrl =
 createQuestionUrl : String
 createQuestionUrl =
     hostname ++ "api/questions"
+
+createRoomUrl : String
+createRoomUrl =
+    hostname ++ "api/rooms"
+
