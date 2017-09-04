@@ -19,6 +19,9 @@ init flags location =
         currentRoute =
             Routing.parseLocation location
 
+        x =
+            Debug.log "Location" (host location)
+
         ( navbarState, navbarCmd ) =
             Navbar.initialState NavbarMsg
 

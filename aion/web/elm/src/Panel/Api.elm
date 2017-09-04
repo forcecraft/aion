@@ -1,7 +1,7 @@
 module Panel.Api exposing (..)
 
 import Forms
-import General.Constants exposing (createCategoryUrl, createQuestionUrl, hostname)
+import General.Constants exposing (createCategoryUrl, createQuestionUrl)
 import Http
 import Msgs exposing (Msg)
 import RemoteData exposing (WebData)

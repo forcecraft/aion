@@ -5,7 +5,7 @@ import Bootstrap.Button as Button
 import Bootstrap.Card as Card
 import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Col as Col
-import General.Constants exposing (gameCardConfig, hostname, panelCardConfig, profileCardConfig)
+import General.Constants exposing (gameCardConfig, panelCardConfig, profileCardConfig)
 import General.Models exposing (Model, SimpleCardConfig)
 import General.Utils exposing (sliceList, roomsViewColorList, roomsDefaultColor)
 import Html exposing (Html, a, button, div, h2, h3, i, img, li, p, text, ul)
