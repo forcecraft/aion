@@ -13,8 +13,8 @@ fetchRoomsUrl location =
     (host location) ++ "api/subjects"
 
 
-fetchRooms : Cmd Msg
-fetchRooms =
-    Http.get fetchRoomsUrl roomsDecoder
+fetchRooms : Location -> Cmd Msg
+fetchRooms location =
+    Http.get (fetchRoomsUrl location) roomsDecoder
         |> RemoteData.sendRequest
         |> Cmd.map Msgs.OnFetchRooms

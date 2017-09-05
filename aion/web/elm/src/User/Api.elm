@@ -13,8 +13,8 @@ fetchCurrentUserUrl location =
     (host location) ++ "api/me"
 
 
-fetchCurrentUser : Cmd Msg
-fetchCurrentUser =
-    Http.get fetchCurrentUserUrl userDecoder
+fetchCurrentUser : Location -> Cmd Msg
+fetchCurrentUser location =
+    Http.get (fetchCurrentUserUrl location) userDecoder
         |> RemoteData.sendRequest
         |> Cmd.map Msgs.OnFetchCurrentUser

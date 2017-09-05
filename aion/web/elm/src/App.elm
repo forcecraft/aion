@@ -1,7 +1,7 @@
 module App exposing (..)
 
 import Bootstrap.Navbar as Navbar
-import General.Constants exposing (hostname)
+import General.Constants exposing (host)
 import General.Models exposing (Flags, Model, initialModel)
 import Msgs exposing (Msg(NavbarMsg))
 import Navigation exposing (Location, modifyUrl)
@@ -26,10 +26,10 @@ init flags location =
             Navbar.initialState NavbarMsg
 
         getInitialModel =
-            initialModel flags currentRoute
+            initialModel flags currentRoute location
     in
         ( { getInitialModel | navbarState = navbarState }
-        , Cmd.batch [ setHomeUrl, fetchRooms, fetchCurrentUser, navbarCmd ]
+        , Cmd.batch [ setHomeUrl location, fetchRooms location, fetchCurrentUser location, navbarCmd ]
         )
 
 
@@ -51,6 +51,6 @@ main =
         }
 
 
-setHomeUrl : Cmd Msg
-setHomeUrl =
-    modifyUrl hostname
+setHomeUrl : Location -> Cmd Msg
+setHomeUrl location =
+    modifyUrl (host location)

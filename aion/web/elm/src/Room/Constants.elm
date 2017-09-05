@@ -14,9 +14,9 @@ imagesPath location =
     (host location) ++ "images/"
 
 
-defaultImagePath : String
-defaultImagePath =
-    imagesPath ++ "question-mark.jpg"
+defaultImagePath : Location -> String
+defaultImagePath location =
+    (imagesPath location) ++ "question-mark.jpg"
 
 
 answerInputFieldId : String

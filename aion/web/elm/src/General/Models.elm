@@ -3,6 +3,7 @@ module General.Models exposing (..)
 import Bootstrap.Navbar as Navbar
 import Forms
 import Msgs exposing (Msg(NavbarMsg))
+import Navigation exposing (Location)
 import Panel.Models exposing (PanelData, categoryForm, questionForm)
 import Phoenix.Socket
 import RemoteData exposing (WebData)
@@ -25,6 +26,7 @@ type alias Model =
     , toasties : Toasty.Stack Toasty.Defaults.Toast
     , panelData : PanelData
     , navbarState : Navbar.State
+    , location : Location
     }
 
 
@@ -51,8 +53,8 @@ type alias SimpleCardConfig =
     }
 
 
-initialModel : Flags -> Route -> Model
-initialModel flags route =
+initialModel : Flags -> Route -> Location -> Model
+initialModel flags route location =
     let
         ( navbarState, _ ) =
             Navbar.initialState NavbarMsg
@@ -77,4 +79,5 @@ initialModel flags route =
             , categoryForm = Forms.initForm categoryForm
             }
         , navbarState = navbarState
+        , location = location
         }

@@ -4,6 +4,7 @@ import Forms
 import General.Constants exposing (createCategoryUrl, createQuestionUrl)
 import Http
 import Msgs exposing (Msg)
+import Navigation exposing (Location)
 import RemoteData exposing (WebData)
 import Panel.Decoders exposing (categoryCreatedDecoder, questionCreatedDecoder)
 import Json.Encode as Encode
@@ -14,9 +15,9 @@ import Room.Models exposing (RoomsData)
 -- create question section
 
 
-createQuestionWithAnswers : QuestionForm -> WebData RoomsData -> Cmd Msg
-createQuestionWithAnswers form rooms =
-    Http.post createQuestionUrl (questionCreationEncoder form rooms) questionCreatedDecoder
+createQuestionWithAnswers : Location -> QuestionForm -> WebData RoomsData -> Cmd Msg
+createQuestionWithAnswers location form rooms =
+    Http.post (createQuestionUrl location) (questionCreationEncoder form rooms) questionCreatedDecoder
         |> RemoteData.sendRequest
         |> Cmd.map Msgs.OnQuestionCreated
 
@@ -52,9 +53,9 @@ questionCreationEncoder form rooms =
 -- create category section
 
 
-createCategory : CategoryForm -> Cmd Msg
-createCategory form =
-    Http.post createCategoryUrl (categoryCreationEncoder form) categoryCreatedDecoder
+createCategory : Location -> CategoryForm -> Cmd Msg
+createCategory location form =
+    Http.post (createCategoryUrl location) (categoryCreationEncoder form) categoryCreatedDecoder
         |> RemoteData.sendRequest
         |> Cmd.map Msgs.OnCategoryCreated
 
