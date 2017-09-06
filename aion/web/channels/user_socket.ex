@@ -8,7 +8,7 @@ defmodule Aion.UserSocket do
 
   channel "rooms:*", RoomChannel
 
-  transport :websocket, Phoenix.Transports.WebSocket, timeout: 30_000
+  transport :websocket, Phoenix.Transports.WebSocket
 
   def connect(%{"token" => token}, socket) do
     case Token.verify(socket, "user", token, max_age: 86_400) do
