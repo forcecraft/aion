@@ -1,11 +1,11 @@
 module Room.Api exposing (..)
 
-import General.Constants exposing (host)
 import Http
 import Msgs exposing (Msg)
 import Navigation exposing (Location)
 import RemoteData
 import Room.Decoders exposing (roomsDecoder)
+import Urls exposing (host)
 
 
 fetchRoomsUrl : Location -> String

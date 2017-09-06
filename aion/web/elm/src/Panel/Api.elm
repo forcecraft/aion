@@ -1,7 +1,6 @@
 module Panel.Api exposing (..)
 
 import Forms
-import General.Constants exposing (createCategoryUrl, createQuestionUrl)
 import Http
 import Msgs exposing (Msg)
 import Navigation exposing (Location)
@@ -10,6 +9,7 @@ import Panel.Decoders exposing (categoryCreatedDecoder, questionCreatedDecoder)
 import Json.Encode as Encode
 import Panel.Models exposing (CategoryForm, QuestionForm)
 import Room.Models exposing (RoomsData)
+import Urls exposing (createCategoryUrl, createQuestionUrl)
 
 
 -- create question section

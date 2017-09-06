@@ -1,10 +1,10 @@
 module User.Api exposing (..)
 
-import General.Constants exposing (host)
 import Http
 import Msgs exposing (Msg)
 import Navigation exposing (Location)
 import RemoteData
+import Urls exposing (host)
 import User.Decoders exposing (userDecoder)
 
 

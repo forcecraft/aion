@@ -1,7 +1,7 @@
 module Room.Constants exposing (..)
 
-import General.Constants exposing (host)
 import Navigation exposing (Location)
+import Urls exposing (host)
 
 
 enterKeyCode : Int

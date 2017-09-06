@@ -3,26 +3,7 @@ module General.Constants exposing (..)
 import General.Models exposing (SimpleCardConfig)
 import Navigation exposing (Location)
 import Routing exposing (panelPath, roomsPath, userPath)
-
-
---hostname : String
---hostname =
---    "http://localhost:4000/"
-
-
-host : Location -> String
-host location =
-    location.protocol ++ "//" ++ location.host ++ "/"
-
-
-createCategoryUrl : Location -> String
-createCategoryUrl location =
-    (host location) ++ "api/subjects"
-
-
-createQuestionUrl : Location -> String
-createQuestionUrl location =
-    (host location) ++ "api/questions"
+import Urls exposing (host)
 
 
 gameCardConfig : Location -> SimpleCardConfig

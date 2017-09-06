@@ -1,7 +1,6 @@
 module View exposing (..)
 
 import Bootstrap.Navbar as Navbar
-import General.Constants exposing (host)
 import General.Models exposing (Model, Route(LoginRoute, NotFoundRoute, PanelRoute, RoomListRoute, RoomRoute, UserRoute))
 import General.View exposing (homeView, notFoundView, roomListView)
 import Html exposing (..)
@@ -11,6 +10,7 @@ import Navigation exposing (Location)
 import Panel.View exposing (panelView)
 import Room.View exposing (roomView)
 import Routing exposing (panelPath, roomsPath, userPath)
+import Urls exposing (host)
 import User.View exposing (userView)
 
 

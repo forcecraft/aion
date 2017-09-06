@@ -1,7 +1,6 @@
 module App exposing (..)
 
 import Bootstrap.Navbar as Navbar
-import General.Constants exposing (host)
 import General.Models exposing (Flags, Model, initialModel)
 import Msgs exposing (Msg(NavbarMsg))
 import Navigation exposing (Location, modifyUrl)
@@ -9,6 +8,7 @@ import Phoenix.Socket
 import Room.Api exposing (fetchRooms)
 import Routing
 import Update exposing (update)
+import Urls exposing (host)
 import User.Api exposing (fetchCurrentUser)
 import View exposing (view)
 
@@ -18,9 +18,6 @@ init flags location =
     let
         currentRoute =
             Routing.parseLocation location
-
-        x =
-            Debug.log "Location" (host location)
 
         ( navbarState, navbarCmd ) =
             Navbar.initialState NavbarMsg
