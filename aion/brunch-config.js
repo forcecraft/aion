@@ -36,7 +36,8 @@ exports.config = {
             executablePath: '../../node_modules/elm/binwrappers',
             elmFolder: 'web/elm',
             mainModules: ['src/App.elm'],
-            outputFolder: '../static/vendor',
+            outputFolder: '../../priv/static/js',
+            outputFile: "bundle.js",
             makeParameters: ['--warn']
         },
         babel: {
