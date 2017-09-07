@@ -28,15 +28,19 @@ update msg model =
     case msg of
         OnFetchRooms response ->
             let
-                newModel = { model | rooms = response }
+                newModel =
+                    { model | rooms = response }
+
                 categoryList =
                     case newModel.rooms of
                         RemoteData.Success roomsData ->
-                            List.map (\room -> (toString(room.id), room.name)) roomsData.data
+                            List.map (\room -> ( toString (room.id), room.name )) roomsData.data
+
                         _ ->
                             []
 
-                oldPanelData = model.panelData
+                oldPanelData =
+                    model.panelData
             in
                 { model | panelData = { oldPanelData | categoryMultiSelect = Multiselect.initModel categoryList "id" } } ! []
 
@@ -67,11 +71,10 @@ update msg model =
         OnRoomCreated response ->
             case response of
                 RemoteData.Success responseData ->
-                     roomCreationSuccessfulToast  (model ! [])
+                    roomCreationSuccessfulToast (model ! [])
 
                 _ ->
                     roomCreationErrorToast (model ! [])
-
 
         OnCategoryCreated response ->
             case response of
@@ -258,7 +261,6 @@ update msg model =
                 }
                     ! []
 
-
         UpdateRoomForm name value ->
             let
                 oldPanelData =
@@ -299,28 +301,27 @@ update msg model =
                         |> List.map (\name -> Forms.errorList categoryForm name)
                         |> List.foldr (++) []
                         |> List.filter (\validations -> validations /= Nothing)
-
             in
                 if List.isEmpty validationErrors then
                     ( model, createCategory model.panelData.categoryForm )
                 else
                     categoryFormValidationErrorToast (model ! [])
 
-
         CreateNewRoom ->
             let
                 roomForm =
                     model.panelData.roomForm
 
-                validationErrors = []
+                validationErrors =
+                    []
 
-                subjectIds = List.map (\(x, _) -> x) (Multiselect.getSelectedValues model.panelData.categoryMultiSelect)
+                subjectIds =
+                    List.map (\( x, _ ) -> x) (Multiselect.getSelectedValues model.panelData.categoryMultiSelect)
             in
                 if List.isEmpty validationErrors then
                     ( model, createRoom model.panelData.roomForm subjectIds )
                 else
                     roomFormValidationErrorToast (model ! [])
-
 
         MultiselectMsg subMsg ->
             let
@@ -332,7 +333,6 @@ update msg model =
             in
                 { model | panelData = { oldPanelData | categoryMultiSelect = subModel } } ! [ Cmd.map MultiselectMsg subCmd ]
 
-
         -- Toasty
         ToastyMsg subMsg ->
             Toasty.update toastsConfig ToastyMsg subMsg model
@@ -342,6 +342,5 @@ update msg model =
             ( { model | navbarState = state }, Cmd.none )
 
         -- NoOp
-
         NoOperation ->
             model ! []

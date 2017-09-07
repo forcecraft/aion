@@ -136,14 +136,16 @@ roomFormElement : Forms.Form -> Html Msg
 roomFormElement form =
     Form.group []
         [ Form.label [ for "room" ] [ text "Enter room name bellow, should be uppercase:" ]
-          , Input.text
-              [ Input.placeholder "Name..."
-              , Input.onInput (UpdateRoomForm "name")
-              , Input.value (Forms.formValue form "name")]
-          , Badge.pillInfo [] [ text (Forms.errorString form "name") ]
-          , Input.text
-              [ Input.placeholder "Description..."
-              , Input.onInput (UpdateRoomForm "description")
-              , Input.value (Forms.formValue form "description")]
-          , Badge.pillInfo [] [ text (Forms.errorString form "description") ]
+        , Input.text
+            [ Input.placeholder "Name..."
+            , Input.onInput (UpdateRoomForm "name")
+            , Input.value (Forms.formValue form "name")
+            ]
+        , Badge.pillInfo [] [ text (Forms.errorString form "name") ]
+        , Input.text
+            [ Input.placeholder "Description..."
+            , Input.onInput (UpdateRoomForm "description")
+            , Input.value (Forms.formValue form "description")
+            ]
+        , Badge.pillInfo [] [ text (Forms.errorString form "description") ]
         ]

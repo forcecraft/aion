@@ -90,7 +90,8 @@ roomNamePossibleFields =
 roomForm : List ( String, List Forms.FieldValidator )
 roomForm =
     [ ( "name", [ Forms.validateExistence ] )
-    , ( "description", [ Forms.validateExistence ] )]
+    , ( "description", [ Forms.validateExistence ] )
+    ]
 
 
 type alias RoomCreatedData =
@@ -98,7 +99,8 @@ type alias RoomCreatedData =
 
 
 type alias RoomCreatedContent =
-    { id : Int, name : String
+    { id : Int
+    , name : String
     , description : String
-    , subject_ids : List(String)
+    , subject_ids : List String
     }

@@ -76,14 +76,14 @@ categoryCreationEncoder form =
             |> Http.jsonBody
 
 
-createRoom : RoomForm -> List (String) -> Cmd Msg
+createRoom : RoomForm -> List String -> Cmd Msg
 createRoom form subjectIds =
     Http.post createRoomUrl (roomCreationEncoder form subjectIds) roomCreatedDecoder
         |> RemoteData.sendRequest
         |> Cmd.map Msgs.OnRoomCreated
 
 
-roomCreationEncoder : RoomForm -> List (String) -> Http.Body
+roomCreationEncoder : RoomForm -> List String -> Http.Body
 roomCreationEncoder form subjectIds =
     let
         roomName =
@@ -92,12 +92,14 @@ roomCreationEncoder form subjectIds =
         roomDescription =
             Forms.formValue form "description"
 
-        subjectIdsValues = List.map Encode.string subjectIds
+        subjectIdsValues =
+            List.map Encode.string subjectIds
 
         roomContent =
             [ ( "name", Encode.string roomName )
             , ( "description", Encode.string roomDescription )
-            , ( "subject_ids", Encode.list subjectIdsValues ) ]
+            , ( "subject_ids", Encode.list subjectIdsValues )
+            ]
 
         payload =
             [ ( "room", Encode.object roomContent ) ]
