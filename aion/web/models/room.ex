@@ -3,7 +3,7 @@ defmodule Aion.Room do
     Represents a game room with different categories of questions
   """
   use Aion.Web, :model
-  alias Aion.{Subject, RoomSubject}
+  alias Aion.{Subject, RoomSubject, Repo}
 
   schema "rooms" do
     field :name, :string
@@ -20,7 +20,7 @@ defmodule Aion.Room do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> Aion.Repo.preload(:subjects)
+    |> Repo.preload(:subjects)
     |> cast(params, [:name, :description])
     |> validate_required([:name, :description])
     |> unique_constraint(:name)
@@ -29,6 +29,6 @@ defmodule Aion.Room do
 
   def parse_subject_ids(params) do
     (params["subject_ids"] || [])
-    |> Enum.map(fn(id) -> Aion.Repo.get(Aion.Subject, id) end)
+    |> Enum.map(fn(id) -> Repo.get(Aion.Subject, id) end)
   end
 end
