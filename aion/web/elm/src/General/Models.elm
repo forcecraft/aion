@@ -3,6 +3,7 @@ module General.Models exposing (..)
 import Bootstrap.Navbar as Navbar
 import Forms
 import Msgs exposing (Msg(NavbarMsg))
+import Multiselect
 import Panel.Models exposing (PanelData, categoryForm, questionForm, roomForm)
 import Phoenix.Socket
 import RemoteData exposing (WebData)
@@ -10,7 +11,6 @@ import Room.Models exposing (RoomId, RoomsData, UsersInRoom, QuestionInRoom, Use
 import Toasty
 import Toasty.Defaults
 import User.Models exposing (CurrentUser)
-import Multiselect
 
 
 type alias Model =

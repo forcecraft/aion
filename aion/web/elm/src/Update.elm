@@ -263,15 +263,15 @@ update msg model =
 
         UpdateRoomForm name value ->
             let
-                oldPanelData =
+                panelData =
                     model.panelData
 
-                roomForm =
-                    oldPanelData.roomForm
+                oldRoomForm =
+                    panelData.roomForm
             in
                 { model
                     | panelData =
-                        { oldPanelData | roomForm = Forms.updateFormInput roomForm name value }
+                        { panelData | roomForm = Forms.updateFormInput oldRoomForm name value }
                 }
                     ! []
 

@@ -11,11 +11,11 @@ import General.Notifications exposing (toastsConfig)
 import Html exposing (..)
 import Html.Attributes exposing (class, for, placeholder, type_, value)
 import Msgs exposing (Msg(..))
+import Multiselect
 import RemoteData exposing (WebData)
 import Room.Models exposing (Room, RoomsData)
 import Toasty
 import Toasty.Defaults
-import Multiselect
 
 
 panelView : Model -> Html Msg

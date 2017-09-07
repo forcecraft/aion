@@ -3,6 +3,7 @@ module Msgs exposing (..)
 import Bootstrap.Navbar as Navbar
 import Dom exposing (Error)
 import Navigation exposing (Location)
+import Multiselect
 import Panel.Models exposing (CategoryCreatedData, QuestionCreatedData, RoomCreatedData)
 import RemoteData exposing (WebData)
 import Phoenix.Socket
@@ -11,7 +12,6 @@ import Room.Models exposing (RoomId, RoomsData)
 import Toasty
 import Toasty.Defaults
 import User.Models exposing (CurrentUser)
-import Multiselect
 
 
 type Msg

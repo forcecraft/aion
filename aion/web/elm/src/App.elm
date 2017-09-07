@@ -4,6 +4,7 @@ import Bootstrap.Navbar as Navbar
 import General.Constants exposing (hostname)
 import General.Models exposing (Flags, Model, initialModel)
 import Msgs exposing (Msg(NavbarMsg))
+import Multiselect
 import Navigation exposing (Location, modifyUrl)
 import Phoenix.Socket
 import Room.Api exposing (fetchRooms)
@@ -11,7 +12,6 @@ import Routing
 import Update exposing (update)
 import User.Api exposing (fetchCurrentUser)
 import View exposing (view)
-import Multiselect
 
 
 init : Flags -> Location -> ( Model, Cmd Msg )
