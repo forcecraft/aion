@@ -19,6 +19,11 @@ createQuestionUrl =
     hostname ++ "api/questions"
 
 
+fetchRoomsUrl : String
+fetchRoomsUrl =
+    hostname ++ "api/rooms"
+
+
 gameCardConfig : SimpleCardConfig
 gameCardConfig =
     { svgImage = hostname ++ "svg/trophy.svg"
