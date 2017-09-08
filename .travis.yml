@@ -23,7 +23,6 @@ cache:
     - aion/web/elm/elm-stuff/build-artifacts
 
 install:
-  - cd ..
   - |
     if [ ! -d sysconfcpus/bin ];
     then
