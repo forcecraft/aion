@@ -37,10 +37,21 @@ defmodule Aion.Question do
   end
 
   @spec get_random_question(integer) :: Question.t
-  def get_random_question(category_id) do
-    query = from q in Question, where: q.category_id == ^category_id
-    query
-    |> Repo.all()
-    |> Enum.random()
+  def get_random_question(room_id) do
+    query = Repo.query("
+      SELECT content, image_name, q.id FROM questions AS q
+      JOIN room_categories AS rc ON rc.category_id = q.category_id
+      JOIN rooms AS r ON r.id = rc.room_id
+      WHERE room_id = $1::integer;
+    ", [String.to_integer(room_id)])
+
+    case query do
+      {:ok, result} ->
+        result.rows
+        |> Enum.map(fn [content, image_name, id] ->  %Question{content: content, image_name: image_name, id: id} end)
+        |> Enum.random()
+      {:error, _} ->
+        %Question{}
+    end
   end
 end
