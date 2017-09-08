@@ -1,7 +1,7 @@
 module Panel.Models exposing (..)
 
 import Forms
-import Panel.Validators exposing (answersValidations, categoryNameValidations, questionValidations, subjectValidations)
+import Panel.Validators exposing (answersValidations, categoryNameValidations, questionValidations, categoryValidations)
 
 
 type alias PanelData =
@@ -20,14 +20,14 @@ type alias QuestionForm =
 
 questionFormPossibleFields : List String
 questionFormPossibleFields =
-    [ "question", "answers", "subject" ]
+    [ "question", "answers", "category" ]
 
 
 questionForm : List ( String, List Forms.FieldValidator )
 questionForm =
     [ ( "question", questionValidations )
     , ( "answers", answersValidations )
-    , ( "subject", subjectValidations )
+    , ( "category", categoryValidations )
     ]
 
 
@@ -36,7 +36,7 @@ type alias QuestionCreatedData =
 
 
 type alias QuestionCreatedContent =
-    { subject_id : Int
+    { category_id : Int
     , image_name : String
     , id : Int
     , content : String

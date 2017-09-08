@@ -9,7 +9,7 @@ import Room.Decoders exposing (roomsDecoder)
 
 fetchRoomsUrl : String
 fetchRoomsUrl =
-    hostname ++ "api/subjects"
+    hostname ++ "api/categories"
 
 
 fetchRooms : Cmd Msg

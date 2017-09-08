@@ -17,7 +17,7 @@ questionCreatedDecoder =
 questionCreatedContentDecoder : Decode.Decoder QuestionCreatedContent
 questionCreatedContentDecoder =
     decode QuestionCreatedContent
-        |> required "subject_id" Decode.int
+        |> required "category_id" Decode.int
         |> required "image_name" (oneOf [ Decode.string, null "" ])
         |> required "id" Decode.int
         |> required "content" Decode.string

@@ -11,7 +11,7 @@ hostname =
 
 createCategoryUrl : String
 createCategoryUrl =
-    hostname ++ "api/subjects"
+    hostname ++ "api/categories"
 
 
 createQuestionUrl : String

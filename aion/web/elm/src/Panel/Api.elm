@@ -30,8 +30,8 @@ questionCreationEncoder form rooms =
         answersValue =
             Forms.formValue form "answers"
 
-        subjectValue =
-            Forms.formValue form "subject"
+        categoryValue =
+            Forms.formValue form "category"
 
         questionContent =
             [ ( "content", Encode.string questionValue )
@@ -40,7 +40,7 @@ questionCreationEncoder form rooms =
         payload =
             [ ( "question", Encode.object questionContent )
             , ( "answers", Encode.string answersValue )
-            , ( "subject", Encode.int (String.toInt subjectValue |> Result.toMaybe |> Maybe.withDefault 0) )
+            , ( "category", Encode.int (String.toInt categoryValue |> Result.toMaybe |> Maybe.withDefault 0) )
             ]
     in
         payload
@@ -69,7 +69,7 @@ categoryCreationEncoder form =
             [ ( "name", Encode.string categoryName ) ]
 
         payload =
-            [ ( "subject", Encode.object questionContent ) ]
+            [ ( "category", Encode.object questionContent ) ]
     in
         payload
             |> Encode.object
