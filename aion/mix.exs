@@ -45,7 +45,8 @@ defmodule Aion.Mixfile do
      {:simetric, "~> 0.1.0"},
      {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
      {:plug, "~>1.3.5", override: true},
-     {:dialyxir, "~> 0.5", only: [:dev], runtime: false}
+     {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
+     {:exrm, "~> 1.0.8"}
   ]
   end
 
