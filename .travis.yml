@@ -7,7 +7,6 @@ elixir:
 
 otp_release:
 - 20.0
-- 19.3
 
 addons:
   postgresql: '9.4'
