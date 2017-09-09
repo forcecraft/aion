@@ -21,7 +21,7 @@ defmodule Aion.Mixfile do
   def application do
     [mod: {Aion, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex, :simetric]]
+                    :phoenix_ecto, :postgrex, :simetric, :addict]]
   end
 
   # Specifies which paths to compile per environment.
@@ -46,7 +46,7 @@ defmodule Aion.Mixfile do
      {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
      {:plug, "~>1.3.5", override: true},
      {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
-     {:exrm, "~> 1.0.8"}
+     {:distillery, "~> 1.4", runtime: false}
   ]
   end
 
