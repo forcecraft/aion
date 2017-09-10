@@ -87,16 +87,16 @@ answersFormElement form =
         ]
 
 
-categoryFormElement : Forms.Form -> List Room -> Html Msg
-categoryFormElement form roomList =
+categoryFormElement : Forms.Form -> List Category -> Html Msg
+categoryFormElement form categoryList =
     Form.group []
         [ Form.label [ for "category" ] [ text "Select the category to which to add the question:" ]
         , Select.select
             [ Select.onChange (UpdateQuestionForm "category") ]
             (Select.item [ value "0" ] [ text "--Select a category--" ]
                 :: List.map
-                    (\room -> Select.item [ value (room.id |> toString) ] [ text room.name ])
-                    roomList
+                    (\category -> Select.item [ value (category.id |> toString) ] [ text category.name ])
+                    categoryList
             )
         , Badge.pillInfo [] [ text (Forms.errorString form "category") ]
         ]
@@ -119,7 +119,7 @@ listCategories result =
 categoryNameFormElement : Forms.Form -> Html Msg
 categoryNameFormElement form =
     Form.group []
-        [ Form.label [ for "category" ] [ text "Enter category name bellow, should be uppercase:" ]
+        [ Form.label [ for "category" ] [ text "Enter category name below, should be uppercase:" ]
         , Input.text
             [ Input.placeholder "for instance: History or Famous people"
             , Input.onInput (UpdateCategoryForm "name")

@@ -44,8 +44,11 @@ update msg model =
 
                 oldPanelData =
                     model.panelData
+
+                updatedCategoryMultiselect =
+                    Multiselect.initModel categoryList "id"
             in
-                { model | panelData = { oldPanelData | categoryMultiSelect = Multiselect.initModel categoryList "id" } } ! []
+                { newModel | panelData = { oldPanelData | categoryMultiSelect = updatedCategoryMultiselect } } ! []
 
         OnFetchCurrentUser response ->
             { model | user = response } ! []
@@ -71,14 +74,6 @@ update msg model =
                 _ ->
                     questionCreationErrorToast (model ! [])
 
-        OnRoomCreated response ->
-            case response of
-                RemoteData.Success responseData ->
-                    roomCreationSuccessfulToast (model ! [])
-
-                _ ->
-                    roomCreationErrorToast (model ! [])
-
         OnCategoryCreated response ->
             case response of
                 RemoteData.Success responseData ->
@@ -96,6 +91,27 @@ update msg model =
 
                 _ ->
                     categoryCreationErrorToast (model ! [])
+
+        OnRoomCreated response ->
+            case response of
+                RemoteData.Success responseData ->
+                    let
+                        oldPanelData =
+                            model.panelData
+
+                        oldRoomForm =
+                            model.panelData.roomForm
+
+                        newRoomForm =
+                            Forms.updateFormInput oldRoomForm "name" ""
+
+                        evenNewerRoomForm =
+                            Forms.updateFormInput newRoomForm "description" ""
+                    in
+                        roomCreationSuccessfulToast ({ model | panelData = { oldPanelData | roomForm = evenNewerRoomForm } } ! [])
+
+                _ ->
+                    roomCreationErrorToast (model ! [])
 
         OnLocationChange location ->
             let
@@ -243,10 +259,13 @@ update msg model =
 
                 questionForm =
                     oldPanelData.questionForm
+
+                updatedQuestionForm =
+                    Forms.updateFormInput questionForm name value
             in
                 { model
                     | panelData =
-                        { oldPanelData | questionForm = Forms.updateFormInput questionForm name value }
+                        { oldPanelData | questionForm = updatedQuestionForm }
                 }
                     ! []
 
@@ -257,10 +276,13 @@ update msg model =
 
                 categoryForm =
                     oldPanelData.categoryForm
+
+                updatedCategoryForm =
+                    Forms.updateFormInput categoryForm name value
             in
                 { model
                     | panelData =
-                        { oldPanelData | categoryForm = Forms.updateFormInput categoryForm name value }
+                        { oldPanelData | categoryForm = updatedCategoryForm }
                 }
                     ! []
 
@@ -271,10 +293,13 @@ update msg model =
 
                 oldRoomForm =
                     panelData.roomForm
+
+                updatedRoomForm =
+                    Forms.updateFormInput oldRoomForm name value
             in
                 { model
                     | panelData =
-                        { panelData | roomForm = Forms.updateFormInput oldRoomForm name value }
+                        { panelData | roomForm = updatedRoomForm }
                 }
                     ! []
 
@@ -319,7 +344,7 @@ update msg model =
                     []
 
                 categoryIds =
-                    List.map (\( x, _ ) -> x) (Multiselect.getSelectedValues model.panelData.categoryMultiSelect)
+                    List.map (\( id, _ ) -> id) (Multiselect.getSelectedValues model.panelData.categoryMultiSelect)
             in
                 if List.isEmpty validationErrors then
                     ( model, createRoom model.panelData.roomForm categoryIds )
