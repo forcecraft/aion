@@ -69,3 +69,13 @@ type alias CategoryCreatedContent =
     { id : Int
     , name : String
     }
+
+
+type alias Category =
+    { id : Int
+    , name : String
+    }
+
+
+type alias CategoriesData =
+    { data : List Category }

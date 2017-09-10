@@ -3,7 +3,7 @@ module Msgs exposing (..)
 import Bootstrap.Navbar as Navbar
 import Dom exposing (Error)
 import Navigation exposing (Location)
-import Panel.Models exposing (CategoryCreatedData, QuestionCreatedData)
+import Panel.Models exposing (CategoriesData, CategoryCreatedData, QuestionCreatedData)
 import RemoteData exposing (WebData)
 import Phoenix.Socket
 import Json.Encode as Encode
@@ -16,6 +16,7 @@ import User.Models exposing (CurrentUser)
 type Msg
     = OnLocationChange Location
     | OnFetchRooms (WebData RoomsData)
+    | OnFetchCategories (WebData CategoriesData)
     | OnFetchCurrentUser (WebData CurrentUser)
     | OnQuestionCreated (WebData QuestionCreatedData)
     | OnCategoryCreated (WebData CategoryCreatedData)

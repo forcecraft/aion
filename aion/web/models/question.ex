@@ -42,14 +42,19 @@ defmodule Aion.Question do
       SELECT content, image_name, q.id FROM questions AS q
       JOIN room_categories AS rc ON rc.category_id = q.category_id
       JOIN rooms AS r ON r.id = rc.room_id
-      WHERE room_id = $1::integer;
+      WHERE room_id = $1::integer
+      ORDER BY RANDOM()
+      LIMIT 1;
     ", [String.to_integer(room_id)])
 
     case query do
       {:ok, result} ->
-        result.rows
-        |> Enum.map(fn [content, image_name, id] ->  %Question{content: content, image_name: image_name, id: id} end)
-        |> Enum.random()
+        case result.rows do
+          [[content, image_name, id]] ->
+            %Question{content: content, image_name: image_name, id: id}
+          _ ->
+            %Question{}
+        end
       {:error, _} ->
         %Question{}
     end

@@ -28,6 +28,9 @@ update msg model =
         OnFetchRooms response ->
             { model | rooms = response } ! []
 
+        OnFetchCategories response ->
+            { model | categories = response } ! []
+
         OnFetchCurrentUser response ->
             { model | user = response } ! []
 

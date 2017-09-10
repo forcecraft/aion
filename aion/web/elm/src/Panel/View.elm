@@ -11,6 +11,7 @@ import General.Notifications exposing (toastsConfig)
 import Html exposing (..)
 import Html.Attributes exposing (class, for, placeholder, type_, value)
 import Msgs exposing (Msg(..))
+import Panel.Models exposing (CategoriesData, Category)
 import RemoteData exposing (WebData)
 import Room.Models exposing (Room, RoomsData)
 import Toasty
@@ -24,7 +25,7 @@ panelView model =
         , Form.form []
             [ questionFormElement model.panelData.questionForm
             , answersFormElement model.panelData.questionForm
-            , categoryFormElement model.panelData.questionForm (listRooms model.rooms)
+            , categoryFormElement model.panelData.questionForm (listCategories model.categories)
             , Button.button
                 [ Button.success
                 , Button.onClick CreateNewQuestionWithAnswers
@@ -90,11 +91,11 @@ categoryFormElement form roomList =
         ]
 
 
-listRooms : WebData RoomsData -> List Room
-listRooms result =
+listCategories : WebData CategoriesData -> List Category
+listCategories result =
     case result of
-        RemoteData.Success roomsData ->
-            roomsData.data
+        RemoteData.Success categoriesData ->
+            categoriesData.data
 
         _ ->
             []
