@@ -20,5 +20,5 @@ if __name__ == '__main__':
         questions = get_questions(path)
 
     load_questions(questions, conn)
-    populate_one_category_rooms(conn)
+    # populate_one_category_rooms(conn)
     populate_all_categories_rooms(conn)
