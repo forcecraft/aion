@@ -39,22 +39,20 @@ defmodule Aion.Question do
   @spec get_random_question(integer) :: Question.t
   def get_random_question(room_id) do
     query = Repo.query("
-      SELECT content, image_name, q.id FROM questions AS q
-      JOIN room_categories AS rc ON rc.category_id = q.category_id
-      JOIN rooms AS r ON r.id = rc.room_id
+      SELECT content, image_name, q.id
+      FROM questions AS q
+      INNER JOIN room_categories AS rc
+      ON rc.category_id = q.category_id
+      INNER JOIN rooms AS r
+      ON r.id = rc.room_id
       WHERE room_id = $1::integer
       ORDER BY RANDOM()
       LIMIT 1;
     ", [String.to_integer(room_id)])
 
     case query do
-      {:ok, result} ->
-        case result.rows do
-          [[content, image_name, id]] ->
-            %Question{content: content, image_name: image_name, id: id}
-          _ ->
-            %Question{}
-        end
+      {:ok, %{rows: [[content, image_name, id]]} = result} ->
+        %Question{content: content, image_name: image_name, id: id}
       {:error, _} ->
         %Question{}
     end
