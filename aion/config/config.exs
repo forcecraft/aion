@@ -29,7 +29,6 @@ import_config "#{Mix.env}.exs"
 
 config :addict,
   secret_key: "2432622431322443424641565a4939756e724773435a6d77774442692e",
-  extra_validation: fn ({valid, errors}, user_params) -> {valid, errors} end, # define extra validation here
   user_schema: Aion.User,
   repo: Aion.Repo,
   from_email: "no-reply@example.com", # CHANGE THIS
