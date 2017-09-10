@@ -1,11 +1,11 @@
 module Panel.Api exposing (..)
 
 import Forms
-import General.Constants exposing (createCategoryUrl, createQuestionUrl, hostname)
+import General.Constants exposing (categoriesUrl, questionsUrl, hostname)
 import Http
 import Msgs exposing (Msg)
 import RemoteData exposing (WebData)
-import Panel.Decoders exposing (categoryCreatedDecoder, questionCreatedDecoder)
+import Panel.Decoders exposing (categoriesDecoder, categoryCreatedDecoder, questionCreatedDecoder)
 import Json.Encode as Encode
 import Panel.Models exposing (CategoryForm, QuestionForm)
 import Room.Models exposing (RoomsData)
@@ -16,7 +16,7 @@ import Room.Models exposing (RoomsData)
 
 createQuestionWithAnswers : QuestionForm -> WebData RoomsData -> Cmd Msg
 createQuestionWithAnswers form rooms =
-    Http.post createQuestionUrl (questionCreationEncoder form rooms) questionCreatedDecoder
+    Http.post questionsUrl (questionCreationEncoder form rooms) questionCreatedDecoder
         |> RemoteData.sendRequest
         |> Cmd.map Msgs.OnQuestionCreated
 
@@ -30,8 +30,8 @@ questionCreationEncoder form rooms =
         answersValue =
             Forms.formValue form "answers"
 
-        subjectValue =
-            Forms.formValue form "subject"
+        categoryValue =
+            Forms.formValue form "category"
 
         questionContent =
             [ ( "content", Encode.string questionValue )
@@ -40,7 +40,7 @@ questionCreationEncoder form rooms =
         payload =
             [ ( "question", Encode.object questionContent )
             , ( "answers", Encode.string answersValue )
-            , ( "subject", Encode.int (String.toInt subjectValue |> Result.toMaybe |> Maybe.withDefault 0) )
+            , ( "category", Encode.int (String.toInt categoryValue |> Result.toMaybe |> Maybe.withDefault 0) )
             ]
     in
         payload
@@ -54,7 +54,7 @@ questionCreationEncoder form rooms =
 
 createCategory : CategoryForm -> Cmd Msg
 createCategory form =
-    Http.post createCategoryUrl (categoryCreationEncoder form) categoryCreatedDecoder
+    Http.post categoriesUrl (categoryCreationEncoder form) categoryCreatedDecoder
         |> RemoteData.sendRequest
         |> Cmd.map Msgs.OnCategoryCreated
 
@@ -69,8 +69,19 @@ categoryCreationEncoder form =
             [ ( "name", Encode.string categoryName ) ]
 
         payload =
-            [ ( "subject", Encode.object questionContent ) ]
+            [ ( "category", Encode.object questionContent ) ]
     in
         payload
             |> Encode.object
             |> Http.jsonBody
+
+
+
+-- list categories section
+
+
+fetchCategories : Cmd Msg
+fetchCategories =
+    Http.get categoriesUrl categoriesDecoder
+        |> RemoteData.sendRequest
+        |> Cmd.map Msgs.OnFetchCategories

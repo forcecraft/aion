@@ -1,12 +1,12 @@
-defmodule Aion.RoomSubject do
+defmodule Aion.RoomCategory do
   @moduledoc """
-    Join table between Room and Subject
+    Join table between Room and Category
   """
   use Aion.Web, :model
 
-  schema "room_subjects" do
+  schema "room_categories" do
     belongs_to :room, Aion.Room
-    belongs_to :subject, Aion.Subject
+    belongs_to :category, Aion.Category
 
     timestamps()
   end

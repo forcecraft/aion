@@ -6,12 +6,12 @@ defmodule Aion.Question do
 
   use Aion.Web, :model
   alias Aion.Repo
-  alias Aion.{Question, Subject}
+  alias Aion.{Question, Category}
 
   schema "questions" do
     field :content, :string
     field :image_name, :string
-    belongs_to :subject, Subject
+    belongs_to :category, Category
 
     timestamps()
   end
@@ -21,10 +21,10 @@ defmodule Aion.Question do
   """
   def changeset(struct, params \\ %{}) do
     struct
-      |> Repo.preload(:subject)
+      |> Repo.preload(:category)
       |> cast(params, [:content, :image_name])
       |> validate_required([:content])
-      |> put_assoc(:subject, params["belongs_to"])
+      |> put_assoc(:category, params["belongs_to"])
   end
 
   #######
@@ -37,10 +37,24 @@ defmodule Aion.Question do
   end
 
   @spec get_random_question(integer) :: Question.t
-  def get_random_question(category_id) do
-    query = from q in Question, where: q.subject_id == ^category_id
-    query
-    |> Repo.all()
-    |> Enum.random()
+  def get_random_question(room_id) do
+    query = Repo.query("
+      SELECT content, image_name, q.id
+      FROM questions AS q
+      INNER JOIN room_categories AS rc
+      ON rc.category_id = q.category_id
+      INNER JOIN rooms AS r
+      ON r.id = rc.room_id
+      WHERE room_id = $1::integer
+      ORDER BY RANDOM()
+      LIMIT 1;
+    ", [String.to_integer(room_id)])
+
+    case query do
+      {:ok, %{rows: [[content, image_name, id]]} = result} ->
+        %Question{content: content, image_name: image_name, id: id}
+      {:error, _} ->
+        %Question{}
+    end
   end
 end

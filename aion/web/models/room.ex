@@ -3,13 +3,13 @@ defmodule Aion.Room do
     Represents a game room with different categories of questions
   """
   use Aion.Web, :model
-  alias Aion.{Subject, RoomSubject}
+  alias Aion.{Category, RoomCategory}
 
   schema "rooms" do
     field :name, :string
     field :description, :string
-    many_to_many :subjects, Subject,
-      join_through: RoomSubject,
+    many_to_many :categories, Category,
+      join_through: RoomCategory,
       on_delete: :delete_all
 
       timestamps()

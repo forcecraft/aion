@@ -5,6 +5,7 @@ import General.Constants exposing (hostname)
 import General.Models exposing (Flags, Model, initialModel)
 import Msgs exposing (Msg(NavbarMsg))
 import Navigation exposing (Location, modifyUrl)
+import Panel.Api exposing (fetchCategories)
 import Phoenix.Socket
 import Room.Api exposing (fetchRooms)
 import Routing
@@ -26,7 +27,7 @@ init flags location =
             initialModel flags currentRoute
     in
         ( { getInitialModel | navbarState = navbarState }
-        , Cmd.batch [ setHomeUrl, fetchRooms, fetchCurrentUser, navbarCmd ]
+        , Cmd.batch [ setHomeUrl, fetchRooms, fetchCategories, fetchCurrentUser, navbarCmd ]
         )
 
 

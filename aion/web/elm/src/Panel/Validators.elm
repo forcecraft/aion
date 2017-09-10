@@ -26,8 +26,8 @@ answersValidations =
         ]
 
 
-subjectValidations : List Forms.FieldValidator
-subjectValidations =
+categoryValidations : List Forms.FieldValidator
+categoryValidations =
     [ Forms.validateExistence ]
 
 

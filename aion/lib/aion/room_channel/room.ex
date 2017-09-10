@@ -77,8 +77,8 @@ defmodule Aion.RoomChannel.Room do
   end
 
   @spec get_new_question_with_answers(integer) :: %{question: Question.t, answers: list Answer.t}
-  defp get_new_question_with_answers(category_id) do
-      question = Question.get_random_question(category_id)
+  defp get_new_question_with_answers(room_id) do
+      question = Question.get_random_question(room_id)
       answers = Answer.get_answers(question.id)
       Logger.debug fn -> "Answers: #{inspect(Enum.map(answers, fn answer -> answer.content end))}" end
 
