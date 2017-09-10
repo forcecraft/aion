@@ -4,7 +4,7 @@ import Bootstrap.Navbar as Navbar
 import Forms
 import Msgs exposing (Msg(NavbarMsg))
 import Multiselect
-import Panel.Models exposing (PanelData, categoryForm, questionForm, roomForm)
+import Panel.Models exposing (CategoriesData, PanelData, categoryForm, questionForm, roomForm)
 import Phoenix.Socket
 import RemoteData exposing (WebData)
 import Room.Models exposing (RoomId, RoomsData, UsersInRoom, QuestionInRoom, UserGameData)
@@ -17,6 +17,7 @@ type alias Model =
     { user : WebData CurrentUser
     , channelToken : String
     , rooms : WebData RoomsData
+    , categories : WebData CategoriesData
     , route : Route
     , socket : Phoenix.Socket.Socket Msg
     , usersInChannel : UsersInRoom
@@ -61,6 +62,7 @@ initialModel flags route =
         { user = RemoteData.Loading
         , channelToken = flags.channelToken
         , rooms = RemoteData.Loading
+        , categories = RemoteData.Loading
         , route = route
         , socket =
             Phoenix.Socket.init ("ws://localhost:4000/socket/websocket?token=" ++ flags.channelToken)

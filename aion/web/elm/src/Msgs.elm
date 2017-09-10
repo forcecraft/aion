@@ -4,7 +4,7 @@ import Bootstrap.Navbar as Navbar
 import Dom exposing (Error)
 import Navigation exposing (Location)
 import Multiselect
-import Panel.Models exposing (CategoryCreatedData, QuestionCreatedData, RoomCreatedData)
+import Panel.Models exposing (CategoriesData, CategoryCreatedData, QuestionCreatedData, RoomCreatedData)
 import RemoteData exposing (WebData)
 import Phoenix.Socket
 import Json.Encode as Encode
@@ -17,6 +17,7 @@ import User.Models exposing (CurrentUser)
 type Msg
     = OnLocationChange Location
     | OnFetchRooms (WebData RoomsData)
+    | OnFetchCategories (WebData CategoriesData)
     | OnFetchCurrentUser (WebData CurrentUser)
     | OnQuestionCreated (WebData QuestionCreatedData)
     | OnCategoryCreated (WebData CategoryCreatedData)

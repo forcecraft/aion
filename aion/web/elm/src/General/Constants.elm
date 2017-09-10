@@ -9,18 +9,18 @@ hostname =
     "http://localhost:4000/"
 
 
-createCategoryUrl : String
-createCategoryUrl =
-    hostname ++ "api/subjects"
+categoriesUrl : String
+categoriesUrl =
+    hostname ++ "api/categories"
 
 
-createQuestionUrl : String
-createQuestionUrl =
+questionsUrl : String
+questionsUrl =
     hostname ++ "api/questions"
 
 
-createRoomUrl : String
-createRoomUrl =
+roomsUrl : String
+roomsUrl =
     hostname ++ "api/rooms"
 
 

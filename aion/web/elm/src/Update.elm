@@ -27,14 +27,17 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         OnFetchRooms response ->
+            { model | rooms = response } ! []
+
+        OnFetchCategories response ->
             let
                 newModel =
-                    { model | rooms = response }
+                    { model | categories = response }
 
                 categoryList =
-                    case newModel.rooms of
-                        RemoteData.Success roomsData ->
-                            List.map (\room -> ( toString (room.id), room.name )) roomsData.data
+                    case newModel.categories of
+                        RemoteData.Success categoriesData ->
+                            List.map (\category -> ( toString (category.id), category.name )) categoriesData.data
 
                         _ ->
                             []
@@ -315,11 +318,11 @@ update msg model =
                 validationErrors =
                     []
 
-                subjectIds =
+                categoryIds =
                     List.map (\( x, _ ) -> x) (Multiselect.getSelectedValues model.panelData.categoryMultiSelect)
             in
                 if List.isEmpty validationErrors then
-                    ( model, createRoom model.panelData.roomForm subjectIds )
+                    ( model, createRoom model.panelData.roomForm categoryIds )
                 else
                     roomFormValidationErrorToast (model ! [])
 

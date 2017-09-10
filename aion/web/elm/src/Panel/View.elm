@@ -12,6 +12,7 @@ import Html exposing (..)
 import Html.Attributes exposing (class, for, placeholder, type_, value)
 import Msgs exposing (Msg(..))
 import Multiselect
+import Panel.Models exposing (CategoriesData, Category)
 import RemoteData exposing (WebData)
 import Room.Models exposing (Room, RoomsData)
 import Toasty
@@ -25,7 +26,7 @@ panelView model =
         , Form.form []
             [ questionFormElement model.panelData.questionForm
             , answersFormElement model.panelData.questionForm
-            , subjectFormElement model.panelData.questionForm (listRooms model.rooms)
+            , categoryFormElement model.panelData.questionForm (listCategories model.categories)
             , Button.button
                 [ Button.success
                 , Button.onClick CreateNewQuestionWithAnswers
@@ -86,26 +87,26 @@ answersFormElement form =
         ]
 
 
-subjectFormElement : Forms.Form -> List Room -> Html Msg
-subjectFormElement form roomList =
+categoryFormElement : Forms.Form -> List Room -> Html Msg
+categoryFormElement form roomList =
     Form.group []
         [ Form.label [ for "category" ] [ text "Select the category to which to add the question:" ]
         , Select.select
-            [ Select.onChange (UpdateQuestionForm "subject") ]
+            [ Select.onChange (UpdateQuestionForm "category") ]
             (Select.item [ value "0" ] [ text "--Select a category--" ]
                 :: List.map
                     (\room -> Select.item [ value (room.id |> toString) ] [ text room.name ])
                     roomList
             )
-        , Badge.pillInfo [] [ text (Forms.errorString form "subject") ]
+        , Badge.pillInfo [] [ text (Forms.errorString form "category") ]
         ]
 
 
-listRooms : WebData RoomsData -> List Room
-listRooms result =
+listCategories : WebData CategoriesData -> List Category
+listCategories result =
     case result of
-        RemoteData.Success roomsData ->
-            roomsData.data
+        RemoteData.Success categoriesData ->
+            categoriesData.data
 
         _ ->
             []

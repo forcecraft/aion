@@ -27,10 +27,10 @@ defmodule Aion.Router do
     pipe_through :api
 
     get "/me", UserController, :get_user_info
-    resources "/subjects", SubjectController, except: [:new, :edit]
+    resources "/categories", CategoryController, except: [:new, :edit]
     resources "/questions", QuestionController, except: [:new, :edit]
     resources "/answers", AnswerController, except: [:new, :edit]
     resources "/rooms", RoomController, except: [:new, :edit]
-    resources "/room_subjects", RoomSubjectController, except: [:new, :edit]
+    resources "/room_categories", RoomCategoryController, except: [:new, :edit]
   end
 end
