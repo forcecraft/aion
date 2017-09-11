@@ -3,7 +3,8 @@ module Msgs exposing (..)
 import Bootstrap.Navbar as Navbar
 import Dom exposing (Error)
 import Navigation exposing (Location)
-import Panel.Models exposing (CategoriesData, CategoryCreatedData, QuestionCreatedData)
+import Multiselect
+import Panel.Models exposing (CategoriesData, CategoryCreatedData, QuestionCreatedData, RoomCreatedData)
 import RemoteData exposing (WebData)
 import Phoenix.Socket
 import Json.Encode as Encode
@@ -20,6 +21,7 @@ type Msg
     | OnFetchCurrentUser (WebData CurrentUser)
     | OnQuestionCreated (WebData QuestionCreatedData)
     | OnCategoryCreated (WebData CategoryCreatedData)
+    | OnRoomCreated (WebData RoomCreatedData)
     | PhoenixMsg (Phoenix.Socket.Msg Msg)
     | ReceiveUserList Encode.Value
     | SetAnswer String
@@ -33,7 +35,10 @@ type Msg
     | ToastyMsg (Toasty.Msg Toasty.Defaults.Toast)
     | CreateNewQuestionWithAnswers
     | CreateNewCategory
+    | CreateNewRoom
     | UpdateQuestionForm String String
     | UpdateCategoryForm String String
+    | UpdateRoomForm String String
+    | MultiselectMsg Multiselect.Msg
     | NavbarMsg Navbar.State
     | LeaveRoom RoomId

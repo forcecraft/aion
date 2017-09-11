@@ -7,8 +7,8 @@ import General.Notifications exposing (toastsConfig)
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Msgs exposing (Msg(..))
-import Panel.Api exposing (createCategory, createQuestionWithAnswers)
-import Panel.Models exposing (categoryNamePossibleFields, questionFormPossibleFields)
+import Panel.Api exposing (createCategory, createQuestionWithAnswers, createRoom)
+import Panel.Models exposing (categoryNamePossibleFields, questionFormPossibleFields, roomNamePossibleFields)
 import Panel.Notifications exposing (..)
 import RemoteData
 import Room.Constants exposing (answerInputFieldId, enterKeyCode)
@@ -19,6 +19,7 @@ import Phoenix.Socket
 import Phoenix.Push
 import Task
 import Toasty
+import Multiselect
 import Socket exposing (initializeRoom, leaveRoom)
 
 
@@ -29,7 +30,25 @@ update msg model =
             { model | rooms = response } ! []
 
         OnFetchCategories response ->
-            { model | categories = response } ! []
+            let
+                newModel =
+                    { model | categories = response }
+
+                categoryList =
+                    case newModel.categories of
+                        RemoteData.Success categoriesData ->
+                            List.map (\category -> ( toString (category.id), category.name )) categoriesData.data
+
+                        _ ->
+                            []
+
+                oldPanelData =
+                    model.panelData
+
+                updatedCategoryMultiselect =
+                    Multiselect.initModel categoryList "id"
+            in
+                { newModel | panelData = { oldPanelData | categoryMultiSelect = updatedCategoryMultiselect } } ! []
 
         OnFetchCurrentUser response ->
             { model | user = response } ! []
@@ -72,6 +91,27 @@ update msg model =
 
                 _ ->
                     categoryCreationErrorToast (model ! [])
+
+        OnRoomCreated response ->
+            case response of
+                RemoteData.Success responseData ->
+                    let
+                        oldPanelData =
+                            model.panelData
+
+                        oldRoomForm =
+                            model.panelData.roomForm
+
+                        newRoomForm =
+                            Forms.updateFormInput oldRoomForm "name" ""
+
+                        evenNewerRoomForm =
+                            Forms.updateFormInput newRoomForm "description" ""
+                    in
+                        roomCreationSuccessfulToast ({ model | panelData = { oldPanelData | roomForm = evenNewerRoomForm } } ! [])
+
+                _ ->
+                    roomCreationErrorToast (model ! [])
 
         OnLocationChange location ->
             let
@@ -219,10 +259,13 @@ update msg model =
 
                 questionForm =
                     oldPanelData.questionForm
+
+                updatedQuestionForm =
+                    Forms.updateFormInput questionForm name value
             in
                 { model
                     | panelData =
-                        { oldPanelData | questionForm = Forms.updateFormInput questionForm name value }
+                        { oldPanelData | questionForm = updatedQuestionForm }
                 }
                     ! []
 
@@ -233,10 +276,30 @@ update msg model =
 
                 categoryForm =
                     oldPanelData.categoryForm
+
+                updatedCategoryForm =
+                    Forms.updateFormInput categoryForm name value
             in
                 { model
                     | panelData =
-                        { oldPanelData | categoryForm = Forms.updateFormInput categoryForm name value }
+                        { oldPanelData | categoryForm = updatedCategoryForm }
+                }
+                    ! []
+
+        UpdateRoomForm name value ->
+            let
+                panelData =
+                    model.panelData
+
+                oldRoomForm =
+                    panelData.roomForm
+
+                updatedRoomForm =
+                    Forms.updateFormInput oldRoomForm name value
+            in
+                { model
+                    | panelData =
+                        { panelData | roomForm = updatedRoomForm }
                 }
                     ! []
 
@@ -271,6 +334,32 @@ update msg model =
                     ( model, createCategory model.panelData.categoryForm )
                 else
                     categoryFormValidationErrorToast (model ! [])
+
+        CreateNewRoom ->
+            let
+                roomForm =
+                    model.panelData.roomForm
+
+                validationErrors =
+                    []
+
+                categoryIds =
+                    List.map (\( id, _ ) -> id) (Multiselect.getSelectedValues model.panelData.categoryMultiSelect)
+            in
+                if List.isEmpty validationErrors then
+                    ( model, createRoom model.panelData.roomForm categoryIds )
+                else
+                    roomFormValidationErrorToast (model ! [])
+
+        MultiselectMsg subMsg ->
+            let
+                ( subModel, subCmd ) =
+                    Multiselect.update subMsg model.panelData.categoryMultiSelect
+
+                oldPanelData =
+                    model.panelData
+            in
+                { model | panelData = { oldPanelData | categoryMultiSelect = subModel } } ! [ Cmd.map MultiselectMsg subCmd ]
 
         -- Toasty
         ToastyMsg subMsg ->

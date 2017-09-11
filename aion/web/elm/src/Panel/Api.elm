@@ -1,13 +1,13 @@
 module Panel.Api exposing (..)
 
 import Forms
-import General.Constants exposing (categoriesUrl, questionsUrl, hostname)
+import General.Constants exposing (categoriesUrl, questionsUrl, hostname, roomsUrl)
 import Http
 import Msgs exposing (Msg)
 import RemoteData exposing (WebData)
-import Panel.Decoders exposing (categoriesDecoder, categoryCreatedDecoder, questionCreatedDecoder)
+import Panel.Decoders exposing (categoriesDecoder, categoryCreatedDecoder, questionCreatedDecoder, roomCreatedDecoder)
 import Json.Encode as Encode
-import Panel.Models exposing (CategoryForm, QuestionForm)
+import Panel.Models exposing (CategoryForm, QuestionForm, RoomForm)
 import Room.Models exposing (RoomsData)
 
 
@@ -85,3 +85,40 @@ fetchCategories =
     Http.get categoriesUrl categoriesDecoder
         |> RemoteData.sendRequest
         |> Cmd.map Msgs.OnFetchCategories
+
+
+createRoom : RoomForm -> List String -> Cmd Msg
+createRoom form categoryIds =
+    Http.post roomsUrl (roomCreationEncoder form categoryIds) roomCreatedDecoder
+        |> RemoteData.sendRequest
+        |> Cmd.map Msgs.OnRoomCreated
+
+
+
+-- room creation section
+
+
+roomCreationEncoder : RoomForm -> List String -> Http.Body
+roomCreationEncoder form categoryIds =
+    let
+        roomName =
+            Forms.formValue form "name"
+
+        roomDescription =
+            Forms.formValue form "description"
+
+        categoryIdsValues =
+            List.map Encode.string categoryIds
+
+        roomContent =
+            [ ( "name", Encode.string roomName )
+            , ( "description", Encode.string roomDescription )
+            , ( "category_ids", Encode.list categoryIdsValues )
+            ]
+
+        payload =
+            [ ( "room", Encode.object roomContent ) ]
+    in
+        payload
+            |> Encode.object
+            |> Http.jsonBody

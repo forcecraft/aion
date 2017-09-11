@@ -11,6 +11,7 @@ import General.Notifications exposing (toastsConfig)
 import Html exposing (..)
 import Html.Attributes exposing (class, for, placeholder, type_, value)
 import Msgs exposing (Msg(..))
+import Multiselect
 import Panel.Models exposing (CategoriesData, Category)
 import RemoteData exposing (WebData)
 import Room.Models exposing (Room, RoomsData)
@@ -42,6 +43,16 @@ panelView model =
                 ]
                 [ text "submit" ]
             , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
+            ]
+        , h4 [] [ text "Create new Room:" ]
+        , Form.form []
+            [ roomFormElement model.panelData.roomForm
+            , Form.group [] [ Html.map MultiselectMsg <| (Multiselect.view model.panelData.categoryMultiSelect) ]
+            , Button.button
+                [ Button.success
+                , Button.onClick CreateNewRoom
+                ]
+                [ text "submit" ]
             ]
         ]
 
@@ -76,16 +87,16 @@ answersFormElement form =
         ]
 
 
-categoryFormElement : Forms.Form -> List Room -> Html Msg
-categoryFormElement form roomList =
+categoryFormElement : Forms.Form -> List Category -> Html Msg
+categoryFormElement form categoryList =
     Form.group []
         [ Form.label [ for "category" ] [ text "Select the category to which to add the question:" ]
         , Select.select
             [ Select.onChange (UpdateQuestionForm "category") ]
             (Select.item [ value "0" ] [ text "--Select a category--" ]
                 :: List.map
-                    (\room -> Select.item [ value (room.id |> toString) ] [ text room.name ])
-                    roomList
+                    (\category -> Select.item [ value (category.id |> toString) ] [ text category.name ])
+                    categoryList
             )
         , Badge.pillInfo [] [ text (Forms.errorString form "category") ]
         ]
@@ -108,11 +119,34 @@ listCategories result =
 categoryNameFormElement : Forms.Form -> Html Msg
 categoryNameFormElement form =
     Form.group []
-        [ Form.label [ for "category" ] [ text "Enter category name bellow, should be uppercase:" ]
+        [ Form.label [ for "category" ] [ text "Enter category name below, should be uppercase:" ]
         , Input.text
             [ Input.placeholder "for instance: History or Famous people"
             , Input.onInput (UpdateCategoryForm "name")
             , Input.value (Forms.formValue form "name")
             ]
         , Badge.pillInfo [] [ text (Forms.errorString form "name") ]
+        ]
+
+
+
+-- room form section
+
+
+roomFormElement : Forms.Form -> Html Msg
+roomFormElement form =
+    Form.group []
+        [ Form.label [ for "room" ] [ text "Enter room name bellow, should be uppercase:" ]
+        , Input.text
+            [ Input.placeholder "Name..."
+            , Input.onInput (UpdateRoomForm "name")
+            , Input.value (Forms.formValue form "name")
+            ]
+        , Badge.pillInfo [] [ text (Forms.errorString form "name") ]
+        , Input.text
+            [ Input.placeholder "Description..."
+            , Input.onInput (UpdateRoomForm "description")
+            , Input.value (Forms.formValue form "description")
+            ]
+        , Badge.pillInfo [] [ text (Forms.errorString form "description") ]
         ]

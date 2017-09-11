@@ -3,7 +3,8 @@ module General.Models exposing (..)
 import Bootstrap.Navbar as Navbar
 import Forms
 import Msgs exposing (Msg(NavbarMsg))
-import Panel.Models exposing (CategoriesData, PanelData, categoryForm, questionForm)
+import Multiselect
+import Panel.Models exposing (CategoriesData, PanelData, categoryForm, questionForm, roomForm)
 import Phoenix.Socket
 import RemoteData exposing (WebData)
 import Room.Models exposing (RoomId, RoomsData, UsersInRoom, QuestionInRoom, UserGameData)
@@ -77,6 +78,8 @@ initialModel flags route =
         , panelData =
             { questionForm = Forms.initForm questionForm
             , categoryForm = Forms.initForm categoryForm
+            , roomForm = Forms.initForm roomForm
+            , categoryMultiSelect = Multiselect.initModel [] "id"
             }
         , navbarState = navbarState
         }

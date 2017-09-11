@@ -1,7 +1,7 @@
 defmodule Aion.RoomControllerTest do
   use Aion.ConnCase
 
-  alias Aion.Room
+  alias Aion.{Room, Category, RoomCategory}
   @valid_attrs %{description: "some content", name: "some content"}
   @invalid_attrs %{}
 
@@ -34,6 +34,14 @@ defmodule Aion.RoomControllerTest do
     conn = post conn, room_path(conn, :create), room: @valid_attrs
     assert json_response(conn, 201)["data"]["id"]
     assert Repo.get_by(Room, @valid_attrs)
+  end
+
+  test "creates room with associated categories", %{conn: conn} do
+    category1 = Repo.insert! %Category{}
+    category2 = Repo.insert! %Category{}
+    room_params = Map.merge(@valid_attrs, %{category_ids: [category1.id, category2.id]})
+    conn = post conn, room_path(conn, :create), room: room_params
+    assert length(Repo.all(RoomCategory)) == 2
   end
 
   test "does not create resource and renders errors when data is invalid", %{conn: conn} do

@@ -4,6 +4,7 @@ import Bootstrap.Navbar as Navbar
 import General.Constants exposing (hostname)
 import General.Models exposing (Flags, Model, initialModel)
 import Msgs exposing (Msg(NavbarMsg))
+import Multiselect
 import Navigation exposing (Location, modifyUrl)
 import Panel.Api exposing (fetchCategories)
 import Phoenix.Socket
@@ -36,6 +37,7 @@ subscriptions model =
     Sub.batch
         [ Phoenix.Socket.listen model.socket Msgs.PhoenixMsg
         , Navbar.subscriptions model.navbarState NavbarMsg
+        , Sub.map Msgs.MultiselectMsg <| Multiselect.subscriptions model.panelData.categoryMultiSelect
         ]
 
 
