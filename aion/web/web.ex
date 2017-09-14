@@ -36,8 +36,6 @@ defmodule Aion.Web do
 
       import Aion.Router.Helpers
       import Aion.Gettext
-
-      plug Addict.Plugs.Authenticated
     end
   end
 
