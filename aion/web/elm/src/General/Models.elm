@@ -4,7 +4,8 @@ import Bootstrap.Navbar as Navbar
 import Forms
 import Msgs exposing (Msg(NavbarMsg))
 import Navigation exposing (Location)
-import Panel.Models exposing (PanelData, categoryForm, questionForm)
+import Multiselect
+import Panel.Models exposing (CategoriesData, PanelData, categoryForm, questionForm, roomForm)
 import Phoenix.Socket
 import RemoteData exposing (WebData)
 import Room.Models exposing (RoomId, RoomsData, UsersInRoom, QuestionInRoom, UserGameData)
@@ -18,6 +19,7 @@ type alias Model =
     { user : WebData CurrentUser
     , channelToken : String
     , rooms : WebData RoomsData
+    , categories : WebData CategoriesData
     , route : Route
     , socket : Phoenix.Socket.Socket Msg
     , usersInChannel : UsersInRoom
@@ -63,6 +65,7 @@ initialModel flags route location =
         { user = RemoteData.Loading
         , channelToken = flags.channelToken
         , rooms = RemoteData.Loading
+        , categories = RemoteData.Loading
         , route = route
         , socket =
             Phoenix.Socket.init ("ws://" ++ (hostname location) ++ "/socket/websocket?token=" ++ flags.channelToken)
@@ -78,6 +81,8 @@ initialModel flags route location =
         , panelData =
             { questionForm = Forms.initForm questionForm
             , categoryForm = Forms.initForm categoryForm
+            , roomForm = Forms.initForm roomForm
+            , categoryMultiSelect = Multiselect.initModel [] "id"
             }
         , navbarState = navbarState
         , location = location

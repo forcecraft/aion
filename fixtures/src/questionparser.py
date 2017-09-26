@@ -5,7 +5,7 @@ from src.codingfix import fix_coding
 
 def parse_file(path):
     question_pattern = r'P\n' \
-                       '%(?P<subject>.*?)%\n' \
+                       '%(?P<category>.*?)%\n' \
                        '(\$(?P<image>([^\$]|\n)*?)\$\n)?' \
                        '@(?P<question>([^@]|\n)*?)@\n' \
                        '@(?P<answers>([^@]|\n)*?)@\s*?'
@@ -14,11 +14,11 @@ def parse_file(path):
     with open(path, 'r') as f:
         matches = re.finditer(re.compile(question_pattern), f.read())
         for match in matches:
-            group_names = ('subject', 'question', 'answers', 'image')
+            group_names = ('category', 'question', 'answers', 'image')
             question = {group_name: match.group(group_name) for group_name in group_names if match.group(group_name)}
             question = fix_coding(question)
             questions.append(question)
-            assert 'answers' in question and 'subject' in question and 'question' in question
+            assert 'answers' in question and 'category' in question and 'question' in question
     return questions
 
 

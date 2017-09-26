@@ -1,6 +1,6 @@
 from src.queries import escape_string
 from src.queries.questions import get_question_id
-from src.queries.subjects import get_subject_id
+from src.queries.categories import get_category_id
 
 
 def get_answer_id(question_id, answer_content, conn):
@@ -14,12 +14,12 @@ def get_answer_id(question_id, answer_content, conn):
 
 
 def get_or_insert_answer(question, answer, conn):
-    subject = escape_string(question['subject'])
+    category = escape_string(question['category'])
     question_content = escape_string(question['question'])
     image = "'" + escape_string(question['image']) + "'" if 'image' in question else 'NULL'
 
-    subject_id = get_subject_id(subject, conn)
-    question_id = get_question_id(subject_id, question_content, image, conn)
+    category_id = get_category_id(category, conn)
+    question_id = get_question_id(category_id, question_content, image, conn)
     answer = escape_string(answer)
 
     with conn.cursor() as cur:

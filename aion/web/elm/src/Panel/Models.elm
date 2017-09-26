@@ -1,12 +1,15 @@
 module Panel.Models exposing (..)
 
 import Forms
-import Panel.Validators exposing (answersValidations, categoryNameValidations, questionValidations, subjectValidations)
+import Panel.Validators exposing (answersValidations, categoryNameValidations, questionValidations, categoryValidations)
+import Multiselect
 
 
 type alias PanelData =
     { questionForm : QuestionForm
     , categoryForm : CategoryForm
+    , roomForm : RoomForm
+    , categoryMultiSelect : Multiselect.Model
     }
 
 
@@ -20,14 +23,14 @@ type alias QuestionForm =
 
 questionFormPossibleFields : List String
 questionFormPossibleFields =
-    [ "question", "answers", "subject" ]
+    [ "question", "answers", "category" ]
 
 
 questionForm : List ( String, List Forms.FieldValidator )
 questionForm =
     [ ( "question", questionValidations )
     , ( "answers", answersValidations )
-    , ( "subject", subjectValidations )
+    , ( "category", categoryValidations )
     ]
 
 
@@ -36,7 +39,7 @@ type alias QuestionCreatedData =
 
 
 type alias QuestionCreatedContent =
-    { subject_id : Int
+    { category_id : Int
     , image_name : String
     , id : Int
     , content : String
@@ -68,4 +71,46 @@ type alias CategoryCreatedData =
 type alias CategoryCreatedContent =
     { id : Int
     , name : String
+    }
+
+
+type alias Category =
+    { id : Int
+    , name : String
+    }
+
+
+type alias CategoriesData =
+    { data : List Category }
+
+
+
+-- room form section
+
+
+type alias RoomForm =
+    Forms.Form
+
+
+roomNamePossibleFields : List String
+roomNamePossibleFields =
+    [ "name", "description" ]
+
+
+roomForm : List ( String, List Forms.FieldValidator )
+roomForm =
+    [ ( "name", [ Forms.validateExistence ] )
+    , ( "description", [ Forms.validateExistence ] )
+    ]
+
+
+type alias RoomCreatedData =
+    { data : RoomCreatedContent }
+
+
+type alias RoomCreatedContent =
+    { id : Int
+    , name : String
+    , description : String
+    , category_ids : List String
     }

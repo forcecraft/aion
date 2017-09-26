@@ -21,7 +21,7 @@ defmodule Aion.QuestionTest do
   end
 
   def get_random_question(category_id) do
-    query = from q in Question, where: q.subject_id == ^category_id
+    query = from q in Question, where: q.category_id == ^category_id
     question =
       query
       |> Repo.all()

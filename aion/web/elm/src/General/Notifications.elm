@@ -1,6 +1,7 @@
 module General.Notifications exposing (..)
 
 import General.Models exposing (Model)
+import Html
 import Html.Attributes exposing (class, style)
 import Msgs exposing (Msg(..))
 import Toasty
@@ -19,5 +20,6 @@ addToast toast ( model, cmd ) =
     Toasty.addToast toastsConfig ToastyMsg toast ( model, cmd )
 
 
+containerAttrs : List (Html.Attribute msg)
 containerAttrs =
     [ class "toasty-notification" ]

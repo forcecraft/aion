@@ -6,7 +6,7 @@ defmodule Aion.QuestionControllerTest do
   @valid_attrs %{content: "some content", image_name: "some content"}
   @invalid_attrs %{}
   @answers "some content"
-  @subject 1
+  @category 1
 
   setup %{conn: _} do
     user = %{ email: "test@example.com", name: "something" }
@@ -23,7 +23,7 @@ defmodule Aion.QuestionControllerTest do
     question = Repo.insert! %Question{}
     conn = get conn, question_path(conn, :show, question)
     assert json_response(conn, 200)["data"] == %{"id" => question.id,
-      "subject_id" => question.subject_id,
+      "category_id" => question.category_id,
       "content" => question.content,
       "image_name" => question.image_name}
   end
@@ -35,13 +35,13 @@ defmodule Aion.QuestionControllerTest do
   end
 
   test "creates and renders resource when data is valid", %{conn: conn} do
-    conn = post conn, question_path(conn, :create), question: @valid_attrs, answers: @answers, subject: @subject
+    conn = post conn, question_path(conn, :create), question: @valid_attrs, answers: @answers, category: @category
     assert json_response(conn, 201)["data"]["id"]
     assert Repo.get_by(Question, @valid_attrs)
   end
 
   test "does not create resource and returns 500 when data is invalid", %{conn: conn} do
-    conn = post conn, question_path(conn, :create), question: @invalid_attrs, answers: @answers, subject: @subject
+    conn = post conn, question_path(conn, :create), question: @invalid_attrs, answers: @answers, category: @category
     assert response(conn, 500)
   end
 

@@ -1,21 +1,21 @@
-from src.queries.room_subjects import get_or_insert_rooms_to_subjects
+from src.queries.room_categories import get_or_insert_rooms_to_categories
 from src.queries.rooms import get_or_insert_room
-from src.queries.subjects import get_subject_dict
+from src.queries.categories import get_category_dict
 
 
-def populate_one_subject_rooms(conn):
-    subject_dict = get_subject_dict(conn)
+def populate_one_category_rooms(conn):
+    category_dict = get_category_dict(conn)
 
-    for subject_id, subject_name in subject_dict.items():
-        room_id = get_or_insert_room(subject_name, subject_name, conn)
-        get_or_insert_rooms_to_subjects(room_id, subject_id, conn)
+    for category_id, category_name in category_dict.items():
+        room_id = get_or_insert_room(category_name, category_name, conn)
+        get_or_insert_rooms_to_categories(room_id, category_id, conn)
 
 
-def populate_all_subjects_rooms(conn):
-    subjects_id_list = list(get_subject_dict(conn).keys())
+def populate_all_categories_rooms(conn):
+    categories_id_list = list(get_category_dict(conn).keys())
     rooms_number = 5
 
     for i in range(rooms_number):
         room_id = get_or_insert_room("general {}".format(i), "room with all categories", conn)
-        for subject_id in subjects_id_list:
-            get_or_insert_rooms_to_subjects(room_id, subject_id, conn)
+        for category_id in categories_id_list:
+            get_or_insert_rooms_to_categories(room_id, category_id, conn)

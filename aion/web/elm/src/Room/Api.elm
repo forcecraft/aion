@@ -5,12 +5,7 @@ import Msgs exposing (Msg)
 import Navigation exposing (Location)
 import RemoteData
 import Room.Decoders exposing (roomsDecoder)
-import Urls exposing (host)
-
-
-fetchRoomsUrl : Location -> String
-fetchRoomsUrl location =
-    (host location) ++ "api/subjects"
+import Urls exposing (host, roomsUrl)
 
 
 fetchRooms : Location -> Cmd Msg

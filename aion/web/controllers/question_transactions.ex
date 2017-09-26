@@ -4,20 +4,20 @@ defmodule Aion.QuestionTransactions do
   """
   use Aion.Web, :controller
 
-  alias Aion.{Answer, Question, Subject}
+  alias Aion.{Answer, Question, Category}
   alias Ecto.Multi
 
   @answer_separator ","
 
-  def create_question_with_answers(question, answers, subject_id) do
+  def create_question_with_answers(question, answers, category_id) do
       Multi.new
-      |> Multi.insert(:insert_question, create_question_changeset(subject_id, question))
+      |> Multi.insert(:insert_question, create_question_changeset(category_id, question))
       |> Multi.run(:insert_answers, &insert_answers(&1.insert_question, answers))
   end
 
-  defp create_question_changeset(subject_id, question) do
-    question_subject = Repo.get(Subject, subject_id)
-    Question.changeset(%Question{}, Map.put(question, "belongs_to", question_subject))
+  defp create_question_changeset(category_id, question) do
+    question_category = Repo.get(Category, category_id)
+    Question.changeset(%Question{}, Map.put(question, "belongs_to", question_category))
   end
 
   defp insert_answers(question, answers) do

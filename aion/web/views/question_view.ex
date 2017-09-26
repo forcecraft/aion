@@ -11,7 +11,7 @@ defmodule Aion.QuestionView do
 
   def render("question.json", %{question: question}) do
     %{id: question.id,
-      subject_id: question.subject_id,
+      category_id: question.category_id,
       content: question.content,
       image_name: question.image_name}
   end
