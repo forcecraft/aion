@@ -13,11 +13,16 @@ host location =
     location.protocol ++ "//" ++ (hostname location) ++ "/"
 
 
-createCategoryUrl : Location -> String
-createCategoryUrl location =
-    (host location) ++ "api/subjects"
+categoriesUrl : Location -> String
+categoriesUrl location =
+    (host location) ++ "api/categories"
 
 
-createQuestionUrl : Location -> String
-createQuestionUrl location =
+questionsUrl : Location -> String
+questionsUrl location =
     (host location) ++ "api/questions"
+
+
+roomsUrl : Location -> String
+roomsUrl location =
+    (host location) ++ "api/rooms"

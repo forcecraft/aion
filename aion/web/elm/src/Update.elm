@@ -347,7 +347,7 @@ update msg model =
                     List.map (\( id, _ ) -> id) (Multiselect.getSelectedValues model.panelData.categoryMultiSelect)
             in
                 if List.isEmpty validationErrors then
-                    ( model, createRoom model.panelData.roomForm categoryIds )
+                    ( model, createRoom model.location model.panelData.roomForm categoryIds )
                 else
                     roomFormValidationErrorToast (model ! [])
 

@@ -1,7 +1,6 @@
 module Panel.Api exposing (..)
 
 import Forms
-import General.Constants exposing ()
 import Http
 import Msgs exposing (Msg)
 import Navigation exposing (Location)
@@ -82,16 +81,16 @@ categoryCreationEncoder form =
 -- list categories section
 
 
-fetchCategories : Cmd Msg
-fetchCategories =
-    Http.get categoriesUrl categoriesDecoder
+fetchCategories : Location -> Cmd Msg
+fetchCategories location =
+    Http.get (categoriesUrl location) categoriesDecoder
         |> RemoteData.sendRequest
         |> Cmd.map Msgs.OnFetchCategories
 
 
-createRoom : RoomForm -> List String -> Cmd Msg
-createRoom form categoryIds =
-    Http.post roomsUrl (roomCreationEncoder form categoryIds) roomCreatedDecoder
+createRoom : Location -> RoomForm -> List String -> Cmd Msg
+createRoom location form categoryIds =
+    Http.post (roomsUrl location) (roomCreationEncoder form categoryIds) roomCreatedDecoder
         |> RemoteData.sendRequest
         |> Cmd.map Msgs.OnRoomCreated
 

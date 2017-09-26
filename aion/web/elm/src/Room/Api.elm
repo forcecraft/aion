@@ -10,6 +10,6 @@ import Urls exposing (host, roomsUrl)
 
 fetchRooms : Location -> Cmd Msg
 fetchRooms location =
-    Http.get (fetchRoomsUrl location) roomsDecoder
+    Http.get (roomsUrl location) roomsDecoder
         |> RemoteData.sendRequest
         |> Cmd.map Msgs.OnFetchRooms
