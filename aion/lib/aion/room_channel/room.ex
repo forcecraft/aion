@@ -6,9 +6,13 @@ defmodule Aion.RoomChannel.Room do
   alias Aion.RoomChannel.{Room, UserRecord}
   require Logger
 
+  @type question_list :: (list Question.t)
+
+  @type new_question_set :: %{questions: question_list, question: Question.t, answers: list Answer.t}
+
   @type t :: %__MODULE__{users: %{String.t => UserRecord.t},
                          users_count: integer,
-                         questions: (list Question.t),
+                         questions: question_list,
                          question: Question.t,
                          answers: list Answer.t}
 
@@ -85,23 +89,23 @@ defmodule Aion.RoomChannel.Room do
     room.question
   end
 
-  @spec get_new_question_with_answers((list Question.t), integer) :: %{questions: (list Question.t), question: Question.t, answers: list Answer.t}
+  @spec get_new_question_with_answers(question_list, integer) ::  new_question_set
   defp get_new_question_with_answers(questions, room_id) do
     [new_question | remaining_questions] = questions
     answers = Answer.get_answers(new_question.id)
     Logger.debug fn -> "Answers: #{inspect(Enum.map(answers, fn answer -> answer.content end))}" end
 
-    if Enum.empty?(remaining_questions), do: remaining_questions = fetch_questions(room_id)
+    remaining_questions = if Enum.empty?(remaining_questions), do: fetch_questions(room_id), else: remaining_questions
 
     %{questions: remaining_questions, question: new_question, answers: answers}
   end
 
-  @spec get_new_questions(integer) :: %{questions: list Question.t}
+  @spec get_new_questions(integer) :: %{questions: question_list}
   defp get_new_questions(room_id) do
     %{questions: Enum.shuffle(fetch_questions(room_id))}
   end
 
-  @spec fetch_questions(integer) :: list Question.t
+  @spec fetch_questions(integer) :: question_list
   defp fetch_questions(room_id) do
     Question.get_questions_by_room_id(room_id)
   end
