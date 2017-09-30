@@ -4,7 +4,7 @@ defmodule Aion.Mixfile do
   def project do
     [app: :aion,
      version: "0.0.1",
-     elixir: "~> 1.2",
+     elixir: "~> 1.4",
      elixirc_paths: elixirc_paths(Mix.env),
      compilers: [:phoenix, :gettext] ++ Mix.compilers,
      build_embedded: Mix.env == :prod,
@@ -21,7 +21,7 @@ defmodule Aion.Mixfile do
   def application do
     [mod: {Aion, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex, :simetric]]
+                    :phoenix_ecto, :postgrex, :simetric, :addict]]
   end
 
   # Specifies which paths to compile per environment.
@@ -45,7 +45,8 @@ defmodule Aion.Mixfile do
      {:simetric, "~> 0.1.0"},
      {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
      {:plug, "~>1.3.5", override: true},
-     {:dialyxir, "~> 0.5", only: [:dev], runtime: false}
+     {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
+     {:exrm, "~> 1.0.8"}
   ]
   end
 

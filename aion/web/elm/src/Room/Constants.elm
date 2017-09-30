@@ -1,6 +1,7 @@
 module Room.Constants exposing (..)
 
-import General.Constants exposing (hostname)
+import Navigation exposing (Location)
+import Urls exposing (host)
 
 
 enterKeyCode : Int
@@ -8,14 +9,14 @@ enterKeyCode =
     13
 
 
-imagesPath : String
-imagesPath =
-    hostname ++ "images/"
+imagesPath : Location -> String
+imagesPath location =
+    (host location) ++ "images/"
 
 
-defaultImagePath : String
-defaultImagePath =
-    imagesPath ++ "question-mark.jpg"
+defaultImagePath : Location -> String
+defaultImagePath location =
+    (imagesPath location) ++ "question-mark.jpg"
 
 
 answerInputFieldId : String

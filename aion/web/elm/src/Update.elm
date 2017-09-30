@@ -315,7 +315,7 @@ update msg model =
                         |> List.filter (\validations -> validations /= Nothing)
             in
                 if List.isEmpty validationErrors then
-                    ( model, createQuestionWithAnswers model.panelData.questionForm model.rooms )
+                    ( model, createQuestionWithAnswers model.location model.panelData.questionForm model.rooms )
                 else
                     questionFormValidationErrorToast (model ! [])
 
@@ -331,7 +331,7 @@ update msg model =
                         |> List.filter (\validations -> validations /= Nothing)
             in
                 if List.isEmpty validationErrors then
-                    ( model, createCategory model.panelData.categoryForm )
+                    ( model, createCategory model.location model.panelData.categoryForm )
                 else
                     categoryFormValidationErrorToast (model ! [])
 
@@ -347,7 +347,7 @@ update msg model =
                     List.map (\( id, _ ) -> id) (Multiselect.getSelectedValues model.panelData.categoryMultiSelect)
             in
                 if List.isEmpty validationErrors then
-                    ( model, createRoom model.panelData.roomForm categoryIds )
+                    ( model, createRoom model.location model.panelData.roomForm categoryIds )
                 else
                     roomFormValidationErrorToast (model ! [])
 

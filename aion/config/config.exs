@@ -15,7 +15,8 @@ config :aion, Aion.Endpoint,
   secret_key_base: "qILNWNsZ5dyZijpvocG45VG5ElYCLYSfSOAWVEiz+cloUiX177Dla1kbz3ZGrfbX",
   render_errors: [view: Aion.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Aion.PubSub,
-           adapter: Phoenix.PubSub.PG2]
+           adapter: Phoenix.PubSub.PG2],
+  hostname: "localhost"
 
 # Configures Elixir's Logger
 config :logger, :console,
@@ -28,7 +29,6 @@ import_config "#{Mix.env}.exs"
 
 config :addict,
   secret_key: "2432622431322443424641565a4939756e724773435a6d77774442692e",
-  extra_validation: fn ({valid, errors}, user_params) -> {valid, errors} end, # define extra validation here
   user_schema: Aion.User,
   repo: Aion.Repo,
   from_email: "no-reply@example.com", # CHANGE THIS

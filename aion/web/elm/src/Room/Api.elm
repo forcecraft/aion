@@ -1,14 +1,15 @@
 module Room.Api exposing (..)
 
-import General.Constants exposing (roomsUrl, hostname)
 import Http
 import Msgs exposing (Msg)
+import Navigation exposing (Location)
 import RemoteData
 import Room.Decoders exposing (roomsDecoder)
+import Urls exposing (host, roomsUrl)
 
 
-fetchRooms : Cmd Msg
-fetchRooms =
-    Http.get roomsUrl roomsDecoder
+fetchRooms : Location -> Cmd Msg
+fetchRooms location =
+    Http.get (roomsUrl location) roomsDecoder
         |> RemoteData.sendRequest
         |> Cmd.map Msgs.OnFetchRooms
