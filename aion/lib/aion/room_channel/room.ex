@@ -8,11 +8,13 @@ defmodule Aion.RoomChannel.Room do
 
   @type t :: %__MODULE__{users: %{String.t => UserRecord.t},
                          users_count: integer,
+                         questions: (list Question.t),
                          question: Question.t,
                          answers: list Answer.t}
 
   defstruct users: %{},
             users_count: 0,
+            questions: [],
             question: nil,
             answers: []
 
@@ -21,6 +23,7 @@ defmodule Aion.RoomChannel.Room do
     case state do
       [] ->
         %Room{}
+        |> load_questions(room_id)
         |> change_question(room_id)
 
       {:question, question} ->
@@ -51,7 +54,13 @@ defmodule Aion.RoomChannel.Room do
   @spec change_question(%__MODULE__{}, integer) :: __MODULE__.t
   def change_question(room, room_id) do
     room
-    |> struct(get_new_question_with_answers(room_id))
+    |> struct(get_new_question_with_answers(room.questions, room_id))
+  end
+
+  @spec load_questions(%__MODULE__{}, integer) :: __MODULE__.t
+  def load_questions(room, room_id) do
+    room
+    |> struct(get_new_questions(room_id))
   end
 
   @spec add_user(__MODULE__.t, UserRecord.t) :: __MODULE__.t
@@ -76,12 +85,24 @@ defmodule Aion.RoomChannel.Room do
     room.question
   end
 
-  @spec get_new_question_with_answers(integer) :: %{question: Question.t, answers: list Answer.t}
-  defp get_new_question_with_answers(room_id) do
-      question = Question.get_random_question(room_id)
-      answers = Answer.get_answers(question.id)
-      Logger.debug fn -> "Answers: #{inspect(Enum.map(answers, fn answer -> answer.content end))}" end
+  @spec get_new_question_with_answers((list Question.t), integer) :: %{questions: (list Question.t), question: Question.t, answers: list Answer.t}
+  defp get_new_question_with_answers(questions, room_id) do
+    [new_question | remaining_questions] = questions
+    answers = Answer.get_answers(new_question.id)
+    Logger.debug fn -> "Answers: #{inspect(Enum.map(answers, fn answer -> answer.content end))}" end
 
-      %{question: question, answers: answers}
+    if Enum.empty?(remaining_questions), do: remaining_questions = fetch_questions(room_id)
+
+    %{questions: remaining_questions, question: new_question, answers: answers}
+  end
+
+  @spec get_new_questions(integer) :: %{questions: list Question.t}
+  defp get_new_questions(room_id) do
+    %{questions: Enum.shuffle(fetch_questions(room_id))}
+  end
+
+  @spec fetch_questions(integer) :: list Question.t
+  defp fetch_questions(room_id) do
+    Question.get_questions_by_room_id(room_id)
   end
 end
