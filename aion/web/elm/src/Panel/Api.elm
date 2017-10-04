@@ -1,22 +1,23 @@
 module Panel.Api exposing (..)
 
 import Forms
-import General.Constants exposing (categoriesUrl, questionsUrl, hostname, roomsUrl)
 import Http
 import Msgs exposing (Msg)
+import Navigation exposing (Location)
 import RemoteData exposing (WebData)
 import Panel.Decoders exposing (categoriesDecoder, categoryCreatedDecoder, questionCreatedDecoder, roomCreatedDecoder)
 import Json.Encode as Encode
 import Panel.Models exposing (CategoryForm, QuestionForm, RoomForm)
 import Room.Models exposing (RoomsData)
+import Urls exposing (categoriesUrl, questionsUrl, hostname, roomsUrl)
 
 
 -- create question section
 
 
-createQuestionWithAnswers : QuestionForm -> WebData RoomsData -> Cmd Msg
-createQuestionWithAnswers form rooms =
-    Http.post questionsUrl (questionCreationEncoder form rooms) questionCreatedDecoder
+createQuestionWithAnswers : Location -> QuestionForm -> WebData RoomsData -> Cmd Msg
+createQuestionWithAnswers location form rooms =
+    Http.post (questionsUrl location) (questionCreationEncoder form rooms) questionCreatedDecoder
         |> RemoteData.sendRequest
         |> Cmd.map Msgs.OnQuestionCreated
 
@@ -52,9 +53,9 @@ questionCreationEncoder form rooms =
 -- create category section
 
 
-createCategory : CategoryForm -> Cmd Msg
-createCategory form =
-    Http.post categoriesUrl (categoryCreationEncoder form) categoryCreatedDecoder
+createCategory : Location -> CategoryForm -> Cmd Msg
+createCategory location form =
+    Http.post (categoriesUrl location) (categoryCreationEncoder form) categoryCreatedDecoder
         |> RemoteData.sendRequest
         |> Cmd.map Msgs.OnCategoryCreated
 
@@ -80,16 +81,16 @@ categoryCreationEncoder form =
 -- list categories section
 
 
-fetchCategories : Cmd Msg
-fetchCategories =
-    Http.get categoriesUrl categoriesDecoder
+fetchCategories : Location -> Cmd Msg
+fetchCategories location =
+    Http.get (categoriesUrl location) categoriesDecoder
         |> RemoteData.sendRequest
         |> Cmd.map Msgs.OnFetchCategories
 
 
-createRoom : RoomForm -> List String -> Cmd Msg
-createRoom form categoryIds =
-    Http.post roomsUrl (roomCreationEncoder form categoryIds) roomCreatedDecoder
+createRoom : Location -> RoomForm -> List String -> Cmd Msg
+createRoom location form categoryIds =
+    Http.post (roomsUrl location) (roomCreationEncoder form categoryIds) roomCreatedDecoder
         |> RemoteData.sendRequest
         |> Cmd.map Msgs.OnRoomCreated
 
