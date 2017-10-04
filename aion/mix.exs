@@ -47,7 +47,6 @@ defmodule Aion.Mixfile do
      {:plug, "~>1.3.5", override: true},
      {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
      {:exrm, "~> 1.0.8"},
-     {:mock, "~> 0.2.0", only: :test},
   ]
   end
 
