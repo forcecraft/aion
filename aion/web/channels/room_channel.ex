@@ -71,10 +71,10 @@ defmodule Aion.RoomChannel do
   def handle_info(:question_not_answered, socket) do
     room_id = get_room_id(socket)
     if QuestionChronicle.should_change?(room_id) do
-      Logger.info("[channel] Question timed out in #{room_id}. Fetching a new one...")
+      Logger.info("[channel] Question timed out in room: #{room_id}. Fetching a new one...")
       send_new_question(room_id, socket)
     else
-      Logger.info("[channel] Timer went off in  #{room_id}, too early, though.")
+      Logger.debug(fn -> "[channel] Timer went off in room: #{room_id}. Too early, though." end)
     end
     {:noreply, socket}
   end
