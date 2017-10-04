@@ -10,7 +10,7 @@ defmodule Aion.RoomChannel.Supervisor do
 
   def init(:ok) do
     children = [
-      worker(Aion.RoomChannel.Monitor, [], restart: :transient)
+      worker(Aion.RoomChannel.Monitor, [], restart: :transient),
     ]
 
     supervise(children, strategy: :simple_one_for_one)
