@@ -17,8 +17,7 @@ defmodule Aion.QuestionChronicle do
     Agent.start_link(fn -> %{} end, name: __MODULE__)
   end
 
-  @doc "Lists all entries stored by the Agent"
-
+  @doc "Lists all question change entries stored by the Agent"
   @spec list_entries :: __MODULE__.t
   def list_entries, do: Agent.get(__MODULE__, &(&1))
 
