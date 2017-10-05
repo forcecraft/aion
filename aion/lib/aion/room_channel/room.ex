@@ -94,7 +94,11 @@ defmodule Aion.RoomChannel.Room do
         answers = Answer.get_answers(next_question.id)
         Logger.debug fn -> "Answers: #{inspect(Enum.map(answers, fn answer -> answer.content end))}" end
 
-        remaining_questions = if Enum.empty?(remaining_questions), do: fetch_questions(room_id), else: remaining_questions
+        remaining_questions = if Enum.empty?(remaining_questions) do
+                                fetch_questions(room_id)
+                              else
+                                remaining_questions
+                              end
 
         %{questions: remaining_questions, current_question: next_question, answers: answers}
 
