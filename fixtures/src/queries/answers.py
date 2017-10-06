@@ -35,4 +35,4 @@ def get_or_insert_answer(question, answer, conn):
 def insert_answers(question, conn):
     answers = question['answers'].split(';')
     for answer in answers:
-        result = get_or_insert_answer(question, answer, conn)
+        get_or_insert_answer(question, answer, conn)
