@@ -22,7 +22,6 @@ defmodule Aion.QuestionChronicle do
   def list_entries, do: Agent.get(__MODULE__, &(&1))
 
   @doc "Checks if a question should be changed due to a timeout"
-
   @spec should_change?(binary) :: boolean
   def should_change?(room_id), do: should_change?(room_id, &get_current_time/0)
 
@@ -34,7 +33,6 @@ defmodule Aion.QuestionChronicle do
   end
 
   @doc "Updates question change's timestamp"
-
   @spec update_last_change(binary) :: :ok
   def update_last_change(room_id), do: update_last_change(room_id, &get_current_time/0)
 
@@ -45,7 +43,6 @@ defmodule Aion.QuestionChronicle do
 
   @spec get_current_time :: integer
   defp get_current_time do
-    # "Returns current time in microseconds"
     System.system_time(:microsecond)
   end
 

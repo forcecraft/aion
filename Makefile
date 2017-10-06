@@ -28,9 +28,7 @@ lint: ## Run elixir linter
 	cd aion && mix credo --strict
 
 reinstall-elm: ## Remove and reinstall elm dependencies
-	cd aion/web/elm && \
-	rm -rf elm-stuff && \
-	../../node_modules/elm/binwrappers/elm-package install -y
+	cd aion/web/elm && rm -rf elm-stuff && elm-package install -y
 
 #######################
 ## ~> DOCKER PART <~ ##
