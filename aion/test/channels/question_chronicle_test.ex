@@ -13,13 +13,11 @@ defmodule Aion.QuestionChronicleTest do
 
   test "should_change is false when the time hasn't passed yet" do
     time_called = @current_time + QuestionChronicle.question_timeout_micro - 1000
-
     assert not QuestionChronicle.should_change?(@room_id, fn -> time_called end)
   end
 
   test "should_change is false when the time has passed" do
     time_called = @current_time + QuestionChronicle.question_timeout_micro
-
     assert QuestionChronicle.should_change?(@room_id, fn -> time_called end)
   end
 
