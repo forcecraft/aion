@@ -27,6 +27,7 @@ def get_or_insert_answer(question, answer, conn):
             query = """INSERT INTO answers (content, question_id, inserted_at, updated_at) VALUES ('{}', {}, now(), now())""".format(
                 answer, question_id)
             cur.execute(query)
+        conn.commit()
 
     return get_answer_id(question_id, answer, conn)
 
@@ -34,4 +35,4 @@ def get_or_insert_answer(question, answer, conn):
 def insert_answers(question, conn):
     answers = question['answers'].split(';')
     for answer in answers:
-        get_or_insert_answer(question, answer, conn)
+        result = get_or_insert_answer(question, answer, conn)

@@ -32,18 +32,6 @@ def explore_directory(path):
     questions = [question for questions in list(gather_questions()) for question in questions]
     return questions
 
-
-def explore_directory(path):
-    def gather_questions():
-        for elem in os.listdir(path):
-            elem_path = os.path.join(path, elem)
-            if os.path.isfile(elem_path):
-                yield parse_file(elem_path)
-
-    questions = [question for questions in list(gather_questions()) for question in questions]
-    return questions
-
-
 def get_questions(path):
     if os.path.isdir(path):
         results = explore_directory(path)
