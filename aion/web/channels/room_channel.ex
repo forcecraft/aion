@@ -6,8 +6,7 @@ defmodule Aion.RoomChannel do
 
   use Phoenix.Channel, log_join: false, log_handle_in: :info
   alias Aion.RoomChannel.Monitor
-  alias Aion.Presence
-  alias Aion.UserSocket
+  alias Aion.{Presence, UserSocket, QuestionChronicle}
   require Logger
 
   @spec join(String.t, %{}, UserSocket.t) :: {:ok, UserSocket.t}
@@ -69,11 +68,16 @@ defmodule Aion.RoomChannel do
     {:noreply, socket}
   end
 
-  # def handle_info(:vacuum, socket) do
-  #   IO.inspect(Presence.list(socket), label: "Vacuum")
-  #   :timer.send_after(2000, :vacuum)
-  #   {:noreply, socket}
-  # end
+  def handle_info(:question_not_answered, socket) do
+    room_id = get_room_id(socket)
+    if QuestionChronicle.should_change?(room_id) do
+      Logger.info("[channel] Question timed out in room: #{room_id}. Fetching a new one...")
+      send_new_question(room_id, socket)
+    else
+      Logger.debug(fn -> "[channel] Timer went off in room: #{room_id}. Too early, though." end)
+    end
+    {:noreply, socket}
+  end
 
   intercept ["presence_diff"]
 
@@ -101,8 +105,13 @@ defmodule Aion.RoomChannel do
   end
 
   defp send_current_question(room_id, socket) do
+    # NOTE: This function is called every time a user joins room / the question changes
     question = Monitor.get_current_question(room_id)
     image_name = if question.image_name == nil, do: "", else: question.image_name
+
+    QuestionChronicle.update_last_change(room_id)
+    :timer.send_after(QuestionChronicle.question_timeout_milli, :question_not_answered)
+
     broadcast! socket, "new:question", %{content: question.content, image_name: image_name}
   end
 
