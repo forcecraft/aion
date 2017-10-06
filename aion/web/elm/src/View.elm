@@ -1,8 +1,9 @@
 module View exposing (..)
 
+import Auth.Views exposing (authView)
 import Bootstrap.Navbar as Navbar
 import General.Constants exposing (hostname)
-import General.Models exposing (Model, Route(LoginRoute, NotFoundRoute, PanelRoute, RoomListRoute, RoomRoute, UserRoute))
+import General.Models exposing (Model, Route(HomeRoute, AuthRoute, NotFoundRoute, PanelRoute, RoomListRoute, RoomRoute, UserRoute))
 import General.View exposing (homeView, notFoundView, roomListView)
 import Html exposing (..)
 import Html.Attributes exposing (class, href, src)
@@ -54,9 +55,23 @@ navbar navbarState =
 page : Model -> Html Msg
 page model =
     let
+        currentRoute =
+            redirectIfNotAuthenticated model.authData.token model.route
+
+        includeNavbar =
+            case currentRoute of
+                AuthRoute ->
+                    \x y -> x
+
+                _ ->
+                    layout
+
         content =
-            case model.route of
-                LoginRoute ->
+            case currentRoute of
+                AuthRoute ->
+                    authView model
+
+                HomeRoute ->
                     homeView model
 
                 RoomListRoute ->
@@ -74,4 +89,14 @@ page model =
                 NotFoundRoute ->
                     notFoundView
     in
-        layout content model.navbarState
+        includeNavbar content model.navbarState
+
+
+redirectIfNotAuthenticated : Maybe String -> Route -> Route
+redirectIfNotAuthenticated token currentRoute =
+    case token of
+        Nothing ->
+            AuthRoute
+
+        Just _ ->
+            currentRoute

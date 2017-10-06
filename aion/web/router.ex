@@ -11,6 +11,25 @@ defmodule Aion.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_session
+    plug :fetch_flash
+  end
+
+  pipeline :api_auth do
+    plug Guardian.Plug.VerifyHeader, realm: "Bearer"
+    plug Guardian.Plug.LoadResource
+  end
+
+  scope "/register", Aion do
+    pipe_through :api
+
+    post "/", RegistrationController, :create, only: [:new, :create]
+  end
+
+  scope "/sessions", Aion do
+    pipe_through :api
+
+    post "/", SessionController, :create, only: [:new, :create, :delete]
   end
 
   scope "/", Aion do
@@ -19,7 +38,7 @@ defmodule Aion.Router do
   end
 
   scope "/api", Aion do
-    pipe_through :api
+    pipe_through [:api, :api_auth]
 
     get "/me", UserController, :get_user_info
     resources "/categories", CategoryController, except: [:new, :edit]

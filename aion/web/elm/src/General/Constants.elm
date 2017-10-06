@@ -24,6 +24,11 @@ roomsUrl =
     hostname ++ "api/rooms"
 
 
+loginUrl : String
+loginUrl =
+    hostname ++ "/sessions"
+
+
 gameCardConfig : SimpleCardConfig
 gameCardConfig =
     { svgImage = hostname ++ "svg/trophy.svg"

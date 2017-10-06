@@ -1,5 +1,6 @@
 module General.Models exposing (..)
 
+import Auth.Models exposing (AuthData, loginForm)
 import Bootstrap.Navbar as Navbar
 import Forms
 import Msgs exposing (Msg(NavbarMsg))
@@ -15,6 +16,7 @@ import User.Models exposing (CurrentUser)
 
 type alias Model =
     { user : WebData CurrentUser
+    , authData : AuthData
     , channelToken : String
     , rooms : WebData RoomsData
     , categories : WebData CategoriesData
@@ -36,7 +38,8 @@ type alias Flags =
 
 
 type Route
-    = LoginRoute
+    = HomeRoute
+    | AuthRoute
     | RoomListRoute
     | RoomRoute RoomId
     | PanelRoute
@@ -60,12 +63,17 @@ initialModel flags route =
             Navbar.initialState NavbarMsg
     in
         { user = RemoteData.Loading
+        , authData =
+            { loginForm = Forms.initForm loginForm
+            , token = Nothing
+            , msg = ""
+            }
         , channelToken = flags.channelToken
         , rooms = RemoteData.Loading
         , categories = RemoteData.Loading
         , route = route
         , socket =
-            Phoenix.Socket.init ("ws://localhost:4000/socket/websocket?token=" ++ flags.channelToken)
+            Phoenix.Socket.init ("ws://localhost:4000/socket/websocket?token=" ++ "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJVc2VyOjYiLCJleHAiOjE1MDk4NzkzNTQsImlhdCI6MTUwNzI4NzM1NCwiaXNzIjoiQWlvbiIsImp0aSI6IjJjZTRkMTdkLTMwNDMtNGQyNi05MWU0LWYyNjlmNDNiZjU3OSIsInBlbSI6e30sInN1YiI6IlVzZXI6NiIsInR5cCI6ImFjY2VzcyJ9.yp9MLzhbfKFiVD3FzV6vJER8jWQnJIuVyirbGuk181PexFMpuoH4arvWL8n1-q72BYSu2Egzp3HMLwGjVjVZ_g")
                 |> Phoenix.Socket.withDebug
         , usersInChannel = []
         , userGameData = { currentAnswer = "" }

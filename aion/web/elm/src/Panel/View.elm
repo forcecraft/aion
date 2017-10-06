@@ -14,7 +14,6 @@ import Msgs exposing (Msg(..))
 import Multiselect
 import Panel.Models exposing (CategoriesData, Category)
 import RemoteData exposing (WebData)
-import Room.Models exposing (Room, RoomsData)
 import Toasty
 import Toasty.Defaults
 

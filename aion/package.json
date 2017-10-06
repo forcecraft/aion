@@ -6,10 +6,11 @@
     "watch": "brunch watch --stdin"
   },
   "dependencies": {
-    "phoenix": "file:deps/phoenix",
-    "phoenix_html": "file:deps/phoenix_html",
     "elm": "0.18.0",
-    "elm-format": "0.6.1-alpha"
+    "elm-format": "0.6.1-alpha",
+    "elm-local-storage-ports": "^0.2.1",
+    "phoenix": "file:deps/phoenix",
+    "phoenix_html": "file:deps/phoenix_html"
   },
   "devDependencies": {
     "babel-brunch": "~6.0.0",

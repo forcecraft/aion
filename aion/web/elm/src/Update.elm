@@ -1,5 +1,6 @@
 module Update exposing (..)
 
+import Auth.Commands exposing (submitCredentials)
 import Dom exposing (focus)
 import Forms
 import General.Models exposing (Model, Route(RoomRoute))
@@ -26,6 +27,21 @@ import Socket exposing (initializeRoom, leaveRoom)
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        Login ->
+            model ! [ submitCredentials model.authData.loginForm ]
+
+        LoginResult res ->
+            let
+                oldAuthData =
+                    model.authData
+            in
+                case res of
+                    Ok token ->
+                        { model | authData = { oldAuthData | token = Just token, msg = "" } } ! []
+
+                    Err err ->
+                        { model | authData = { oldAuthData | msg = toString err } } ! []
+
         OnFetchRooms response ->
             { model | rooms = response } ! []
 
@@ -252,6 +268,23 @@ update msg model =
                 model ! []
 
         -- Forms
+        UpdateLoginForm name value ->
+            let
+                oldAuthData =
+                    model.authData
+
+                loginForm =
+                    oldAuthData.loginForm
+
+                updatedLoginForm =
+                    Forms.updateFormInput loginForm name value
+            in
+                { model
+                    | authData =
+                        { oldAuthData | loginForm = updatedLoginForm }
+                }
+                    ! []
+
         UpdateQuestionForm name value ->
             let
                 oldPanelData =
