@@ -9,8 +9,8 @@ import Urls exposing (host)
 gameCardConfig : Location -> SimpleCardConfig
 gameCardConfig location =
     { svgImage = (host location) ++ "svg/trophy.svg"
-    , title = "Play a game"
-    , description = "Find a room for yourself and check your knowledge versus other players."
+    , title = "Play!"
+    , description = "Find a room matching your interests and compete with others."
     , url = roomsPath
     , buttonText = "Browse rooms"
     }
@@ -19,10 +19,10 @@ gameCardConfig location =
 panelCardConfig : Location -> SimpleCardConfig
 panelCardConfig location =
     { svgImage = (host location) ++ "svg/tasks.svg"
-    , title = "Panel"
-    , description = "Create new rooms, new categories and new questions."
+    , title = "Workspace"
+    , description = "Create new rooms, add new categories and new questions."
     , url = panelPath
-    , buttonText = "Visit panel"
+    , buttonText = "Visit workspace"
     }
 
 
@@ -30,7 +30,7 @@ profileCardConfig : Location -> SimpleCardConfig
 profileCardConfig location =
     { svgImage = (host location) ++ "svg/diploma.svg"
     , title = "Profile"
-    , description = "Check your profile, gaming history and statistics."
+    , description = "Check your profile, match history and statistics."
     , url = userPath
     , buttonText = "Go to profile"
     }
