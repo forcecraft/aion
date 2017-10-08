@@ -14,11 +14,11 @@ if __name__ == '__main__':
     conn = connect_to_db()
 
     if paths is None:
-        paths = ['jpks/']
+        paths = ['example/']
 
     for path in paths:
         questions = get_questions(path)
 
     load_questions(questions, conn)
     # populate_one_category_rooms(conn)
-    populate_all_categories_rooms(conn)
+    # populate_all_categories_rooms(conn)
