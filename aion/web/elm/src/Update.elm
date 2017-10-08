@@ -37,7 +37,13 @@ update msg model =
             in
                 case res of
                     Ok token ->
-                        { model | authData = { oldAuthData | token = Just token, msg = "" } } ! []
+                        { model
+                            | authData = { oldAuthData | token = Just token, msg = "" }
+                            , socket =
+                                Phoenix.Socket.init ("ws://localhost:4000/socket/websocket?token=" ++ token)
+                                    |> Phoenix.Socket.withDebug
+                        }
+                            ! []
 
                     Err err ->
                         { model | authData = { oldAuthData | msg = toString err } } ! []

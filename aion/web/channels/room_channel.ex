@@ -8,6 +8,7 @@ defmodule Aion.RoomChannel do
   alias Aion.RoomChannel.Monitor
   alias Aion.Presence
   alias Aion.UserSocket
+  alias Aion.GuardianSerializer
   require Logger
 
   @spec join(String.t, %{}, UserSocket.t) :: {:ok, UserSocket.t}
@@ -122,6 +123,7 @@ defmodule Aion.RoomChannel do
   end
 
   defp get_user(socket) do
-    socket.assigns.current_user.name
+    {:ok, user} = GuardianSerializer.from_token(socket.assigns.guardian_default_claims["aud"])
+    user.name
   end
 end
