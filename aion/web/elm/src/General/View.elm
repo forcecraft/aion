@@ -57,7 +57,7 @@ simpleCard cardConfig =
 roomListView : Model -> Html Msg
 roomListView model =
     div []
-        [ div [ class "room-select-title" ] [ h2 [] [ text "Select Room To Play:" ] ]
+        [ div [ class "room-select-title" ] [ h2 [] [ text "Select a room to play:" ] ]
         , listRooms model.rooms
         ]
 

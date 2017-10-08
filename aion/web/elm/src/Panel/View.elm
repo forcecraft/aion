@@ -21,7 +21,7 @@ import Toasty.Defaults
 panelView : Model -> Html Msg
 panelView model =
     div [ class "panel-container" ]
-        [ h4 [] [ text "Create new question for certain category:" ]
+        [ h4 [] [ text "New question:" ]
         , Form.form []
             [ questionFormElement model.panelData.questionForm
             , answersFormElement model.panelData.questionForm
@@ -33,7 +33,7 @@ panelView model =
                 [ text "submit" ]
             , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
             ]
-        , h4 [] [ text "Create new category:" ]
+        , h4 [] [ text "New category:" ]
         , Form.form []
             [ categoryNameFormElement model.panelData.categoryForm
             , Button.button
@@ -43,7 +43,7 @@ panelView model =
                 [ text "submit" ]
             , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
             ]
-        , h4 [] [ text "Create new Room:" ]
+        , h4 [] [ text "New room:" ]
         , Form.form []
             [ roomFormElement model.panelData.roomForm
             , Form.group [] [ Html.map MultiselectMsg <| (Multiselect.view model.panelData.categoryMultiSelect) ]
@@ -65,7 +65,7 @@ questionFormElement form =
     Form.group []
         [ Form.label [ for "question" ] [ text "Enter question content below:" ]
         , Input.text
-            [ Input.placeholder "How much is 2+2?"
+            [ Input.placeholder "How much is 2 + 2?"
             , Input.onInput (UpdateQuestionForm "question")
             , Input.value (Forms.formValue form "question")
             ]
@@ -76,7 +76,7 @@ questionFormElement form =
 answersFormElement : Forms.Form -> Html Msg
 answersFormElement form =
     Form.group []
-        [ Form.label [ for "answer" ] [ text "Enter answer below, separate all posibilities with comma:" ]
+        [ Form.label [ for "answer" ] [ text "Enter correct answers below, separate all posibilities with commas:" ]
         , Input.text
             [ Input.placeholder "4,four"
             , Input.onInput (UpdateQuestionForm "answers")
@@ -89,10 +89,10 @@ answersFormElement form =
 categoryFormElement : Forms.Form -> List Category -> Html Msg
 categoryFormElement form categoryList =
     Form.group []
-        [ Form.label [ for "category" ] [ text "Select the category to which to add the question:" ]
+        [ Form.label [ for "category" ] [ text "Select a category:" ]
         , Select.select
             [ Select.onChange (UpdateQuestionForm "category") ]
-            (Select.item [ value "0" ] [ text "--Select a category--" ]
+            (Select.item [ value "0" ] [ text "--select a category--" ]
                 :: List.map
                     (\category -> Select.item [ value (category.id |> toString) ] [ text category.name ])
                     categoryList
@@ -118,9 +118,9 @@ listCategories result =
 categoryNameFormElement : Forms.Form -> Html Msg
 categoryNameFormElement form =
     Form.group []
-        [ Form.label [ for "category" ] [ text "Enter category name below, should be uppercase:" ]
+        [ Form.label [ for "category" ] [ text "Enter category name below:" ]
         , Input.text
-            [ Input.placeholder "for instance: History or Famous people"
+            [ Input.placeholder "Discrete mathematics"
             , Input.onInput (UpdateCategoryForm "name")
             , Input.value (Forms.formValue form "name")
             ]
@@ -135,15 +135,15 @@ categoryNameFormElement form =
 roomFormElement : Forms.Form -> Html Msg
 roomFormElement form =
     Form.group []
-        [ Form.label [ for "room" ] [ text "Enter room name bellow, should be uppercase:" ]
+        [ Form.label [ for "room" ] [ text "Enter room name below:" ]
         , Input.text
-            [ Input.placeholder "Name..."
+            [ Input.placeholder "Pancake Party"
             , Input.onInput (UpdateRoomForm "name")
             , Input.value (Forms.formValue form "name")
             ]
         , Badge.pillInfo [] [ text (Forms.errorString form "name") ]
         , Input.text
-            [ Input.placeholder "Description..."
+            [ Input.placeholder "Gathering the best pancake lovers and testing their pancake knowledge"
             , Input.onInput (UpdateRoomForm "description")
             , Input.value (Forms.formValue form "description")
             ]

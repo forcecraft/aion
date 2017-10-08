@@ -46,7 +46,7 @@ navbar location navbarState =
             ]
         |> Navbar.items
             [ Navbar.itemLink [ href roomsPath ] [ text "Rooms" ]
-            , Navbar.itemLink [ href panelPath ] [ text "Panel" ]
+            , Navbar.itemLink [ href panelPath ] [ text "Workspace" ]
             , Navbar.itemLink [ href userPath ] [ text "Profile" ]
             ]
         |> Navbar.view navbarState

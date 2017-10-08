@@ -85,7 +85,7 @@ displayAnswerInput : Answer -> Html Msg
 displayAnswerInput currentAnswer =
     Form.form [ class "room-answer-input" ]
         [ Form.group []
-            [ Form.label [ for "answer" ] [ Badge.badgeSuccess [] [ text "Put your answer below:" ] ]
+            [ Form.label [ for "answer" ] [ Badge.badgeSuccess [] [ text "Insert your answer below:" ] ]
             , displayAnswerInputField currentAnswer
             , displayAnswerSubmitButton
             ]
