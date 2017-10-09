@@ -49,6 +49,9 @@ update msg model =
                     Err err ->
                         { model | authData = { oldAuthData | msg = toString err } } ! []
 
+        Register ->
+            model ! []
+
         ChangeAuthForm ->
             let
                 oldAuthData =

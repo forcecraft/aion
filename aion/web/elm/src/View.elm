@@ -68,7 +68,7 @@ page model =
         content =
             case currentRoute of
                 AuthRoute ->
-                    authView model
+                    authView model.authData
 
                 HomeRoute ->
                     homeView model
