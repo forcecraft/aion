@@ -7,7 +7,7 @@ import Bootstrap.Form as Form
 import Bootstrap.Form.Input as Input
 import Forms
 import General.Models exposing (Model)
-import Html exposing (Html, div, h4, text)
+import Html exposing (Html, br, div, h4, text)
 import Html.Attributes exposing (class, for)
 import Msgs exposing (Msg(..))
 
@@ -15,7 +15,18 @@ import Msgs exposing (Msg(..))
 authView : Model -> Html Msg
 authView model =
     div [ class "auth-container" ]
-        [ loginFormView model.authData.loginForm
+        [ case model.authData.displayLoginInsteadOfRegistration of
+            True ->
+                loginFormView model.authData.loginForm
+
+            False ->
+                div [] []
+        , br [] []
+        , Button.button
+            [ Button.roleLink
+            , Button.onClick ChangeAuthForm
+            ]
+            [ text model.authData.formMsg ]
         ]
 
 
@@ -27,13 +38,15 @@ loginFormView : LoginForm -> Html Msg
 loginFormView loginForm =
     div [ class "login-container" ]
         [ h4 [] [ text "Log in:" ]
-        , emailLoginFormElement loginForm
-        , passwordLoginFormElement loginForm
-        , Button.button
-            [ Button.info
-            , Button.onClick Login
+        , Form.form []
+            [ emailLoginFormElement loginForm
+            , passwordLoginFormElement loginForm
+            , Button.button
+                [ Button.info
+                , Button.onClick Login
+                ]
+                [ text "submit" ]
             ]
-            [ text "submit" ]
         ]
 
 
@@ -54,10 +67,14 @@ passwordLoginFormElement : Forms.Form -> Html Msg
 passwordLoginFormElement form =
     Form.group []
         [ Form.label [ for "password" ] [ text "Enter password below:" ]
-        , Input.text
-            [ Input.placeholder "*********"
+        , Input.password
+            [ Input.placeholder "Your password..."
             , Input.onInput (UpdateLoginForm "password")
             , Input.value (Forms.formValue form "password")
             ]
         , Badge.pillInfo [] [ text (Forms.errorString form "password") ]
         ]
+
+
+
+-- registration form section

@@ -1,8 +1,5 @@
 module General.Constants exposing (..)
 
-import General.Models exposing (SimpleCardConfig)
-import Routing exposing (panelPath, roomsPath, userPath)
-
 
 hostname : String
 hostname =
@@ -56,4 +53,38 @@ profileCardConfig =
     , description = "Check your profile, gaming history and statistics."
     , url = userPath
     , buttonText = "Go to profile"
+    }
+
+
+loginFormMsg : String
+loginFormMsg =
+    "Don't have an account? Click here to register"
+
+
+registerFormMsg : String
+registerFormMsg =
+    "Already have an account? Click here to login"
+
+
+roomsPath : String
+roomsPath =
+    "#rooms"
+
+
+panelPath : String
+panelPath =
+    "#panel"
+
+
+userPath : String
+userPath =
+    "#profile"
+
+
+type alias SimpleCardConfig =
+    { svgImage : String
+    , title : String
+    , description : String
+    , url : String
+    , buttonText : String
     }

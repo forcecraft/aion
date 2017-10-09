@@ -39,6 +39,7 @@ type Msg
     | CreateNewRoom
     | Login
     | LoginResult (Result Http.Error String)
+    | ChangeAuthForm
     | UpdateLoginForm String String
     | UpdateQuestionForm String String
     | UpdateCategoryForm String String

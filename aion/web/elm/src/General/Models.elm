@@ -1,8 +1,9 @@
 module General.Models exposing (..)
 
-import Auth.Models exposing (AuthData, loginForm)
+import Auth.Models exposing (AuthData, loginForm, registrationForm)
 import Bootstrap.Navbar as Navbar
 import Forms
+import General.Constants exposing (loginFormMsg)
 import Msgs exposing (Msg(NavbarMsg))
 import Multiselect
 import Panel.Models exposing (CategoriesData, PanelData, categoryForm, questionForm, roomForm)
@@ -47,15 +48,6 @@ type Route
     | NotFoundRoute
 
 
-type alias SimpleCardConfig =
-    { svgImage : String
-    , title : String
-    , description : String
-    , url : String
-    , buttonText : String
-    }
-
-
 initialModel : Flags -> Route -> Model
 initialModel flags route =
     let
@@ -65,6 +57,9 @@ initialModel flags route =
         { user = RemoteData.Loading
         , authData =
             { loginForm = Forms.initForm loginForm
+            , registrationForm = Forms.initForm registrationForm
+            , displayLoginInsteadOfRegistration = True
+            , formMsg = loginFormMsg
             , token = Nothing
             , msg = ""
             }

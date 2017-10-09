@@ -3,6 +3,7 @@ module Update exposing (..)
 import Auth.Commands exposing (submitCredentials)
 import Dom exposing (focus)
 import Forms
+import General.Constants exposing (loginFormMsg, registerFormMsg)
 import General.Models exposing (Model, Route(RoomRoute))
 import General.Notifications exposing (toastsConfig)
 import Json.Decode as Decode
@@ -47,6 +48,35 @@ update msg model =
 
                     Err err ->
                         { model | authData = { oldAuthData | msg = toString err } } ! []
+
+        ChangeAuthForm ->
+            let
+                oldAuthData =
+                    model.authData
+
+                oldDisplayLoginInsteadOfRegistration =
+                    oldAuthData.displayLoginInsteadOfRegistration
+            in
+                case oldDisplayLoginInsteadOfRegistration of
+                    True ->
+                        { model
+                            | authData =
+                                { oldAuthData
+                                    | displayLoginInsteadOfRegistration = False
+                                    , formMsg = registerFormMsg
+                                }
+                        }
+                            ! []
+
+                    False ->
+                        { model
+                            | authData =
+                                { oldAuthData
+                                    | displayLoginInsteadOfRegistration = True
+                                    , formMsg = loginFormMsg
+                                }
+                        }
+                            ! []
 
         OnFetchRooms response ->
             { model | rooms = response } ! []

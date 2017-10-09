@@ -25,18 +25,3 @@ parseLocation location =
 
         Nothing ->
             NotFoundRoute
-
-
-roomsPath : String
-roomsPath =
-    "#rooms"
-
-
-panelPath : String
-panelPath =
-    "#panel"
-
-
-userPath : String
-userPath =
-    "#profile"

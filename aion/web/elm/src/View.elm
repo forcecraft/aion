@@ -2,7 +2,7 @@ module View exposing (..)
 
 import Auth.Views exposing (authView)
 import Bootstrap.Navbar as Navbar
-import General.Constants exposing (hostname)
+import General.Constants exposing (hostname, panelPath, roomsPath, userPath)
 import General.Models exposing (Model, Route(HomeRoute, AuthRoute, NotFoundRoute, PanelRoute, RoomListRoute, RoomRoute, UserRoute))
 import General.View exposing (homeView, notFoundView, roomListView)
 import Html exposing (..)
@@ -10,7 +10,6 @@ import Html.Attributes exposing (class, href, src)
 import Msgs exposing (Msg(..))
 import Panel.View exposing (panelView)
 import Room.View exposing (roomView)
-import Routing exposing (panelPath, roomsPath, userPath)
 import User.View exposing (userView)
 
 
