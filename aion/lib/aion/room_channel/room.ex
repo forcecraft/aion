@@ -61,7 +61,10 @@ defmodule Aion.RoomChannel.Room do
 
   @spec load_questions(%__MODULE__{}, integer) :: __MODULE__.t
   def load_questions(room, room_id) do
-    questions = room_id |> fetch_questions |> Enum.shuffle
+    questions =
+      room_id
+      |> fetch_questions()
+      |> Enum.shuffle()
     struct(room, %{questions: questions})
   end
 
@@ -87,24 +90,26 @@ defmodule Aion.RoomChannel.Room do
     room.current_question
   end
 
-  @spec get_new_question_with_answers((list Question.t), integer) ::  new_question_set
+  @spec get_new_question_with_answers((list Question.t), integer) :: new_question_set
   defp get_new_question_with_answers(questions, room_id) do
     case questions do
+      [last_question] ->
+        remaining_questions = fetch_questions(room_id)
+        get_new_question_set(last_question, remaining_questions)
+
       [next_question | remaining_questions] ->
-        answers = Answer.get_answers(next_question.id)
-        Logger.debug fn -> "Answers: #{inspect(Enum.map(answers, fn answer -> answer.content end))}" end
-
-        remaining_questions = if Enum.empty?(remaining_questions) do
-                                fetch_questions(room_id)
-                              else
-                                remaining_questions
-                              end
-
-        %{questions: remaining_questions, current_question: next_question, answers: answers}
+        get_new_question_set(next_question, remaining_questions)
 
       [] ->
         %{questions: [], current_question: nil, answers: []}
     end
+  end
+
+  @spec get_new_question_set(Question.t, list Question.t) :: new_question_set
+  defp get_new_question_set(current_question, remaining_questions) do
+    answers = Answer.get_answers(current_question.id)
+    Logger.debug fn -> "Answers: #{inspect(Enum.map(answers, fn answer -> answer.content end))}" end
+    %{questions: remaining_questions, current_question: current_question, answers: answers}
   end
 
   @spec fetch_questions(integer) :: list Question.t
