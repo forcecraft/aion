@@ -16,12 +16,12 @@ defmodule Aion.QuestionTest do
     refute changeset.valid?
   end
 
-    test "get_questions_by_room_id when there are no questions" do
-      room1 = Repo.insert! %Room{}
+  test "get_questions_by_room_id when there are no questions" do
+    room1 = Repo.insert! %Room{}
 
-      result = Question.get_questions_by_room_id(room1.id)
-      assert length(result) == 0
-    end
+    result = Question.get_questions_by_room_id(room1.id)
+    assert length(result) == 0
+  end
 
   test "get_questions_by_room_id when there are some questions" do
     room1 = Repo.insert! %Room{}
