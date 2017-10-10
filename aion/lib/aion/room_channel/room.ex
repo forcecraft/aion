@@ -6,13 +6,13 @@ defmodule Aion.RoomChannel.Room do
   alias Aion.RoomChannel.{Room, UserRecord}
   require Logger
 
-  @type new_question_set :: %{questions: (list Question.t), current_question: Question.t, answers: list Answer.t}
+  @type new_question_set :: %{questions: (list Question.t), current_question: Question.t, answers: (list Answer.t)}
 
   @type t :: %__MODULE__{users: %{String.t => UserRecord.t},
                          users_count: integer,
                          questions: (list Question.t),
                          current_question: Question.t,
-                         answers: list Answer.t}
+                         answers: (list Answer.t)}
 
   defstruct users: %{},
             users_count: 0,
@@ -55,7 +55,7 @@ defmodule Aion.RoomChannel.Room do
   """
   @spec change_question(%__MODULE__{}, integer) :: __MODULE__.t
   def change_question(room, room_id) do
-    new_questions_with_answers = get_new_question_with_answers(room.questions, room_id)
+    new_questions_with_answers = get_new_question_set(room.questions, room_id)
     struct(room, new_questions_with_answers)
   end
 
@@ -90,23 +90,23 @@ defmodule Aion.RoomChannel.Room do
     room.current_question
   end
 
-  @spec get_new_question_with_answers((list Question.t), integer) :: new_question_set
-  defp get_new_question_with_answers(questions, room_id) do
+  @spec get_new_question_set((list Question.t), integer) :: new_question_set
+  defp get_new_question_set(questions, room_id) do
     case questions do
-      [last_question] ->
-        remaining_questions = fetch_questions(room_id)
-        get_new_question_set(last_question, remaining_questions)
-
-      [next_question | remaining_questions] ->
-        get_new_question_set(next_question, remaining_questions)
-
       [] ->
         %{questions: [], current_question: nil, answers: []}
+
+      [last_question] ->
+        remaining_questions = fetch_questions(room_id)
+        create_new_question_set(last_question, remaining_questions)
+
+      [next_question | remaining_questions] ->
+        create_new_question_set(next_question, remaining_questions)
     end
   end
 
-  @spec get_new_question_set(Question.t, list Question.t) :: new_question_set
-  defp get_new_question_set(current_question, remaining_questions) do
+  @spec create_new_question_set(Question.t, (list Question.t)) :: new_question_set
+  defp create_new_question_set(current_question, remaining_questions) do
     answers = Answer.get_answers(current_question.id)
     Logger.debug fn -> "Answers: #{inspect(Enum.map(answers, fn answer -> answer.content end))}" end
     %{questions: remaining_questions, current_question: current_question, answers: answers}
