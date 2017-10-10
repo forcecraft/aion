@@ -9,10 +9,11 @@ import General.Notifications exposing (toastsConfig)
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Msgs exposing (Msg(..))
-import Panel.Api exposing (createCategory, createQuestionWithAnswers, createRoom)
+import Panel.Api exposing (createCategory, createQuestionWithAnswers, createRoom, fetchCategories)
 import Panel.Models exposing (categoryNamePossibleFields, questionFormPossibleFields, roomNamePossibleFields)
 import Panel.Notifications exposing (..)
 import RemoteData
+import Room.Api exposing (fetchRooms)
 import Room.Constants exposing (answerInputFieldId, enterKeyCode)
 import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, userJoinedInfoDecoder, usersListDecoder)
 import Room.Notifications exposing (..)
@@ -23,6 +24,7 @@ import Task
 import Toasty
 import Multiselect
 import Socket exposing (initializeRoom, leaveRoom)
+import User.Api exposing (fetchCurrentUser)
 
 
 updateForm : String -> String -> Forms.Form -> Forms.Form
@@ -49,7 +51,7 @@ update msg model =
                                 Phoenix.Socket.init ("ws://localhost:4000/socket/websocket?token=" ++ token)
                                     |> Phoenix.Socket.withDebug
                         }
-                            ! []
+                            ! [ fetchRooms, fetchCategories, fetchCurrentUser ]
 
                     Err err ->
                         { model | authData = { oldAuthData | msg = toString err } } ! []
