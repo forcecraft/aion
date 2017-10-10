@@ -12,6 +12,7 @@ import Msgs exposing (Msg(..))
 import Panel.Api exposing (createCategory, createQuestionWithAnswers, createRoom, fetchCategories)
 import Panel.Models exposing (categoryNamePossibleFields, questionFormPossibleFields, roomNamePossibleFields)
 import Panel.Notifications exposing (..)
+import Ports exposing (check)
 import RemoteData
 import Room.Api exposing (fetchRooms)
 import Room.Constants exposing (answerInputFieldId, enterKeyCode)
@@ -51,7 +52,7 @@ update msg model =
                                 Phoenix.Socket.init ("ws://localhost:4000/socket/websocket?token=" ++ token)
                                     |> Phoenix.Socket.withDebug
                         }
-                            ! [ fetchRooms, fetchCategories, fetchCurrentUser ]
+                            ! [ check token, fetchRooms, fetchCategories, fetchCurrentUser ]
 
                     Err err ->
                         { model | authData = { oldAuthData | msg = toString err } } ! []

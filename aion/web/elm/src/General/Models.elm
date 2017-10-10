@@ -18,7 +18,6 @@ import User.Models exposing (CurrentUser)
 type alias Model =
     { user : WebData CurrentUser
     , authData : AuthData
-    , channelToken : String
     , rooms : WebData RoomsData
     , categories : WebData CategoriesData
     , route : Route
@@ -34,7 +33,7 @@ type alias Model =
 
 
 type alias Flags =
-    { channelToken : String
+    { token : String
     }
 
 
@@ -53,6 +52,14 @@ initialModel flags route =
     let
         ( navbarState, _ ) =
             Navbar.initialState NavbarMsg
+
+        token =
+            case String.isEmpty flags.token of
+                True ->
+                    Nothing
+
+                False ->
+                    Just flags.token
     in
         { user = RemoteData.Loading
         , authData =
@@ -60,10 +67,9 @@ initialModel flags route =
             , registrationForm = Forms.initForm registrationForm
             , displayLoginInsteadOfRegistration = True
             , formMsg = loginFormMsg
-            , token = Nothing
+            , token = token
             , msg = ""
             }
-        , channelToken = flags.channelToken
         , rooms = RemoteData.Loading
         , categories = RemoteData.Loading
         , route = route
