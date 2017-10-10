@@ -52,3 +52,10 @@ registrationForm =
     , ( "email", [ Forms.validateExistence ] )
     , ( "password", [ Forms.validateExistence ] )
     ]
+
+
+type alias RegistrationResultData =
+    { name : String
+    , id : Int
+    , email : String
+    }

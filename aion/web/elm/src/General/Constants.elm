@@ -26,6 +26,11 @@ loginUrl =
     hostname ++ "/sessions"
 
 
+registerUrl : String
+registerUrl =
+    hostname ++ "/register"
+
+
 gameCardConfig : SimpleCardConfig
 gameCardConfig =
     { svgImage = hostname ++ "svg/trophy.svg"

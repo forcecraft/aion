@@ -4,9 +4,8 @@ defmodule Aion.SessionController do
   alias Aion.User
   alias Aion.Auth
 
-  # to be delted?
   def index(conn, _params) do
-    render(conn, "data.json")
+    render(conn, "login.json")
   end
 
   def create(conn, %{"email" => email, "password" => password}) do
@@ -15,7 +14,6 @@ defmodule Aion.SessionController do
         new_conn = Guardian.Plug.api_sign_in(conn, conn.assigns[:current_user])
         jwt = Guardian.Plug.current_token(new_conn)
         {:ok, claims} = Guardian.Plug.claims(new_conn)
-      #   IO.inspect(claims)
         exp = Map.get(claims, "exp")
 
         new_conn
@@ -23,7 +21,6 @@ defmodule Aion.SessionController do
         |> put_resp_header("x-expires", "#{exp}")
         |> render("login.json", jwt: jwt)
       {:error, _reason, conn} ->
-        IO.inspect(_reason)
         conn
         |> put_status(500)
         |> render("error.json")

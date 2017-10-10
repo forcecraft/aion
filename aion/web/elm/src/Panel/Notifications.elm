@@ -60,3 +60,17 @@ roomCreationErrorToast =
 roomCreationSuccessfulToast : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 roomCreationSuccessfulToast =
     addToast (Toasty.Defaults.Success "Success!" "Room created successfully.")
+
+
+
+-- registration notifications
+
+
+registrationErrorToast : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+registrationErrorToast =
+    addToast (Toasty.Defaults.Error "Error!" "Failed to register :(")
+
+
+registrationSuccessfulToast : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+registrationSuccessfulToast =
+    addToast (Toasty.Defaults.Success "Success!" "Account created successfuly - proceed to Login.")

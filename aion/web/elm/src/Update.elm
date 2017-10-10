@@ -1,6 +1,6 @@
 module Update exposing (..)
 
-import Auth.Commands exposing (submitCredentials)
+import Auth.Commands exposing (registerUser, submitCredentials)
 import Dom exposing (focus)
 import Forms
 import General.Constants exposing (loginFormMsg, registerFormMsg)
@@ -23,6 +23,11 @@ import Task
 import Toasty
 import Multiselect
 import Socket exposing (initializeRoom, leaveRoom)
+
+
+updateForm : String -> String -> Forms.Form -> Forms.Form
+updateForm name value form =
+    Forms.updateFormInput form name value
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -50,7 +55,31 @@ update msg model =
                         { model | authData = { oldAuthData | msg = toString err } } ! []
 
         Register ->
-            model ! []
+            model ! [ registerUser model.authData.registrationForm ]
+
+        RegistrationResult response ->
+            case response of
+                RemoteData.Success responseData ->
+                    let
+                        oldAuthData =
+                            model.authData
+
+                        oldRegistrationForm =
+                            oldAuthData.registrationForm
+
+                        newRegistrationForm =
+                            updateForm "name" "" oldRegistrationForm
+                                |> updateForm "email" ""
+                                |> updateForm "password" ""
+                    in
+                        { model | authData = { oldAuthData | registrationForm = newRegistrationForm } }
+                            ! []
+                            |> registrationSuccessfulToast
+
+                _ ->
+                    model
+                        ! []
+                        |> registrationErrorToast
 
         ChangeAuthForm ->
             let
@@ -119,15 +148,17 @@ update msg model =
                             model.panelData.questionForm
 
                         newQuestionForm =
-                            Forms.updateFormInput oldQuestionForm "question" ""
-
-                        evenNewerQuestionForm =
-                            Forms.updateFormInput newQuestionForm "answers" ""
+                            updateForm "question" "" oldQuestionForm
+                                |> updateForm "answers" ""
                     in
-                        questionCreationSuccessfulToast ({ model | panelData = { oldPanelData | questionForm = evenNewerQuestionForm } } ! [])
+                        { model | panelData = { oldPanelData | questionForm = newQuestionForm } }
+                            ! []
+                            |> questionCreationSuccessfulToast
 
                 _ ->
-                    questionCreationErrorToast (model ! [])
+                    model
+                        ! []
+                        |> questionCreationErrorToast
 
         OnCategoryCreated response ->
             case response of
@@ -142,10 +173,14 @@ update msg model =
                         newCategoryForm =
                             Forms.updateFormInput oldCategoryForm "name" ""
                     in
-                        categoryCreationSuccessfulToast ({ model | panelData = { oldPanelData | categoryForm = newCategoryForm } } ! [])
+                        { model | panelData = { oldPanelData | categoryForm = newCategoryForm } }
+                            ! []
+                            |> categoryCreationSuccessfulToast
 
                 _ ->
-                    categoryCreationErrorToast (model ! [])
+                    model
+                        ! []
+                        |> categoryCreationErrorToast
 
         OnRoomCreated response ->
             case response of
@@ -158,15 +193,17 @@ update msg model =
                             model.panelData.roomForm
 
                         newRoomForm =
-                            Forms.updateFormInput oldRoomForm "name" ""
-
-                        evenNewerRoomForm =
-                            Forms.updateFormInput newRoomForm "description" ""
+                            updateForm "name" "" oldRoomForm
+                                |> updateForm "description" ""
                     in
-                        roomCreationSuccessfulToast ({ model | panelData = { oldPanelData | roomForm = evenNewerRoomForm } } ! [])
+                        { model | panelData = { oldPanelData | roomForm = newRoomForm } }
+                            ! []
+                            |> roomCreationSuccessfulToast
 
                 _ ->
-                    roomCreationErrorToast (model ! [])
+                    model
+                        ! []
+                        |> roomCreationErrorToast
 
         OnLocationChange location ->
             let
@@ -237,7 +274,9 @@ update msg model =
                                 _ ->
                                     Debug.crash "Unexpected Feedback"
                     in
-                        answerToast (model ! [])
+                        model
+                            ! []
+                            |> answerToast
 
                 Err error ->
                     model ! []
@@ -324,6 +363,23 @@ update msg model =
                 }
                     ! []
 
+        UpdateRegistrationForm name value ->
+            let
+                oldAuthData =
+                    model.authData
+
+                registrationForm =
+                    oldAuthData.registrationForm
+
+                updatedRegistrationForm =
+                    Forms.updateFormInput registrationForm name value
+            in
+                { model
+                    | authData =
+                        { oldAuthData | registrationForm = updatedRegistrationForm }
+                }
+                    ! []
+
         UpdateQuestionForm name value ->
             let
                 oldPanelData =
@@ -389,7 +445,9 @@ update msg model =
                 if List.isEmpty validationErrors then
                     ( model, createQuestionWithAnswers model.panelData.questionForm model.rooms )
                 else
-                    questionFormValidationErrorToast (model ! [])
+                    model
+                        ! []
+                        |> questionFormValidationErrorToast
 
         CreateNewCategory ->
             let
@@ -405,7 +463,9 @@ update msg model =
                 if List.isEmpty validationErrors then
                     ( model, createCategory model.panelData.categoryForm )
                 else
-                    categoryFormValidationErrorToast (model ! [])
+                    model
+                        ! []
+                        |> categoryFormValidationErrorToast
 
         CreateNewRoom ->
             let
@@ -421,7 +481,9 @@ update msg model =
                 if List.isEmpty validationErrors then
                     ( model, createRoom model.panelData.roomForm categoryIds )
                 else
-                    roomFormValidationErrorToast (model ! [])
+                    model
+                        ! []
+                        |> roomFormValidationErrorToast
 
         MultiselectMsg subMsg ->
             let

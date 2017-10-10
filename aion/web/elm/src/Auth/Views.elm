@@ -6,25 +6,27 @@ import Bootstrap.Button as Button
 import Bootstrap.Form as Form
 import Bootstrap.Form.Input as Input
 import Forms
+import General.Models exposing (Model)
+import General.Notifications exposing (toastsConfig)
 import Html exposing (Html, br, div, h4, text)
 import Html.Attributes exposing (class, for)
 import Msgs exposing (Msg(..))
+import Toasty
+import Toasty.Defaults
 
 
---TODO: make form creation a function
-
-
-authView : AuthData -> Html Msg
-authView authData =
+authView : Model -> Html Msg
+authView model =
     div [ class "auth-container" ]
-        [ case authData.displayLoginInsteadOfRegistration of
+        [ case model.authData.displayLoginInsteadOfRegistration of
             True ->
-                loginFormView authData.loginForm
+                loginFormView model.authData.loginForm
 
             False ->
-                registrationFormView authData.registrationForm
+                registrationFormView model.authData.registrationForm
         , br [] []
-        , authFormSwitch authData.formMsg
+        , authFormSwitch model.authData.formMsg
+        , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
         ]
 
 
@@ -92,13 +94,13 @@ passwordLoginFormElement form =
 
 
 registrationFormView : RegistrationForm -> Html Msg
-registrationFormView registerForm =
+registrationFormView registrationForm =
     div [ class "registration-container" ]
         [ h4 [] [ text "Register:" ]
         , Form.form []
-            [ nameRegisterFormElement registerForm
-            , emailRegisterFormElement registerForm
-            , passwordRegisterFormElement registerForm
+            [ nameRegisterFormElement registrationForm
+            , emailRegisterFormElement registrationForm
+            , passwordRegisterFormElement registrationForm
             , Button.button
                 [ Button.info
                 , Button.onClick Register
@@ -114,7 +116,7 @@ nameRegisterFormElement form =
         [ Form.label [ for "name" ] [ text "Enter username:" ]
         , Input.text
             [ Input.placeholder "John Doe"
-            , Input.onInput (UpdateLoginForm "name")
+            , Input.onInput (UpdateRegistrationForm "name")
             , Input.value (Forms.formValue form "name")
             ]
         , Badge.pillInfo [] [ text (Forms.errorString form "name") ]
@@ -127,7 +129,7 @@ emailRegisterFormElement form =
         [ Form.label [ for "email" ] [ text "Enter email below:" ]
         , Input.text
             [ Input.placeholder "john.doe@yahoo.com"
-            , Input.onInput (UpdateLoginForm "email")
+            , Input.onInput (UpdateRegistrationForm "email")
             , Input.value (Forms.formValue form "email")
             ]
         , Badge.pillInfo [] [ text (Forms.errorString form "email") ]
@@ -140,7 +142,7 @@ passwordRegisterFormElement form =
         [ Form.label [ for "password" ] [ text "Enter password below:" ]
         , Input.password
             [ Input.placeholder "Your password..."
-            , Input.onInput (UpdateLoginForm "password")
+            , Input.onInput (UpdateRegistrationForm "password")
             , Input.value (Forms.formValue form "password")
             ]
         , Badge.pillInfo [] [ text (Forms.errorString form "password") ]

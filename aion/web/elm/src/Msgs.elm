@@ -1,5 +1,6 @@
 module Msgs exposing (..)
 
+import Auth.Models exposing (RegistrationResultData)
 import Bootstrap.Navbar as Navbar
 import Dom exposing (Error)
 import Http
@@ -40,8 +41,10 @@ type Msg
     | Login
     | LoginResult (Result Http.Error String)
     | Register
+    | RegistrationResult (WebData RegistrationResultData)
     | ChangeAuthForm
     | UpdateLoginForm String String
+    | UpdateRegistrationForm String String
     | UpdateQuestionForm String String
     | UpdateCategoryForm String String
     | UpdateRoomForm String String
