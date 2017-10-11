@@ -1,8 +1,8 @@
 defmodule Aion.SessionController do
   use Aion.Web, :controller
 
-  alias Aion.User
-  alias Aion.Auth
+  alias Aion.{Auth, User}
+  alias Guardian.Plug
 
   def index(conn, _params) do
     render(conn, "login.json")
@@ -11,9 +11,9 @@ defmodule Aion.SessionController do
   def create(conn, %{"email" => email, "password" => password}) do
     case Auth.login_by_username_and_pass(conn, email, password, repo: Repo) do
       {:ok, conn} ->
-        new_conn = Guardian.Plug.api_sign_in(conn, conn.assigns[:current_user])
-        jwt = Guardian.Plug.current_token(new_conn)
-        {:ok, claims} = Guardian.Plug.claims(new_conn)
+        new_conn = Plug.api_sign_in(conn, conn.assigns[:current_user])
+        jwt = Plug.current_token(new_conn)
+        {:ok, claims} = Plug.claims(new_conn)
         exp = Map.get(claims, "exp")
 
         new_conn

@@ -1,6 +1,9 @@
 defmodule Aion.Auth do
+  @moduledoc """
+  Module for authentication logic
+  """
   import Plug.Conn
-  import Comeonin.Bcrypt, only: [ checkpw: 2, dummy_checkpw: 0 ]
+  import Comeonin.Bcrypt, only: [checkpw: 2, dummy_checkpw: 0]
 
   def init(opts) do
     Keyword.fetch!(opts, :repo)
@@ -37,5 +40,4 @@ defmodule Aion.Auth do
         {:error, :not_found, conn}
     end
   end
-
 end

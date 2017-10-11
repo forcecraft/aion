@@ -4,6 +4,7 @@ defmodule Aion.User do
   """
   @type t :: %__MODULE__{name: String.t, email: String.t, password: String.t, encrypted_password: String.t}
   use Aion.Web, :model
+  alias Comeonin.Bcrypt
 
   schema "users" do
     field :name, :string
@@ -36,7 +37,7 @@ defmodule Aion.User do
   defp put_pass_hash(changeset) do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: pass}} ->
-          put_change(changeset, :encrypted_password, Comeonin.Bcrypt.hashpwsalt(pass))
+          put_change(changeset, :encrypted_password, Bcrypt.hashpwsalt(pass))
       _ ->
           changeset
     end

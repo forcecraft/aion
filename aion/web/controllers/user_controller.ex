@@ -1,10 +1,11 @@
 defmodule Aion.UserController do
   use Aion.Web, :controller
+  alias Guardian.Plug
 
-  plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
+  plug Plug.EnsureAuthenticated, handler: __MODULE__
 
   def get_user_info(conn, _params) do
-    user = Guardian.Plug.current_resource(conn)
+    user = Plug.current_resource(conn)
     render(conn, "user.json", user: user)
   end
 
