@@ -9,9 +9,12 @@ defmodule Aion.QuestionControllerTest do
   @category 1
 
   setup %{conn: _} do
-    user = %{ email: "test@example.com", name: "something" }
-    conn = Plug.Test. init_test_session(build_conn(), %{current_user: user})
-    {:ok, conn: put_req_header(conn, "accept", "application/json")}
+    user = %Aion.User{ email: "test@example.com", name: "something", password: "2131231", id: 1 }
+    {:ok, jwt, _} = Guardian.encode_and_sign(user)
+    conn =
+      build_conn()
+      |> put_req_header("authorization", "Bearer #{jwt}")
+    {:ok, %{conn: conn}}
   end
   test "lists all entries on index", %{conn: conn} do
     conn = get conn, question_path(conn, :index)
