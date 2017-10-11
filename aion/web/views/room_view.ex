@@ -14,4 +14,8 @@ defmodule Aion.RoomView do
       name: room.name,
       description: room.description}
   end
+
+  def render("error.json", %{message: msg}) do
+    %{"error": msg}
+  end
 end

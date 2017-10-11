@@ -3,6 +3,8 @@ defmodule Aion.CategoryController do
 
   alias Aion.Category
 
+  plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
+
   def index(conn, _params) do
     categories = Repo.all(Category)
     render(conn, "index.json", categories: categories)
@@ -51,5 +53,11 @@ defmodule Aion.CategoryController do
     Repo.delete!(category)
 
     send_resp(conn, :no_content, "")
+  end
+
+  def unauthenticated(conn, _params) do
+    conn
+    |> put_status(401)
+    |> render("error.json", message: "Authentication required")
   end
 end

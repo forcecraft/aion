@@ -1,6 +1,6 @@
 module Update exposing (..)
 
-import Auth.Commands exposing (registerUser, submitCredentials)
+import Auth.Api exposing (registerUser, submitCredentials)
 import Auth.Notifications exposing (..)
 import Dom exposing (focus)
 import Forms
@@ -34,6 +34,16 @@ updateForm name value form =
     Forms.updateFormInput form name value
 
 
+unwrapToken : Maybe String -> String
+unwrapToken token =
+    case token of
+        Just actualToken ->
+            actualToken
+
+        Nothing ->
+            ""
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -53,7 +63,11 @@ update msg model =
                                 Phoenix.Socket.init ("ws://localhost:4000/socket/websocket?token=" ++ token)
                                     |> Phoenix.Socket.withDebug
                         }
-                            ! [ check token, fetchRooms, fetchCategories, fetchCurrentUser token ]
+                            ! [ check token
+                              , fetchRooms token
+                              , fetchCategories token
+                              , fetchCurrentUser token
+                              ]
 
                     Err err ->
                         { model | authData = { oldAuthData | msg = toString err } } ! []
@@ -452,9 +466,15 @@ update msg model =
                         |> List.map (\name -> Forms.errorList questionForm name)
                         |> List.foldr (++) []
                         |> List.filter (\validations -> validations /= Nothing)
+
+                token =
+                    unwrapToken model.authData.token
+
+                rooms =
+                    model.rooms
             in
                 if List.isEmpty validationErrors then
-                    ( model, createQuestionWithAnswers model.panelData.questionForm model.rooms )
+                    model ! [ createQuestionWithAnswers token questionForm rooms ]
                 else
                     model
                         ! []
@@ -465,6 +485,9 @@ update msg model =
                 categoryForm =
                     model.panelData.categoryForm
 
+                token =
+                    unwrapToken model.authData.token
+
                 validationErrors =
                     categoryNamePossibleFields
                         |> List.map (\name -> Forms.errorList categoryForm name)
@@ -472,7 +495,7 @@ update msg model =
                         |> List.filter (\validations -> validations /= Nothing)
             in
                 if List.isEmpty validationErrors then
-                    ( model, createCategory model.panelData.categoryForm )
+                    model ! [ createCategory token categoryForm ]
                 else
                     model
                         ! []
@@ -488,9 +511,12 @@ update msg model =
 
                 categoryIds =
                     List.map (\( id, _ ) -> id) (Multiselect.getSelectedValues model.panelData.categoryMultiSelect)
+
+                token =
+                    unwrapToken model.authData.token
             in
                 if List.isEmpty validationErrors then
-                    ( model, createRoom model.panelData.roomForm categoryIds )
+                    model ! [ createRoom token roomForm categoryIds ]
                 else
                     model
                         ! []

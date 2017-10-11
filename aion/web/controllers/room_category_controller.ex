@@ -3,6 +3,8 @@ defmodule Aion.RoomCategoryController do
 
   alias Aion.RoomCategory
 
+  plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
+
   def index(conn, _params) do
     room_categories = Repo.all(RoomCategory)
     render(conn, "index.json", room_categories: room_categories)
@@ -51,5 +53,11 @@ defmodule Aion.RoomCategoryController do
     Repo.delete!(room_category)
 
     send_resp(conn, :no_content, "")
+  end
+
+  def unauthenticated(conn, _params) do
+    conn
+    |> put_status(401)
+    |> render("error.json", message: "Authentication required")
   end
 end

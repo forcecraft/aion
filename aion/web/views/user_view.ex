@@ -10,4 +10,8 @@ defmodule Aion.UserView do
       %{}
     end
   end
+
+  def render("error.json", %{message: msg}) do
+    %{"error": msg}
+  end
 end

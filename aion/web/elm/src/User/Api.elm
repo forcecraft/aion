@@ -9,8 +9,8 @@ import User.Decoders exposing (userDecoder)
 import User.Models exposing (CurrentUser)
 
 
-getCurrentUserRequest : String -> Decode.Decoder CurrentUser -> Request CurrentUser
-getCurrentUserRequest token decoder =
+fetchCurrentUserRequest : String -> Decode.Decoder CurrentUser -> Request CurrentUser
+fetchCurrentUserRequest token decoder =
     Http.request
         { method = "GET"
         , headers = [ Http.header "Authorization" ("Bearer " ++ token) ]
@@ -18,12 +18,12 @@ getCurrentUserRequest token decoder =
         , body = Http.emptyBody
         , expect = Http.expectJson decoder
         , timeout = Nothing
-        , withCredentials = False
+        , withCredentials = True
         }
 
 
 fetchCurrentUser : String -> Cmd Msg
 fetchCurrentUser token =
-    getCurrentUserRequest token userDecoder
+    fetchCurrentUserRequest token userDecoder
         |> RemoteData.sendRequest
         |> Cmd.map Msgs.OnFetchCurrentUser

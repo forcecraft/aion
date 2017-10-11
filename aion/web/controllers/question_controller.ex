@@ -4,6 +4,8 @@ defmodule Aion.QuestionController do
   alias Aion.Question
   alias Aion.QuestionTransactions
 
+  plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
+
   def index(conn, _params) do
     questions = Repo.all(Question)
     render(conn, "index.json", questions: questions)
@@ -51,5 +53,11 @@ defmodule Aion.QuestionController do
     Repo.delete!(question)
 
     send_resp(conn, :no_content, "")
+  end
+
+  def unauthenticated(conn, _params) do
+    conn
+    |> put_status(401)
+    |> render("error.json", message: "Authentication required")
   end
 end

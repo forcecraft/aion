@@ -13,4 +13,8 @@ defmodule Aion.CategoryView do
     %{id: category.id,
       name: category.name}
   end
+
+  def render("error.json", %{message: msg}) do
+    %{"error": msg}
+  end
 end

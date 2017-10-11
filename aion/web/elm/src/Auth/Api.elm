@@ -1,4 +1,4 @@
-module Auth.Commands exposing (..)
+module Auth.Api exposing (..)
 
 import Auth.Models exposing (RegistrationForm, RegistrationResultData)
 import Forms
@@ -9,6 +9,9 @@ import Json.Decode.Pipeline exposing (decode, required)
 import Json.Encode as Encode
 import Msgs exposing (Msg(..))
 import RemoteData
+
+
+-- login section
 
 
 authenticate : String -> Decode.Decoder a -> Value -> Http.Request a
@@ -29,6 +32,10 @@ submitCredentials form =
 tokenStringDecoder : Decode.Decoder String
 tokenStringDecoder =
     Decode.field "token" Decode.string
+
+
+
+-- register section
 
 
 registerUser : Forms.Form -> Cmd Msg

@@ -14,4 +14,8 @@ defmodule Aion.AnswerView do
       question_id: answer.question_id,
       content: answer.content}
   end
+
+  def render("error.json", %{message: msg}) do
+    %{"error": msg}
+  end
 end
