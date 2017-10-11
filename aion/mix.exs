@@ -21,7 +21,7 @@ defmodule Aion.Mixfile do
                     :phoenix_ecto, :postgrex, :simetric]]
   end
 
-  defp elixirc_paths(:test), do: ["lib", "web/auth", "web/channels", "web/controllers", "web/models", "web/templates", "web/views", "test/support"]
+  defp elixirc_paths(:test), do: ["lib", "web", "test/support"]
   defp elixirc_paths(_),     do: ["lib", "web"]
 
   defp deps do
