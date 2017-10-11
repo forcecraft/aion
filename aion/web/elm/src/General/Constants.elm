@@ -30,6 +30,10 @@ registerUrl : String
 registerUrl =
     hostname ++ "/register"
 
+currentUserUrl : String
+currentUserUrl =
+    hostname ++ "api/me"
+
 
 gameCardConfig : SimpleCardConfig
 gameCardConfig =
