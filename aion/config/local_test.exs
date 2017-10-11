@@ -14,6 +14,6 @@ config :aion, Aion.Repo,
   adapter: Ecto.Adapters.Postgres,
   username: "postgres",
   password: "postgres",
-  database: "aion",
+  database: "aion_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox

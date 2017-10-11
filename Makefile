@@ -66,5 +66,5 @@ local-config: ## Switch config file to
 	cp aion/config/local_dev.exs aion/config/dev.exs
 
 populate-database: ## Seed database with fixtures prepared in fixtures/jpks/
-	ln -f -s fixtures/src/local-config.py fixtures/src/config.py
-	scripts/populate-database
+	cp fixtures/src/local_config.py fixtures/src/config.py
+	scripts/populate_database

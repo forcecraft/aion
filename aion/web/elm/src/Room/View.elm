@@ -15,6 +15,7 @@ import Html.Events exposing (keyCode, on, onClick, onInput, onWithOptions)
 import Json.Decode exposing (map)
 import Msgs exposing (Msg(..))
 import Html exposing (Html, a, div, img, li, p, text, ul)
+import Navigation exposing (Location)
 import Room.Constants exposing (answerInputFieldId, defaultImagePath, imagesPath)
 import Room.Models exposing (Answer, ImageName, RoomId, RoomsData, UserGameData, UserInRoomRecord)
 import Room.Utils exposing (getRoomList, getRoomNameById)
@@ -39,7 +40,7 @@ roomView model roomId =
                 [ Grid.col []
                     [ h4 [] [ text roomName ]
                     , displayQuestion model.questionInChannel.content
-                    , displayQuestionImage imageName
+                    , displayQuestionImage model.location imageName
                     , displayAnswerInput currentAnswer
                     , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
                     ]
@@ -70,21 +71,21 @@ displayQuestion question =
         |> Card.view
 
 
-displayQuestionImage : ImageName -> Html Msg
-displayQuestionImage imageName =
+displayQuestionImage : Location -> ImageName -> Html Msg
+displayQuestionImage location imageName =
     case imageName of
         "" ->
-            img [ class "room-image", src defaultImagePath ] []
+            img [ class "room-image", src (defaultImagePath location) ] []
 
         imageName ->
-            img [ class "room-image", src (imagesPath ++ imageName) ] []
+            img [ class "room-image", src ((imagesPath location) ++ imageName) ] []
 
 
 displayAnswerInput : Answer -> Html Msg
 displayAnswerInput currentAnswer =
     Form.form [ class "room-answer-input" ]
         [ Form.group []
-            [ Form.label [ for "answer" ] [ Badge.badgeSuccess [] [ text "Put your answer below:" ] ]
+            [ Form.label [ for "answer" ] [ Badge.badgeSuccess [] [ text "Insert your answer below:" ] ]
             , displayAnswerInputField currentAnswer
             , displayAnswerSubmitButton
             ]

@@ -1,20 +1,21 @@
 module Room.Api exposing (..)
 
-import General.Constants exposing (roomsUrl, hostname)
 import Http exposing (Request)
 import Json.Decode as Decode
 import Msgs exposing (Msg)
+import Navigation exposing (Location)
 import RemoteData
 import Room.Decoders exposing (roomsDecoder)
 import Room.Models exposing (RoomsData)
+import Urls exposing (host, roomsUrl)
 
 
-fetchCurrentUserRequest : String -> Decode.Decoder RoomsData -> Request RoomsData
-fetchCurrentUserRequest token decoder =
+fetchCurrentUserRequest : String -> String -> Decode.Decoder RoomsData -> Request RoomsData
+fetchCurrentUserRequest url token decoder =
     Http.request
         { method = "GET"
         , headers = [ Http.header "Authorization" ("Bearer " ++ token) ]
-        , url = roomsUrl
+        , url = url
         , body = Http.emptyBody
         , expect = Http.expectJson decoder
         , timeout = Nothing
@@ -22,8 +23,12 @@ fetchCurrentUserRequest token decoder =
         }
 
 
-fetchRooms : String -> Cmd Msg
-fetchRooms token =
-    fetchCurrentUserRequest token roomsDecoder
-        |> RemoteData.sendRequest
-        |> Cmd.map Msgs.OnFetchRooms
+fetchRooms : Location -> String -> Cmd Msg
+fetchRooms location token =
+    let
+        url =
+            roomsUrl location
+    in
+        fetchCurrentUserRequest url token roomsDecoder
+            |> RemoteData.sendRequest
+            |> Cmd.map Msgs.OnFetchRooms

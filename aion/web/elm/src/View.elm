@@ -3,14 +3,16 @@ module View exposing (..)
 import Auth.Views exposing (authView)
 import Bootstrap.Navbar as Navbar
 import Bootstrap.Button as Button
-import General.Constants exposing (hostname, panelPath, roomsPath, userPath)
+import General.Constants exposing (panelPath, roomsPath, userPath)
 import General.Models exposing (Model, Route(HomeRoute, AuthRoute, NotFoundRoute, PanelRoute, RoomListRoute, RoomRoute, UserRoute))
 import General.View exposing (homeView, notFoundView, roomListView)
 import Html exposing (..)
 import Html.Attributes exposing (class, href, src)
 import Msgs exposing (Msg(..))
+import Navigation exposing (Location)
 import Panel.View exposing (panelView)
 import Room.View exposing (roomView)
+import Urls exposing (host)
 import User.View exposing (userView)
 
 
@@ -20,17 +22,17 @@ view model =
         [ page model ]
 
 
-layout : Html Msg -> Navbar.State -> Html Msg
-layout content navbarState =
+layout : Html Msg -> Location -> Navbar.State -> Html Msg
+layout content location navbarState =
     div
         [ class "layout" ]
-        [ navbar navbarState
+        [ navbar location navbarState
         , content
         ]
 
 
-navbar : Navbar.State -> Html Msg
-navbar navbarState =
+navbar : Location -> Navbar.State -> Html Msg
+navbar location navbarState =
     Navbar.config NavbarMsg
         |> Navbar.withAnimation
         |> Navbar.success
@@ -38,7 +40,7 @@ navbar navbarState =
         |> Navbar.brand
             [ href "#" ]
             [ img
-                [ src (hostname ++ "svg/hemp.svg")
+                [ src ((host location) ++ "svg/hemp.svg")
                 , class "header-aion-logo"
                 ]
                 []
@@ -46,7 +48,7 @@ navbar navbarState =
             ]
         |> Navbar.items
             [ Navbar.itemLink [ href roomsPath ] [ text "Rooms" ]
-            , Navbar.itemLink [ href panelPath ] [ text "Panel" ]
+            , Navbar.itemLink [ href panelPath ] [ text "Workspace" ]
             , Navbar.itemLink [ href userPath ] [ text "Profile" ]
             ]
         |> Navbar.customItems
@@ -70,7 +72,7 @@ page model =
         includeNavbar =
             case currentRoute of
                 AuthRoute ->
-                    \x y -> x
+                    \x y z -> x
 
                 _ ->
                     layout
@@ -98,7 +100,7 @@ page model =
                 NotFoundRoute ->
                     notFoundView
     in
-        includeNavbar content model.navbarState
+        includeNavbar content model.location model.navbarState
 
 
 redirectIfNotAuthenticated : Maybe String -> Route -> Route

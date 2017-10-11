@@ -1,7 +1,7 @@
 module Update exposing (..)
 
 import Auth.Api exposing (registerUser, submitCredentials)
-import Auth.Notifications exposing (..)
+import Auth.Notifications exposing (registrationErrorToast, registrationSuccessfulToast)
 import Dom exposing (focus)
 import Forms
 import General.Constants exposing (loginFormMsg, registerFormMsg)
@@ -48,7 +48,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Login ->
-            model ! [ submitCredentials model.authData.loginForm ]
+            model ! [ submitCredentials model.location model.authData.loginForm ]
 
         LoginResult res ->
             let
@@ -64,16 +64,16 @@ update msg model =
                                     |> Phoenix.Socket.withDebug
                         }
                             ! [ check token
-                              , fetchRooms token
-                              , fetchCategories token
-                              , fetchCurrentUser token
+                              , fetchRooms model.location token
+                              , fetchCategories model.location token
+                              , fetchCurrentUser model.location token
                               ]
 
                     Err err ->
                         { model | authData = { oldAuthData | msg = toString err } } ! []
 
         Register ->
-            model ! [ registerUser model.authData.registrationForm ]
+            model ! [ registerUser model.location model.authData.registrationForm ]
 
         RegistrationResult response ->
             case response of
@@ -470,11 +470,14 @@ update msg model =
                 token =
                     unwrapToken model.authData.token
 
+                location =
+                    model.location
+
                 rooms =
                     model.rooms
             in
                 if List.isEmpty validationErrors then
-                    model ! [ createQuestionWithAnswers token questionForm rooms ]
+                    model ! [ createQuestionWithAnswers location token questionForm rooms ]
                 else
                     model
                         ! []
@@ -488,6 +491,9 @@ update msg model =
                 token =
                     unwrapToken model.authData.token
 
+                location =
+                    model.location
+
                 validationErrors =
                     categoryNamePossibleFields
                         |> List.map (\name -> Forms.errorList categoryForm name)
@@ -495,7 +501,7 @@ update msg model =
                         |> List.filter (\validations -> validations /= Nothing)
             in
                 if List.isEmpty validationErrors then
-                    model ! [ createCategory token categoryForm ]
+                    model ! [ createCategory location token categoryForm ]
                 else
                     model
                         ! []
@@ -514,9 +520,12 @@ update msg model =
 
                 token =
                     unwrapToken model.authData.token
+
+                location =
+                    model.location
             in
                 if List.isEmpty validationErrors then
-                    model ! [ createRoom token roomForm categoryIds ]
+                    model ! [ createRoom location token roomForm categoryIds ]
                 else
                     model
                         ! []

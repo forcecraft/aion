@@ -1,66 +1,34 @@
 module General.Constants exposing (..)
 
-
-hostname : String
-hostname =
-    "http://localhost:4000/"
+import Navigation exposing (Location)
+import Urls exposing (host)
 
 
-categoriesUrl : String
-categoriesUrl =
-    hostname ++ "api/categories"
-
-
-questionsUrl : String
-questionsUrl =
-    hostname ++ "api/questions"
-
-
-roomsUrl : String
-roomsUrl =
-    hostname ++ "api/rooms"
-
-
-loginUrl : String
-loginUrl =
-    hostname ++ "/sessions"
-
-
-registerUrl : String
-registerUrl =
-    hostname ++ "/register"
-
-
-currentUserUrl : String
-currentUserUrl =
-    hostname ++ "api/me"
-
-
-gameCardConfig : SimpleCardConfig
-gameCardConfig =
-    { svgImage = hostname ++ "svg/trophy.svg"
-    , title = "Play a game"
-    , description = "Find a room for yourself and check your knowledge versus other players."
+gameCardConfig : Location -> SimpleCardConfig
+gameCardConfig location =
+    { svgImage = (host location) ++ "svg/trophy.svg"
+    , title = "Play!"
+    , description = "Find a room matching your interests and compete with others."
     , url = roomsPath
     , buttonText = "Browse rooms"
     }
 
 
-panelCardConfig : SimpleCardConfig
-panelCardConfig =
-    { svgImage = hostname ++ "svg/tasks.svg"
-    , title = "Panel"
-    , description = "Create new rooms, new categories and new questions."
+panelCardConfig : Location -> SimpleCardConfig
+panelCardConfig location =
+    { svgImage = (host location) ++ "svg/tasks.svg"
+    , title = "Workspace"
+    , description = "Create new rooms, add new categories and new questions."
     , url = panelPath
-    , buttonText = "Visit panel"
+    , buttonText = "Visit workspace"
     }
 
 
-profileCardConfig : SimpleCardConfig
-profileCardConfig =
-    { svgImage = hostname ++ "svg/diploma.svg"
+profileCardConfig : Location -> SimpleCardConfig
+profileCardConfig location =
+    { svgImage = (host location) ++ "svg/diploma.svg"
     , title = "Profile"
-    , description = "Check your profile, gaming history and statistics."
+    , description = "Check your profile, match history and statistics."
     , url = userPath
     , buttonText = "Go to profile"
     }

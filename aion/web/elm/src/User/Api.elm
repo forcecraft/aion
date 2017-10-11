@@ -1,20 +1,27 @@
 module User.Api exposing (..)
 
-import General.Constants exposing (currentUserUrl, hostname)
+import Http
 import Http exposing (Request)
 import Json.Decode as Decode
 import Msgs exposing (Msg)
+import Navigation exposing (Location)
 import RemoteData
+import Urls exposing (host)
 import User.Decoders exposing (userDecoder)
 import User.Models exposing (CurrentUser)
 
 
-fetchCurrentUserRequest : String -> Decode.Decoder CurrentUser -> Request CurrentUser
-fetchCurrentUserRequest token decoder =
+fetchCurrentUserUrl : Location -> String
+fetchCurrentUserUrl location =
+    (host location) ++ "api/me"
+
+
+fetchCurrentUserRequest : String -> String -> Decode.Decoder CurrentUser -> Request CurrentUser
+fetchCurrentUserRequest url token decoder =
     Http.request
         { method = "GET"
         , headers = [ Http.header "Authorization" ("Bearer " ++ token) ]
-        , url = currentUserUrl
+        , url = url
         , body = Http.emptyBody
         , expect = Http.expectJson decoder
         , timeout = Nothing
@@ -22,8 +29,12 @@ fetchCurrentUserRequest token decoder =
         }
 
 
-fetchCurrentUser : String -> Cmd Msg
-fetchCurrentUser token =
-    fetchCurrentUserRequest token userDecoder
-        |> RemoteData.sendRequest
-        |> Cmd.map Msgs.OnFetchCurrentUser
+fetchCurrentUser : Location -> String -> Cmd Msg
+fetchCurrentUser location token =
+    let
+        url =
+            fetchCurrentUserUrl location
+    in
+        fetchCurrentUserRequest url token userDecoder
+            |> RemoteData.sendRequest
+            |> Cmd.map Msgs.OnFetchCurrentUser

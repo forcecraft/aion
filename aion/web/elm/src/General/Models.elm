@@ -5,6 +5,7 @@ import Bootstrap.Navbar as Navbar
 import Forms
 import General.Constants exposing (loginFormMsg)
 import Msgs exposing (Msg(NavbarMsg))
+import Navigation exposing (Location)
 import Multiselect
 import Panel.Models exposing (CategoriesData, PanelData, categoryForm, questionForm, roomForm)
 import Phoenix.Socket
@@ -12,6 +13,7 @@ import RemoteData exposing (WebData)
 import Room.Models exposing (RoomId, RoomsData, UsersInRoom, QuestionInRoom, UserGameData)
 import Toasty
 import Toasty.Defaults
+import Urls exposing (hostname)
 import User.Models exposing (CurrentUser)
 
 
@@ -29,6 +31,7 @@ type alias Model =
     , toasties : Toasty.Stack Toasty.Defaults.Toast
     , panelData : PanelData
     , navbarState : Navbar.State
+    , location : Location
     }
 
 
@@ -47,8 +50,8 @@ type Route
     | NotFoundRoute
 
 
-initialModel : Flags -> Route -> Model
-initialModel flags route =
+initialModel : Flags -> Route -> Location -> Model
+initialModel flags route location =
     let
         ( navbarState, _ ) =
             Navbar.initialState NavbarMsg
@@ -74,7 +77,7 @@ initialModel flags route =
         , categories = RemoteData.Loading
         , route = route
         , socket =
-            Phoenix.Socket.init ("ws://localhost:4000/socket/websocket?token=" ++ flags.token)
+            Phoenix.Socket.init ("ws://" ++ (hostname location) ++ "/socket/websocket?token=" ++ flags.token)
                 |> Phoenix.Socket.withDebug
         , usersInChannel = []
         , userGameData = { currentAnswer = "" }
@@ -91,4 +94,5 @@ initialModel flags route =
             , categoryMultiSelect = Multiselect.initModel [] "id"
             }
         , navbarState = navbarState
+        , location = location
         }

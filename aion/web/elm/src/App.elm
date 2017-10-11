@@ -1,7 +1,6 @@
 module App exposing (..)
 
 import Bootstrap.Navbar as Navbar
-import General.Constants exposing (hostname)
 import General.Models exposing (Flags, Model, initialModel)
 import Msgs exposing (Msg(NavbarMsg))
 import Multiselect
@@ -11,6 +10,7 @@ import Phoenix.Socket
 import Room.Api exposing (fetchRooms)
 import Routing
 import Update exposing (update)
+import Urls exposing (host)
 import User.Api exposing (fetchCurrentUser)
 import View exposing (view)
 
@@ -25,15 +25,15 @@ init flags location =
             Navbar.initialState NavbarMsg
 
         getInitialModel =
-            initialModel flags currentRoute
+            initialModel flags currentRoute location
     in
         ( { getInitialModel | navbarState = navbarState }
         , Cmd.batch
-            [ setHomeUrl
+            [ setHomeUrl location
             , navbarCmd
-            , fetchRooms flags.token
-            , fetchCategories flags.token
-            , fetchCurrentUser flags.token
+            , fetchRooms location flags.token
+            , fetchCategories location flags.token
+            , fetchCurrentUser location flags.token
             ]
         )
 
@@ -57,6 +57,6 @@ main =
         }
 
 
-setHomeUrl : Cmd Msg
-setHomeUrl =
-    modifyUrl hostname
+setHomeUrl : Location -> Cmd Msg
+setHomeUrl location =
+    modifyUrl (host location)

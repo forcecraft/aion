@@ -15,7 +15,8 @@ config :aion, Aion.Endpoint,
   secret_key_base: "qILNWNsZ5dyZijpvocG45VG5ElYCLYSfSOAWVEiz+cloUiX177Dla1kbz3ZGrfbX",
   render_errors: [view: Aion.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Aion.PubSub,
-           adapter: Phoenix.PubSub.PG2]
+           adapter: Phoenix.PubSub.PG2],
+  hostname: "localhost"
 
 # Configures Elixir's Logger
 config :logger, :console,
