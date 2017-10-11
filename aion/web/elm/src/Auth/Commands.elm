@@ -4,12 +4,16 @@ import Auth.Models exposing (RegistrationForm, RegistrationResultData)
 import Forms
 import General.Constants exposing (loginUrl, registerUrl)
 import Http
-import Json.Decode as Decode
+import Json.Decode as Decode exposing (Value)
 import Json.Decode.Pipeline exposing (decode, required)
 import Json.Encode as Encode
 import Msgs exposing (Msg(..))
-import Lib.Jwt exposing (authenticate)
 import RemoteData
+
+
+authenticate : String -> Decode.Decoder a -> Value -> Http.Request a
+authenticate url dec credentials =
+    Http.post url (Http.jsonBody credentials) dec
 
 
 submitCredentials : Forms.Form -> Cmd Msg
