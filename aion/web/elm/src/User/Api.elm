@@ -13,13 +13,14 @@ getCurrentUserRequest : String -> Decode.Decoder CurrentUser -> Request CurrentU
 getCurrentUserRequest token decoder =
     Http.request
         { method = "GET"
-        , headers = [ Http.header "Authorization" ("Bearer " ++ token)]
+        , headers = [ Http.header "Authorization" ("Bearer " ++ token) ]
         , url = currentUserUrl
         , body = Http.emptyBody
         , expect = Http.expectJson decoder
         , timeout = Nothing
         , withCredentials = False
         }
+
 
 fetchCurrentUser : String -> Cmd Msg
 fetchCurrentUser token =

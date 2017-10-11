@@ -42,6 +42,7 @@ type Msg
     | LoginResult (Result Http.Error String)
     | Register
     | RegistrationResult (WebData RegistrationResultData)
+    | Logout
     | ChangeAuthForm
     | UpdateLoginForm String String
     | UpdateRegistrationForm String String

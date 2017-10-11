@@ -2,6 +2,7 @@ module View exposing (..)
 
 import Auth.Views exposing (authView)
 import Bootstrap.Navbar as Navbar
+import Bootstrap.Button as Button
 import General.Constants exposing (hostname, panelPath, roomsPath, userPath)
 import General.Models exposing (Model, Route(HomeRoute, AuthRoute, NotFoundRoute, PanelRoute, RoomListRoute, RoomRoute, UserRoute))
 import General.View exposing (homeView, notFoundView, roomListView)
@@ -47,6 +48,15 @@ navbar navbarState =
             [ Navbar.itemLink [ href roomsPath ] [ text "Rooms" ]
             , Navbar.itemLink [ href panelPath ] [ text "Panel" ]
             , Navbar.itemLink [ href userPath ] [ text "Profile" ]
+            ]
+        |> Navbar.customItems
+            [ Navbar.customItem
+                (Button.button
+                    [ Button.roleLink
+                    , Button.onClick Logout
+                    ]
+                    [ text "Logout" ]
+                )
             ]
         |> Navbar.view navbarState
 

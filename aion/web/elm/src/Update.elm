@@ -1,6 +1,7 @@
 module Update exposing (..)
 
 import Auth.Commands exposing (registerUser, submitCredentials)
+import Auth.Notifications exposing (..)
 import Dom exposing (focus)
 import Forms
 import General.Constants exposing (loginFormMsg, registerFormMsg)
@@ -83,6 +84,13 @@ update msg model =
                     model
                         ! []
                         |> registrationErrorToast
+
+        Logout ->
+            let
+                oldAuthData =
+                    model.authData
+            in
+                { model | authData = { oldAuthData | token = Nothing } } ! [ check "" ]
 
         ChangeAuthForm ->
             let

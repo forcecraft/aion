@@ -73,8 +73,9 @@ initialModel flags route =
         , rooms = RemoteData.Loading
         , categories = RemoteData.Loading
         , route = route
-        , socket = Phoenix.Socket.init ("ws://localhost:4000/socket/websocket?token=" ++ flags.token)
-                   |> Phoenix.Socket.withDebug
+        , socket =
+            Phoenix.Socket.init ("ws://localhost:4000/socket/websocket?token=" ++ flags.token)
+                |> Phoenix.Socket.withDebug
         , usersInChannel = []
         , userGameData = { currentAnswer = "" }
         , questionInChannel =
