@@ -28,7 +28,7 @@ init flags location =
             initialModel flags currentRoute
     in
         ( { getInitialModel | navbarState = navbarState }
-        , Cmd.batch [ setHomeUrl, navbarCmd, fetchRooms, fetchCategories, fetchCurrentUser ]
+        , Cmd.batch [ setHomeUrl, navbarCmd, fetchRooms, fetchCategories, fetchCurrentUser flags.token ]
         )
 
 

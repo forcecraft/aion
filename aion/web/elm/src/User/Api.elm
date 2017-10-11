@@ -9,20 +9,20 @@ import User.Decoders exposing (userDecoder)
 import User.Models exposing (CurrentUser)
 
 
-getCurrentUserRequest : Decode.Decoder CurrentUser -> Request CurrentUser
-getCurrentUserRequest decoder =
+getCurrentUserRequest : String -> Decode.Decoder CurrentUser -> Request CurrentUser
+getCurrentUserRequest token decoder =
     Http.request
-    { method = "GET"
-    , headers = [ Http.header "Authorization" "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJVc2VyOjYiLCJleHAiOjE1MTAyOTg0NDcsImlhdCI6MTUwNzcwNjQ0NywiaXNzIjoiQWlvbiIsImp0aSI6ImQwNTY4OTJjLTVmNDgtNGVlYS05YjVhLTQ2NzBlYmM4OWYxOSIsInBlbSI6e30sInN1YiI6IlVzZXI6NiIsInR5cCI6ImFjY2VzcyJ9.zEl19eW2v7mqL5x5PzKInp5HBMvzhe2E2czLufpIDc7RRjv1JUZE21OuXxynIMjf6mTMScvCJduprBHuD2JTAg"]
-    , url = currentUserUrl
-    , body = Http.emptyBody
-    , expect = Http.expectJson decoder
-    , timeout = Nothing
-    , withCredentials = False
-    }
+        { method = "GET"
+        , headers = [ Http.header "Authorization" ("Bearer " ++ token)]
+        , url = currentUserUrl
+        , body = Http.emptyBody
+        , expect = Http.expectJson decoder
+        , timeout = Nothing
+        , withCredentials = False
+        }
 
-fetchCurrentUser : Cmd Msg
-fetchCurrentUser =
-    getCurrentUserRequest userDecoder
+fetchCurrentUser : String -> Cmd Msg
+fetchCurrentUser token =
+    getCurrentUserRequest token userDecoder
         |> RemoteData.sendRequest
         |> Cmd.map Msgs.OnFetchCurrentUser

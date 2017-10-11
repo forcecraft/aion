@@ -52,7 +52,7 @@ update msg model =
                                 Phoenix.Socket.init ("ws://localhost:4000/socket/websocket?token=" ++ token)
                                     |> Phoenix.Socket.withDebug
                         }
-                            ! [ check token, fetchRooms, fetchCategories, fetchCurrentUser ]
+                            ! [ check token, fetchRooms, fetchCategories, fetchCurrentUser token ]
 
                     Err err ->
                         { model | authData = { oldAuthData | msg = toString err } } ! []
