@@ -20,6 +20,7 @@ defmodule Aion.Web do
     quote do
       use Ecto.Schema
 
+      alias Aion.Repo
       import Ecto
       import Ecto.Changeset
       import Ecto.Query

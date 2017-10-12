@@ -11,7 +11,9 @@ defmodule Aion.Mixfile do
      start_permanent: Mix.env == :prod,
      aliases: aliases(),
      deps: deps(),
-     dialyzer: [ignore_warnings: "dialyzer.ignore_warnings"]
+     dialyzer: [
+       ignore_warnings: "dialyzer.ignore_warnings",
+     ],
    ]
   end
 

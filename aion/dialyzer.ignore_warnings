@@ -21,4 +21,16 @@ web/channels/room_channel.ex:32: The inferred type for the 2nd argument of termi
 web/channels/room_channel.ex:13: The inferred type for the 3rd argument of join/3 (#{'__struct__':='Elixir.Phoenix.Socket', 'assigns':=atom() | #{'guardian_default_claims':='nil' | [{_,_}] | map(), _=>_}, 'channel_pid':=pid(), 'topic':=binary(), _=>_}) is not a supertype of #{'__struct__':='Elixir.Phoenix.Socket', 'assigns':=#{}, 'channel':=atom(), 'channel_pid':=pid(), 'endpoint':=atom(), 'handler':=atom(), 'id':='nil', 'joined':=boolean(), 'pubsub_server':=atom(), 'ref':=_, 'serializer':=atom(), 'topic':=binary(), 'transport':=atom(), 'transport_name':=atom(), 'transport_pid':=pid()}, which is expected type for this argument in the callback of the 'Elixir.Phoenix.Channel' behaviour
 web/channels/room_channel.ex:13: The inferred return type of join/3 ({'ok',#{'__struct__':='Elixir.Phoenix.Socket', 'assigns':=atom() | #{'guardian_default_claims':='nil' | [any()] | map(), _=>_}, 'channel_pid':=pid(), 'topic':=binary(), _=>_}}) has nothing in common with {'error',map()} | {'ok',#{'__struct__':='Elixir.Phoenix.Socket', 'assigns':=#{}, 'channel':=atom(), 'channel_pid':=pid(), 'endpoint':=atom(), 'handler':=atom(), 'id':='nil', 'joined':=boolean(), 'pubsub_server':=atom(), 'ref':=_, 'serializer':=atom(), 'topic':=binary(), 'transport':=atom(), 'transport_name':=atom(), 'transport_pid':=pid()}} | {'ok',map(),#{'__struct__':='Elixir.Phoenix.Socket', 'assigns':=#{}, 'channel':=atom(), 'channel_pid':=pid(), 'endpoint':=atom(), 'handler':=atom(), 'id':='nil', 'joined':=boolean(), 'pubsub_server':=atom(), 'ref':=_, 'serializer':=atom(), 'topic':=binary(), 'transport':=atom(), 'transport_name':=atom(), 'transport_pid':=pid()}}, which is the expected return type for the callback of the 'Elixir.Phoenix.Channel' behaviour
 web/channels/room_channel.ex:32: The inferred type for the 2nd argument of terminate/2 (#{'__struct__':='Elixir.Phoenix.Socket', 'assigns':=atom() | #{'guardian_default_claims':='nil' | [{_,_}] | map(), _=>_}, 'channel_pid':=pid(), 'topic':=<<_:48,_:_*8>>, _=>_}) is not a supertype of #{'__struct__':='Elixir.Phoenix.Socket', 'assigns':=#{}, 'channel':=atom(), 'channel_pid':=pid(), 'endpoint':=atom(), 'handler':=atom(), 'id':='nil', 'joined':=boolean(), 'pubsub_server':=atom(), 'ref':=_, 'serializer':=atom(), 'topic':=binary(), 'transport':=atom(), 'transport_name':=atom(), 'transport_pid':=pid()}, which is expected type for this argument in the callback of the 'Elixir.Phoenix.Channel' behaviour
+:0: Unknown function 'Elixir.Comeonin.Bcrypt':checkpw/2
+:0: Unknown function 'Elixir.Comeonin.Bcrypt':dummy_checkpw/0
+:0: Unknown function 'Elixir.Comeonin.Bcrypt':hashpwsalt/1
+:0: Unknown function 'Elixir.Guardian.Phoenix.Socket':sign_in/2
+:0: Unknown function 'Elixir.Guardian.Plug':api_sign_in/2
+:0: Unknown function 'Elixir.Guardian.Plug':claims/1
+:0: Unknown function 'Elixir.Guardian.Plug':current_resource/1
+:0: Unknown function 'Elixir.Guardian.Plug':current_token/1
+:0: Unknown function 'Elixir.Guardian.Plug.EnsureAuthenticated':call/2
+:0: Unknown function 'Elixir.Guardian.Plug.LoadResource':call/2
+:0: Unknown function 'Elixir.Guardian.Plug.VerifyHeader':call/2
+web/auth/serializer.ex:1: Callback info about the 'Elixir.Guardian.Serializer' behaviour is not available
 

@@ -3,7 +3,7 @@ defmodule Aion.RegistrationController do
   alias Aion.User
 
   def show(conn, %{"id" => id}) do
-    user = User.get!(User, id)
+    user = Repo.get!(User, id)
     render(conn, "show.json", user: user)
   end
 
