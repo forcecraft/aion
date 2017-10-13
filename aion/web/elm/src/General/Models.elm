@@ -13,7 +13,7 @@ import RemoteData exposing (WebData)
 import Room.Models exposing (RoomId, RoomsData, UsersInRoom, QuestionInRoom, UserGameData)
 import Toasty
 import Toasty.Defaults
-import Urls exposing (hostname)
+import Urls exposing (hostname, websocketUrl)
 import User.Models exposing (CurrentUser)
 
 
@@ -77,7 +77,7 @@ initialModel flags route location =
         , categories = RemoteData.Loading
         , route = route
         , socket =
-            Phoenix.Socket.init ("ws://" ++ (hostname location) ++ "/socket/websocket?token=" ++ flags.token)
+            Phoenix.Socket.init (websocketUrl location flags.token)
                 |> Phoenix.Socket.withDebug
         , usersInChannel = []
         , userGameData = { currentAnswer = "" }

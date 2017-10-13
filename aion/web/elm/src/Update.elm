@@ -27,7 +27,7 @@ import Task
 import Toasty
 import Multiselect
 import Socket exposing (initializeRoom, leaveRoom)
-import Urls exposing (host)
+import Urls exposing (host, websocketUrl)
 import User.Api exposing (fetchCurrentUser)
 
 
@@ -70,7 +70,7 @@ update msg model =
                         { model
                             | authData = { oldAuthData | token = Just token, msg = "" }
                             , socket =
-                                Phoenix.Socket.init ("ws://localhost:4000/socket/websocket?token=" ++ token)
+                                Phoenix.Socket.init (websocketUrl model.location token)
                                     |> Phoenix.Socket.withDebug
                         }
                             ! [ check token

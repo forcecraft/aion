@@ -36,3 +36,8 @@ loginUrl location =
 registerUrl : Location -> String
 registerUrl location =
     (host location) ++ "register"
+
+
+websocketUrl : Location -> String -> String
+websocketUrl location token =
+    "ws://" ++ (hostname location) ++ "/socket/websocket?token=" ++ token
