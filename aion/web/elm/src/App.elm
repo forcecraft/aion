@@ -9,8 +9,7 @@ import Panel.Api exposing (fetchCategories)
 import Phoenix.Socket
 import Room.Api exposing (fetchRooms)
 import Routing
-import Update exposing (update)
-import Urls exposing (host)
+import Update exposing (setHomeUrl, update)
 import User.Api exposing (fetchCurrentUser)
 import View exposing (view)
 
@@ -55,8 +54,3 @@ main =
         , update = update
         , subscriptions = subscriptions
         }
-
-
-setHomeUrl : Location -> Cmd Msg
-setHomeUrl location =
-    modifyUrl (host location)

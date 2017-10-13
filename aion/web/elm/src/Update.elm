@@ -10,6 +10,7 @@ import General.Notifications exposing (toastsConfig)
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Msgs exposing (Msg(..))
+import Navigation exposing (Location, modifyUrl)
 import Panel.Api exposing (createCategory, createQuestionWithAnswers, createRoom, fetchCategories)
 import Panel.Models exposing (categoryNamePossibleFields, questionFormPossibleFields, roomNamePossibleFields)
 import Panel.Notifications exposing (..)
@@ -26,6 +27,7 @@ import Task
 import Toasty
 import Multiselect
 import Socket exposing (initializeRoom, leaveRoom)
+import Urls exposing (host)
 import User.Api exposing (fetchCurrentUser)
 
 
@@ -44,11 +46,19 @@ unwrapToken token =
             ""
 
 
+setHomeUrl : Location -> Cmd Msg
+setHomeUrl location =
+    modifyUrl (host location)
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Login ->
-            model ! [ submitCredentials model.location model.authData.loginForm ]
+            model
+                ! [ submitCredentials model.location model.authData.loginForm
+                  , setHomeUrl model.location
+                  ]
 
         LoginResult res ->
             let
