@@ -1,8 +1,16 @@
 module Socket exposing (..)
 
 import Msgs exposing (Msg(ReceiveAnswerFeedback, ReceiveQuestion, ReceiveUserJoined, ReceiveUserList))
+import Navigation exposing (Location)
 import Phoenix.Channel
 import Phoenix.Socket
+import Urls exposing (websocketUrl)
+
+
+initSocket : String -> Location -> Phoenix.Socket.Socket msg
+initSocket token location =
+    Phoenix.Socket.init (websocketUrl location token)
+        |> Phoenix.Socket.withDebug
 
 
 initializeRoom : Phoenix.Socket.Socket Msg -> String -> ( Phoenix.Socket.Socket Msg, Cmd (Phoenix.Socket.Msg Msg) )

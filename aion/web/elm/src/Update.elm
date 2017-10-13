@@ -26,7 +26,7 @@ import Phoenix.Push
 import Task
 import Toasty
 import Multiselect
-import Socket exposing (initializeRoom, leaveRoom)
+import Socket exposing (initSocket, initializeRoom, leaveRoom)
 import Urls exposing (host, websocketUrl)
 import User.Api exposing (fetchCurrentUser)
 
@@ -77,9 +77,7 @@ update msg model =
                     Ok token ->
                         { model
                             | authData = { oldAuthData | token = Just token, msg = "" }
-                            , socket =
-                                Phoenix.Socket.init (websocketUrl model.location token)
-                                    |> Phoenix.Socket.withDebug
+                            , socket = initSocket token model.location
                         }
                             ! postTokenActions token model.location
 
@@ -111,20 +109,14 @@ update msg model =
                     in
                         { model
                             | authData = { oldAuthData | registrationForm = newRegistrationForm, token = Just token }
-                            , socket =
-                                Phoenix.Socket.init (websocketUrl model.location token)
-                                    |> Phoenix.Socket.withDebug
+                            , socket = initSocket token model.location
                         }
                             ! postTokenActions token model.location
 
                 _ ->
-                    let
-                        x =
-                            Debug.log "ererrrrr" response
-                    in
-                        model
-                            ! []
-                            |> registrationErrorToast
+                    model
+                        ! []
+                        |> registrationErrorToast
 
         Logout ->
             let
