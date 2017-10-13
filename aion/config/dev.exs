@@ -30,10 +30,3 @@ config :aion, Aion.Repo,
   database: "aion",
   hostname: "localhost",
   pool_size: 10
-
-config :guardian, Guardian,
-  allowed_algos: ["HS512"],
-  secret_key: "@11H41LW35tT3x45",
-  issuer: "Aion",
-  ttl: { 30, :days },
-  serializer: Aion.GuardianSerializer

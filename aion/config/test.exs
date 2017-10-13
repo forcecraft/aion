@@ -17,10 +17,3 @@ config :aion, Aion.Repo,
   database: "aion_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
-
-config :guardian, Guardian,
-  allowed_algos: ["HS512"],
-  secret_key: "test secrect key",
-  issuer: "Test",
-  ttl: { 30, :days },
-  serializer: Aion.GuardianSerializer
