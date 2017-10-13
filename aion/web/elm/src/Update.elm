@@ -1,7 +1,7 @@
 module Update exposing (..)
 
 import Auth.Api exposing (registerUser, submitCredentials)
-import Auth.Notifications exposing (registrationErrorToast, registrationSuccessfulToast)
+import Auth.Notifications exposing (loginErrorToast, loginSuccessfulToast, registrationErrorToast, registrationSuccessfulToast)
 import Dom exposing (focus)
 import Forms
 import General.Constants exposing (loginFormMsg, registerFormMsg)
@@ -80,7 +80,9 @@ update msg model =
                               ]
 
                     Err err ->
-                        { model | authData = { oldAuthData | msg = toString err } } ! []
+                        { model | authData = { oldAuthData | msg = toString err } }
+                            ! []
+                            |> loginErrorToast
 
         Register ->
             model ! [ registerUser model.location model.authData.registrationForm ]

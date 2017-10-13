@@ -16,4 +16,13 @@ registrationErrorToast =
 
 registrationSuccessfulToast : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 registrationSuccessfulToast =
-    addToast (Toasty.Defaults.Success "Success!" "Account created successfuly - proceed to Login.")
+    addToast (Toasty.Defaults.Success "Success!" "Account created successfuly.")
+
+
+
+-- login notifications
+
+
+loginErrorToast : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+loginErrorToast =
+    addToast (Toasty.Defaults.Error "Error!" "Failed to login :(")
