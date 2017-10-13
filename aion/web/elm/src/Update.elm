@@ -57,6 +57,7 @@ postTokenActions token location =
     , fetchRooms location token
     , fetchCategories location token
     , fetchCurrentUser location token
+    , setHomeUrl location
     ]
 
 
@@ -65,9 +66,7 @@ update msg model =
     case msg of
         Login ->
             model
-                ! [ submitCredentials model.location model.authData.loginForm
-                  , setHomeUrl model.location
-                  ]
+                ! [ submitCredentials model.location model.authData.loginForm ]
 
         LoginResult res ->
             let
@@ -110,7 +109,12 @@ update msg model =
                                 |> updateForm "email" ""
                                 |> updateForm "password" ""
                     in
-                        { model | authData = { oldAuthData | registrationForm = newRegistrationForm, token = Just token } }
+                        { model
+                            | authData = { oldAuthData | registrationForm = newRegistrationForm, token = Just token }
+                            , socket =
+                                Phoenix.Socket.init (websocketUrl model.location token)
+                                    |> Phoenix.Socket.withDebug
+                        }
                             ! postTokenActions token model.location
 
                 _ ->
