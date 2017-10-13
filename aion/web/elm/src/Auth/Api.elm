@@ -70,6 +70,4 @@ registrationDataEncoder form =
 registrationResultDecoder : Decode.Decoder RegistrationResultData
 registrationResultDecoder =
     decode RegistrationResultData
-        |> required "name" Decode.string
-        |> required "id" Decode.int
-        |> required "email" Decode.string
+        |> required "token" Decode.string

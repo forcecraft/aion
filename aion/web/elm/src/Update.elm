@@ -1,7 +1,7 @@
 module Update exposing (..)
 
 import Auth.Api exposing (registerUser, submitCredentials)
-import Auth.Notifications exposing (loginErrorToast, registrationErrorToast, registrationSuccessfulToast)
+import Auth.Notifications exposing (loginErrorToast, registrationErrorToast)
 import Dom exposing (focus)
 import Forms
 import General.Constants exposing (loginFormMsg, registerFormMsg)
@@ -51,6 +51,15 @@ setHomeUrl location =
     modifyUrl (host location)
 
 
+postTokenActions : String -> Location -> List (Cmd Msg)
+postTokenActions token location =
+    [ check token
+    , fetchRooms location token
+    , fetchCategories location token
+    , fetchCurrentUser location token
+    ]
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -73,11 +82,7 @@ update msg model =
                                 Phoenix.Socket.init (websocketUrl model.location token)
                                     |> Phoenix.Socket.withDebug
                         }
-                            ! [ check token
-                              , fetchRooms model.location token
-                              , fetchCategories model.location token
-                              , fetchCurrentUser model.location token
-                              ]
+                            ! postTokenActions token model.location
 
                     Err err ->
                         { model | authData = { oldAuthData | msg = toString err } }
@@ -91,6 +96,9 @@ update msg model =
             case response of
                 RemoteData.Success responseData ->
                     let
+                        token =
+                            responseData.token
+
                         oldAuthData =
                             model.authData
 
@@ -102,14 +110,17 @@ update msg model =
                                 |> updateForm "email" ""
                                 |> updateForm "password" ""
                     in
-                        { model | authData = { oldAuthData | registrationForm = newRegistrationForm } }
-                            ! []
-                            |> registrationSuccessfulToast
+                        { model | authData = { oldAuthData | registrationForm = newRegistrationForm, token = Just token } }
+                            ! postTokenActions token model.location
 
                 _ ->
-                    model
-                        ! []
-                        |> registrationErrorToast
+                    let
+                        x =
+                            Debug.log "ererrrrr" response
+                    in
+                        model
+                            ! []
+                            |> registrationErrorToast
 
         Logout ->
             let

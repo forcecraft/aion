@@ -1,6 +1,6 @@
 defmodule Aion.RegistrationController do
   use Aion.Web, :controller
-  alias Aion.User
+  alias Aion.{SessionController, User}
 
   def show(conn, %{"id" => id}) do
     user = Repo.get!(User, id)
@@ -12,9 +12,7 @@ defmodule Aion.RegistrationController do
 
     case Repo.insert(changeset) do
       {:ok, user} ->
-        conn
-        |> put_status(:created)
-        |> render("show.json", user: user)
+        SessionController.create(conn, %{"email" => user.email, "password" => user.password})
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)

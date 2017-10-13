@@ -55,7 +55,5 @@ registrationForm =
 
 
 type alias RegistrationResultData =
-    { name : String
-    , id : Int
-    , email : String
+    { token : String
     }

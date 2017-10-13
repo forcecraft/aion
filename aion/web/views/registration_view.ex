@@ -1,14 +1,8 @@
 defmodule Aion.RegistrationView do
   use Aion.Web, :view
 
-  def render("show.json", %{user: user}) do
-    render("user.json", %{user: user})
-  end
-
-  def render("user.json", %{user: user}) do
-    %{id: user.id,
-      name: user.name,
-      email: user.email}
+  def render("login.json", %{jwt: jwt}) do
+    %{"token": jwt}
   end
 
   def render("error.json", %{}) do
