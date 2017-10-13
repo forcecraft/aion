@@ -1,7 +1,7 @@
 module Update exposing (..)
 
 import Auth.Api exposing (registerUser, submitCredentials)
-import Auth.Notifications exposing (loginErrorToast, loginSuccessfulToast, registrationErrorToast, registrationSuccessfulToast)
+import Auth.Notifications exposing (loginErrorToast, registrationErrorToast, registrationSuccessfulToast)
 import Dom exposing (focus)
 import Forms
 import General.Constants exposing (loginFormMsg, registerFormMsg)
