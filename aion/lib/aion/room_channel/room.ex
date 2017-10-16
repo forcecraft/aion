@@ -3,10 +3,8 @@ defmodule Aion.RoomChannel.Room do
   This module represents one game room, and fetches resources from the db
   """
   alias Aion.{Question, Answer}
-  alias Aion.RoomChannel.{Room, UserRecord}
+  alias Aion.RoomChannel.{Room, UserRecord, QuestionSet}
   require Logger
-
-  @type new_question_set :: %{questions: (list Question.t), current_question: Question.t, answers: (list Answer.t)}
 
   @type t :: %__MODULE__{users: %{String.t => UserRecord.t},
                          users_count: integer,
@@ -55,7 +53,7 @@ defmodule Aion.RoomChannel.Room do
   """
   @spec change_question(%__MODULE__{}, integer) :: __MODULE__.t
   def change_question(room, room_id) do
-    new_questions_with_answers = get_new_question_set(room.questions, room_id)
+    new_questions_with_answers = QuestionSet.create(room.questions, room_id)
     struct(room, new_questions_with_answers)
   end
 
@@ -63,7 +61,7 @@ defmodule Aion.RoomChannel.Room do
   def load_questions(room, room_id) do
     questions =
       room_id
-      |> fetch_questions()
+      |> Question.get_questions_by_room_id()
       |> Enum.shuffle()
     struct(room, %{questions: questions})
   end
@@ -88,32 +86,5 @@ defmodule Aion.RoomChannel.Room do
   @spec get_current_question(__MODULE__.t) :: Question.t
   def get_current_question(room) do
     room.current_question
-  end
-
-  @spec get_new_question_set((list Question.t), integer) :: new_question_set
-  defp get_new_question_set(questions, room_id) do
-    case questions do
-      [] ->
-        %{questions: [], current_question: nil, answers: []}
-
-      [last_question] ->
-        remaining_questions = fetch_questions(room_id)
-        create_new_question_set(last_question, remaining_questions)
-
-      [next_question | remaining_questions] ->
-        create_new_question_set(next_question, remaining_questions)
-    end
-  end
-
-  @spec create_new_question_set(Question.t, (list Question.t)) :: new_question_set
-  defp create_new_question_set(current_question, remaining_questions) do
-    answers = Answer.get_answers(current_question.id)
-    Logger.debug fn -> "Answers: #{inspect(Enum.map(answers, fn answer -> answer.content end))}" end
-    %{questions: remaining_questions, current_question: current_question, answers: answers}
-  end
-
-  @spec fetch_questions(integer) :: list Question.t
-  defp fetch_questions(room_id) do
-    Question.get_questions_by_room_id(room_id)
   end
 end
