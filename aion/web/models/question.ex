@@ -6,7 +6,7 @@ defmodule Aion.Question do
 
   use Aion.Web, :model
   alias Aion.Repo
-  alias Aion.{Question, Category}
+  alias Aion.{Question, Category, RoomCategory, Room}
 
   schema "questions" do
     field :content, :string
@@ -34,6 +34,16 @@ defmodule Aion.Question do
   @spec get_question(integer) :: Question.t
   def get_question(question_id) do
     Repo.get(Question, question_id)
+  end
+
+  @spec get_questions_by_room_id(integer) :: Question.t
+  def get_questions_by_room_id(room_id) do
+    Repo.all(
+      from q in Question,
+      join: rc in RoomCategory, on: rc.category_id == q.category_id,
+      join: r in Room, on: r.id == rc.room_id,
+      where: r.id == ^room_id
+    )
   end
 
   @spec get_random_question(integer) :: Question.t

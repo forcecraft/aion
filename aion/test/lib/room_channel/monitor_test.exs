@@ -8,7 +8,7 @@ defmodule Aion.MonitorTest do
   @question %Question{content: "Content"}
 
   setup do
-    Monitor.create(@room_id, question: @question)
+    Monitor.create(@room_id, current_question: @question)
     :ok
   end
 

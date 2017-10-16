@@ -3,28 +3,31 @@ defmodule Aion.RoomChannel.Room do
   This module represents one game room, and fetches resources from the db
   """
   alias Aion.{Question, Answer}
-  alias Aion.RoomChannel.{Room, UserRecord}
+  alias Aion.RoomChannel.{Room, UserRecord, QuestionSet}
   require Logger
 
   @type t :: %__MODULE__{users: %{String.t => UserRecord.t},
                          users_count: integer,
-                         question: Question.t,
-                         answers: list Answer.t}
+                         questions: (list Question.t),
+                         current_question: Question.t,
+                         answers: (list Answer.t)}
 
   defstruct users: %{},
             users_count: 0,
-            question: nil,
+            questions: [],
+            current_question: nil,
             answers: []
 
-  @spec new(integer, [question: nil | Question.t]) :: %__MODULE__{}
+  @spec new(integer, [current_question: nil | Question.t]) :: %__MODULE__{}
   def new(room_id, state \\ []) do
     case state do
       [] ->
         %Room{}
+        |> load_questions(room_id)
         |> change_question(room_id)
 
-      {:question, question} ->
-        %Room{question: question}
+      {:current_question, question} ->
+        %Room{current_question: question}
 
       _ -> Logger.error fn -> "Unexpected state passed to Room.new: #{state}" end
            %Room{}
@@ -50,8 +53,17 @@ defmodule Aion.RoomChannel.Room do
   """
   @spec change_question(%__MODULE__{}, integer) :: __MODULE__.t
   def change_question(room, room_id) do
-    room
-    |> struct(get_new_question_with_answers(room_id))
+    new_questions_with_answers = QuestionSet.create(room.questions, room_id)
+    struct(room, new_questions_with_answers)
+  end
+
+  @spec load_questions(%__MODULE__{}, integer) :: __MODULE__.t
+  def load_questions(room, room_id) do
+    questions =
+      room_id
+      |> Question.get_questions_by_room_id()
+      |> Enum.shuffle()
+    struct(room, %{questions: questions})
   end
 
   @spec add_user(__MODULE__.t, UserRecord.t) :: __MODULE__.t
@@ -73,15 +85,6 @@ defmodule Aion.RoomChannel.Room do
 
   @spec get_current_question(__MODULE__.t) :: Question.t
   def get_current_question(room) do
-    room.question
-  end
-
-  @spec get_new_question_with_answers(integer) :: %{question: Question.t, answers: list Answer.t}
-  defp get_new_question_with_answers(room_id) do
-      question = Question.get_random_question(room_id)
-      answers = Answer.get_answers(question.id)
-      Logger.debug fn -> "Answers: #{inspect(Enum.map(answers, fn answer -> answer.content end))}" end
-
-      %{question: question, answers: answers}
+    room.current_question
   end
 end
