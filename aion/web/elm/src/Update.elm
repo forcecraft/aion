@@ -1,6 +1,7 @@
 module Update exposing (..)
 
 import Auth.Api exposing (registerUser, submitCredentials)
+import Auth.Models exposing (UnauthenticatedViewToggle(LoginView, RegisterView))
 import Auth.Notifications exposing (loginErrorToast, registrationErrorToast)
 import Dom exposing (focus)
 import Forms
@@ -130,25 +131,25 @@ update msg model =
                 oldAuthData =
                     model.authData
 
-                oldDisplayLoginInsteadOfRegistration =
-                    oldAuthData.displayLoginInsteadOfRegistration
+                oldUnauthenticatedView =
+                    oldAuthData.unauthenticatedView
             in
-                case oldDisplayLoginInsteadOfRegistration of
-                    True ->
+                case oldUnauthenticatedView of
+                    LoginView ->
                         { model
                             | authData =
                                 { oldAuthData
-                                    | displayLoginInsteadOfRegistration = False
+                                    | unauthenticatedView = RegisterView
                                     , formMsg = registerFormMsg
                                 }
                         }
                             ! []
 
-                    False ->
+                    RegisterView ->
                         { model
                             | authData =
                                 { oldAuthData
-                                    | displayLoginInsteadOfRegistration = True
+                                    | unauthenticatedView = LoginView
                                     , formMsg = loginFormMsg
                                 }
                         }

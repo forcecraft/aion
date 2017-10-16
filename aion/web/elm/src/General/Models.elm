@@ -1,6 +1,6 @@
 module General.Models exposing (..)
 
-import Auth.Models exposing (AuthData, loginForm, registrationForm)
+import Auth.Models exposing (AuthData, UnauthenticatedViewToggle(LoginView), loginForm, registrationForm)
 import Bootstrap.Navbar as Navbar
 import Forms
 import General.Constants exposing (loginFormMsg)
@@ -68,7 +68,7 @@ initialModel flags route location =
         , authData =
             { loginForm = Forms.initForm loginForm
             , registrationForm = Forms.initForm registrationForm
-            , displayLoginInsteadOfRegistration = True
+            , unauthenticatedView = LoginView
             , formMsg = loginFormMsg
             , token = token
             , msg = ""

@@ -16,8 +16,8 @@ import Urls exposing (loginUrl, registerUrl)
 
 
 authenticate : String -> Decode.Decoder a -> Value -> Http.Request a
-authenticate url dec credentials =
-    Http.post url (Http.jsonBody credentials) dec
+authenticate url decoder credentials =
+    Http.post url (Http.jsonBody credentials) decoder
 
 
 submitCredentials : Location -> Forms.Form -> Cmd Msg

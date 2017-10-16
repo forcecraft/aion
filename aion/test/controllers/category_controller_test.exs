@@ -5,14 +5,8 @@ defmodule Aion.CategoryControllerTest do
   @valid_attrs %{name: "some content"}
   @invalid_attrs %{}
 
-  setup %{conn: _} do
-    user = %Aion.User{ email: "test@example.com", name: "something", password: "2131231", id: 1 }
-    {:ok, jwt, _} = Guardian.encode_and_sign(user)
-    conn =
-      build_conn()
-      |> put_req_header("authorization", "Bearer #{jwt}")
-      |> put_req_header("accept", "application/json")
-    {:ok, %{conn: conn}}
+  setup do
+    Aion.TestHelpers.setup
   end
 
   test "lists all entries on index", %{conn: conn} do

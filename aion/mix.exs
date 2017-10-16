@@ -41,7 +41,8 @@ defmodule Aion.Mixfile do
      {:plug, "~>1.3.5", override: true},
      {:postgrex, ">= 0.0.0"},
      {:simetric, "~> 0.1.0"},
-     {:exrm, "~> 1.0.8"},]
+     {:exrm, "~> 1.0.8"},
+     ]
   end
 
   defp aliases do

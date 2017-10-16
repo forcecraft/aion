@@ -1,6 +1,6 @@
 module View exposing (..)
 
-import Auth.Views exposing (authView)
+import Auth.View exposing (authView)
 import Bootstrap.Navbar as Navbar
 import Bootstrap.Button as Button
 import General.Constants exposing (panelPath, roomsPath, userPath)
@@ -72,7 +72,7 @@ page model =
         includeNavbar =
             case currentRoute of
                 AuthRoute ->
-                    \x y z -> x
+                    \content _ _ -> content
 
                 _ ->
                     layout

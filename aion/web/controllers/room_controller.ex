@@ -1,7 +1,7 @@
 defmodule Aion.RoomController do
   use Aion.Web, :controller
 
-  alias Aion.Room
+  alias Aion.{Room, ErrorCodesViews}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
 
@@ -56,8 +56,6 @@ defmodule Aion.RoomController do
   end
 
   def unauthenticated(conn, _params) do
-    conn
-    |> put_status(401)
-    |> render("error.json", message: "Authentication required")
+    ErrorCodesViews.unauthenticated(conn)
   end
 end

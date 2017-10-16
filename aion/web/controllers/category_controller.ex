@@ -1,7 +1,7 @@
 defmodule Aion.CategoryController do
   use Aion.Web, :controller
 
-  alias Aion.Category
+  alias Aion.{Category, ErrorCodesViews}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
 
@@ -56,8 +56,6 @@ defmodule Aion.CategoryController do
   end
 
   def unauthenticated(conn, _params) do
-    conn
-    |> put_status(401)
-    |> render("error.json", message: "Authentication required")
+    ErrorCodesViews.unauthenticated(conn)
   end
 end

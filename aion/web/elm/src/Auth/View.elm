@@ -1,6 +1,6 @@
-module Auth.Views exposing (..)
+module Auth.View exposing (..)
 
-import Auth.Models exposing (AuthData, LoginForm, RegistrationForm)
+import Auth.Models exposing (AuthData, LoginForm, RegistrationForm, UnauthenticatedViewToggle(LoginView, RegisterView))
 import Bootstrap.Badge as Badge
 import Bootstrap.Button as Button
 import Bootstrap.Form as Form
@@ -18,14 +18,14 @@ import Toasty.Defaults
 authView : Model -> Html Msg
 authView model =
     div [ class "auth-container" ]
-        [ case model.authData.displayLoginInsteadOfRegistration of
-            True ->
+        [ case model.authData.unauthenticatedView of
+            LoginView ->
                 loginFormView model.authData.loginForm
 
-            False ->
+            RegisterView ->
                 registrationFormView model.authData.registrationForm
         , br [] []
-        , authFormSwitch model.authData.formMsg
+        , authFormToggle model.authData.formMsg
         , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
         ]
 
@@ -34,8 +34,8 @@ authView model =
 -- auth form switch section
 
 
-authFormSwitch : String -> Html Msg
-authFormSwitch formMsg =
+authFormToggle : String -> Html Msg
+authFormToggle formMsg =
     Button.button
         [ Button.roleLink
         , Button.onClick ChangeAuthForm

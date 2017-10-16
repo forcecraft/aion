@@ -11,7 +11,7 @@ defmodule Aion.RoomChannel do
 
   @spec join(String.t, %{}, UserSocket.t) :: {:ok, UserSocket.t}
   def join("rooms:" <> room_id, _params, socket) do
-    username = get_username(socket)
+    username = get_user_name(socket)
     # Note: this is a temporary solution.
     # In the future, this function should return an error if a user wants to join a room that does not exist.
     if not Monitor.exists?(room_id) do
@@ -30,7 +30,7 @@ defmodule Aion.RoomChannel do
   end
 
   def terminate(msg, socket) do
-    username = get_username(socket)
+    username = get_user_name(socket)
     room_id = get_room_id(socket)
 
     Monitor.user_left(room_id, username)
@@ -48,7 +48,7 @@ defmodule Aion.RoomChannel do
   end
 
   def handle_in("new:answer", %{"room_id" => room_id, "answer" => answer}, socket) do
-    username = get_username(socket)
+    username = get_user_name(socket)
     evaluation = Monitor.new_answer(room_id, answer, username)
     send_feedback socket, evaluation
 
@@ -130,7 +130,7 @@ defmodule Aion.RoomChannel do
     room_id
   end
 
-  defp get_username(socket) do
+  defp get_user_name(socket) do
     {:ok, user} = GuardianSerializer.from_token(socket.assigns.guardian_default_claims["aud"])
     user.name
   end

@@ -11,8 +11,8 @@ defmodule Aion.UserSocket do
 
   transport :websocket, Phoenix.Transports.WebSocket
 
-  def connect(%{"token" => jwt}, socket) do
-    case sign_in(socket, jwt) do
+  def connect(%{"token" => token}, socket) do
+    case sign_in(socket, token) do
       {:ok, auth_socket, guardian_params} ->
         {:ok, auth_socket}
       _ ->

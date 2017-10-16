@@ -36,12 +36,12 @@ profileCardConfig location =
 
 loginFormMsg : String
 loginFormMsg =
-    "Don't have an account? Click here to register"
+    "Don't have an account? Click here to register."
 
 
 registerFormMsg : String
 registerFormMsg =
-    "Already have an account? Click here to login"
+    "Already have an account? Click here to login."
 
 
 roomsPath : String

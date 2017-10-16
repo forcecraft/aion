@@ -6,11 +6,16 @@ import Forms
 type alias AuthData =
     { loginForm : LoginForm
     , registrationForm : RegistrationForm
-    , displayLoginInsteadOfRegistration : Bool
+    , unauthenticatedView : UnauthenticatedViewToggle
     , formMsg : String
     , token : Maybe String
     , msg : String
     }
+
+
+type UnauthenticatedViewToggle
+    = LoginView
+    | RegisterView
 
 
 
@@ -21,8 +26,8 @@ type alias LoginForm =
     Forms.Form
 
 
-loginFormPossibleFields : List String
-loginFormPossibleFields =
+loginFormFields : List String
+loginFormFields =
     [ "email", "password" ]
 
 
@@ -41,8 +46,8 @@ type alias RegistrationForm =
     Forms.Form
 
 
-registrationFormPossibleFields : List String
-registrationFormPossibleFields =
+registrationFormFields : List String
+registrationFormFields =
     [ "name", "email", "password" ]
 
 

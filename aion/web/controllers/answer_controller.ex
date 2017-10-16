@@ -1,7 +1,7 @@
 defmodule Aion.AnswerController do
   use Aion.Web, :controller
 
-  alias Aion.Answer
+  alias Aion.{Answer, ErrorCodesViews}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
 
@@ -56,8 +56,6 @@ defmodule Aion.AnswerController do
   end
 
   def unauthenticated(conn, _params) do
-    conn
-    |> put_status(401)
-    |> render("error.json", message: "Authentication required")
+    ErrorCodesViews.unauthenticated(conn)
   end
 end
