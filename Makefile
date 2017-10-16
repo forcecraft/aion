@@ -62,9 +62,18 @@ local-db: ## Create and migrate db locally
 local-deps: ## Download all needed dependencies
 	cd aion && mix deps.get && npm install && cd web/elm && elm-package install -y
 
-local-config: ## Switch config file to
+local-config: ## Switch config file to the one containing settings for local use
 	cp aion/config/local_dev.exs aion/config/dev.exs
+	cp fixtures/src/local_config.py fixtures/src/config.py
+
+##################################
+## ~> DATABASE SEEDING PART <~  ##
+##################################
 
 populate-database: ## Seed database with fixtures prepared in fixtures/jpks/
-	cp fixtures/src/local_config.py fixtures/src/config.py
-	scripts/populate_database
+populate-database: local-config
+	cd fixtures && python3 main.py
+
+populate-rooms: ## Create a set of rooms aggregating all the questions present in the database
+populate-rooms: local-config
+	cd fixtures && python3 main.py --rooms
