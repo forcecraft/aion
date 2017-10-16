@@ -1,7 +1,6 @@
 defmodule Aion.UserController do
   use Aion.Web, :controller
   alias Guardian.Plug
-  alias Aion.ErrorCodesViews
 
   plug Plug.EnsureAuthenticated, handler: __MODULE__
 
@@ -11,6 +10,6 @@ defmodule Aion.UserController do
   end
 
   def unauthenticated(conn, _params) do
-    ErrorCodesViews.unauthenticated(conn)
+    Errors.unauthenticated(conn)
   end
 end

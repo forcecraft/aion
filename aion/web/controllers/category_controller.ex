@@ -1,7 +1,7 @@
 defmodule Aion.CategoryController do
   use Aion.Web, :controller
 
-  alias Aion.{Category, ErrorCodesViews}
+  alias Aion.Category
 
   plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
 
@@ -20,9 +20,7 @@ defmodule Aion.CategoryController do
         |> put_resp_header("location", category_path(conn, :show, category))
         |> render("show.json", category: category)
       {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> render(Aion.ChangesetView, "error.json", changeset: changeset)
+        Errors.unprocessable_entity(conn, changeset)
     end
   end
 
@@ -39,9 +37,7 @@ defmodule Aion.CategoryController do
       {:ok, category} ->
         render(conn, "show.json", category: category)
       {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> render(Aion.ChangesetView, "error.json", changeset: changeset)
+        Errors.unprocessable_entity(conn, changeset)
     end
   end
 
@@ -56,6 +52,6 @@ defmodule Aion.CategoryController do
   end
 
   def unauthenticated(conn, _params) do
-    ErrorCodesViews.unauthenticated(conn)
+    Errors.unauthenticated(conn)
   end
 end

@@ -1,7 +1,7 @@
 defmodule Aion.SessionController do
   use Aion.Web, :controller
 
-  alias Aion.{Auth, User}
+  alias Aion.Auth
   alias Guardian.Plug
 
   def index(conn, _params) do
@@ -21,9 +21,7 @@ defmodule Aion.SessionController do
         |> put_resp_header("x-expires", "#{exp}")
         |> render("login.json", jwt: jwt)
       {:error, _reason, conn} ->
-        conn
-        |> put_status(500)
-        |> render("error.json")
+        Errors.internal_error(conn)
     end
   end
 end

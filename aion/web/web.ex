@@ -32,6 +32,8 @@ defmodule Aion.Web do
       use Phoenix.Controller
 
       alias Aion.Repo
+      alias Aion.ControllerErrors, as: Errors
+
       import Ecto
       import Ecto.Query
 

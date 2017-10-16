@@ -1,7 +1,7 @@
 defmodule Aion.QuestionController do
   use Aion.Web, :controller
 
-  alias Aion.{Question, QuestionTransactions, ErrorCodesViews}
+  alias Aion.{Question, QuestionTransactions}
 
   plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
 
@@ -38,9 +38,7 @@ defmodule Aion.QuestionController do
       {:ok, question} ->
         render(conn, "show.json", question: question)
       {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> render(Aion.ChangesetView, "error.json", changeset: changeset)
+        Errors.unprocessable_entity(conn, changeset)
     end
   end
 
@@ -55,6 +53,6 @@ defmodule Aion.QuestionController do
   end
 
   def unauthenticated(conn, _params) do
-    ErrorCodesViews.unauthenticated(conn)
+    Errors.unauthenticated(conn)
   end
 end

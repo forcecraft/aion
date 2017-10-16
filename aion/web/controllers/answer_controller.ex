@@ -1,7 +1,7 @@
 defmodule Aion.AnswerController do
   use Aion.Web, :controller
 
-  alias Aion.{Answer, ErrorCodesViews}
+  alias Aion.Answer
 
   plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
 
@@ -20,9 +20,7 @@ defmodule Aion.AnswerController do
         |> put_resp_header("location", answer_path(conn, :show, answer))
         |> render("show.json", answer: answer)
       {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> render(Aion.ChangesetView, "error.json", changeset: changeset)
+        Errors.unprocessable_entity(conn, changeset)
     end
   end
 
@@ -39,9 +37,7 @@ defmodule Aion.AnswerController do
       {:ok, answer} ->
         render(conn, "show.json", answer: answer)
       {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> render(Aion.ChangesetView, "error.json", changeset: changeset)
+        Errors.unprocessable_entity(conn, changeset)
     end
   end
 
@@ -56,6 +52,6 @@ defmodule Aion.AnswerController do
   end
 
   def unauthenticated(conn, _params) do
-    ErrorCodesViews.unauthenticated(conn)
+    Errors.unauthenticated(conn)
   end
 end

@@ -14,9 +14,7 @@ defmodule Aion.RegistrationController do
       {:ok, user} ->
         SessionController.create(conn, %{"email" => user.email, "password" => user.password})
       {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> render(Aion.ChangesetView, "error.json", changeset: changeset)
+        Errors.unprocessable_entity(conn, changeset)
     end
   end
 end

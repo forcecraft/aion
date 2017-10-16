@@ -1,7 +1,7 @@
 defmodule Aion.RoomCategoryController do
   use Aion.Web, :controller
 
-  alias Aion.{RoomCategory, ErrorCodesViews}
+  alias Aion.RoomCategory
 
   plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
 
@@ -20,9 +20,7 @@ defmodule Aion.RoomCategoryController do
         |> put_resp_header("location", room_category_path(conn, :show, room_category))
         |> render("show.json", room_category: room_category)
       {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> render(Aion.ChangesetView, "error.json", changeset: changeset)
+        Errors.unprocessable_entity(conn, changeset)
     end
   end
 
@@ -39,9 +37,7 @@ defmodule Aion.RoomCategoryController do
       {:ok, room_category} ->
         render(conn, "show.json", room_category: room_category)
       {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> render(Aion.ChangesetView, "error.json", changeset: changeset)
+        Errors.unprocessable_entity(conn, changeset)
     end
   end
 
@@ -56,6 +52,6 @@ defmodule Aion.RoomCategoryController do
   end
 
   def unauthenticated(conn, _params) do
-    ErrorCodesViews.unauthenticated(conn)
+    Errors.unauthenticated(conn)
   end
 end
