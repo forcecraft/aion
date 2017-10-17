@@ -77,3 +77,14 @@ populate-database: local-config
 populate-rooms: ## Create a set of rooms aggregating all the questions present in the database
 populate-rooms: local-config
 	cd fixtures && python3 main.py --rooms
+
+##################################
+## ~> DEPLOYMENT PART <~        ##
+##################################
+
+deploy: ## Create a release and run the production server
+	cd aion && \
+	sudo rel/aion/bin/aion stop && \
+	brunch build --production && \
+	MIX_ENV=prod mix do deps.get, phoenix.digest, deps.compile, release && \
+	sudo rel/aion/bin/aion start
