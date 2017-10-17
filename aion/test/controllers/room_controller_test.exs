@@ -1,5 +1,5 @@
 defmodule Aion.RoomControllerTest do
-  use Aion.ConnCase
+  use Aion.AuthConnCase
 
   alias Aion.{Room, Category, RoomCategory}
   @valid_attrs %{description: "some content", name: "some content"}

@@ -1,5 +1,5 @@
 defmodule Aion.QuestionControllerTest do
-  use Aion.ConnCase
+  use Aion.AuthConnCase
 
   alias Aion.Question
 

@@ -1,5 +1,5 @@
 defmodule Aion.AnswerControllerTest do
-  use Aion.ConnCase
+  use Aion.AuthConnCase
 
   alias Aion.Answer
   @valid_attrs %{content: "some content"}

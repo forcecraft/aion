@@ -1,5 +1,5 @@
 defmodule Aion.CategoryControllerTest do
-  use Aion.ConnCase
+  use Aion.AuthConnCase
 
   alias Aion.Category
   @valid_attrs %{name: "some content"}
