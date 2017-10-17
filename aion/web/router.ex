@@ -33,7 +33,7 @@ defmodule Aion.Router do
   end
 
   scope "/", Aion do
-    pipe_through :browser
+    pipe_through :api
     get "/", PageController, :index
   end
 

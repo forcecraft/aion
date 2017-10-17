@@ -5,10 +5,6 @@ defmodule Aion.RoomControllerTest do
   @valid_attrs %{description: "some content", name: "some content"}
   @invalid_attrs %{}
 
-  setup do
-    Aion.TestHelpers.setup
-  end
-
   test "lists all entries on index", %{conn: conn} do
     conn = get conn, room_path(conn, :index)
     assert json_response(conn, 200)["data"] == []

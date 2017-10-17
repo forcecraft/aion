@@ -5,10 +5,6 @@ defmodule Aion.AnswerControllerTest do
   @valid_attrs %{content: "some content"}
   @invalid_attrs %{}
 
-  setup do
-    Aion.TestHelpers.setup
-  end
-
   test "lists all entries on index", %{conn: conn} do
     conn = get conn, answer_path(conn, :index)
     assert is_list json_response(conn, 200)["data"]

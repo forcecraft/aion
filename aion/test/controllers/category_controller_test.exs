@@ -5,10 +5,6 @@ defmodule Aion.CategoryControllerTest do
   @valid_attrs %{name: "some content"}
   @invalid_attrs %{}
 
-  setup do
-    Aion.TestHelpers.setup
-  end
-
   test "lists all entries on index", %{conn: conn} do
     conn = get conn, category_path(conn, :index)
     data = json_response(conn, 200)["data"]

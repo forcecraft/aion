@@ -12,7 +12,6 @@ defmodule Aion.ConnCase do
   inside a transaction which is reset at the beginning
   of the test unless the test case is marked as async.
   """
-
   use ExUnit.CaseTemplate
 
   using do
@@ -26,7 +25,8 @@ defmodule Aion.ConnCase do
       import Ecto.Query
 
       import Aion.Router.Helpers
-
+      import Guardian
+      import Aion.User
       # The default endpoint for testing
       @endpoint Aion.Endpoint
     end
@@ -39,6 +39,12 @@ defmodule Aion.ConnCase do
       Ecto.Adapters.SQL.Sandbox.mode(Aion.Repo, {:shared, self()})
     end
 
-    {:ok, conn: Phoenix.ConnTest.build_conn()}
+    user = %Aion.User{email: "test@example.com", name: "something", password: "2131231", id: 1}
+    {:ok, jwt, _} = Guardian.encode_and_sign(user)
+    conn =
+      Phoenix.ConnTest.build_conn()
+      |> Plug.Conn.put_req_header("authorization", "Bearer #{jwt}")
+      |> Plug.Conn.put_req_header("accept", "application/json")
+    {:ok, conn: conn}
   end
 end

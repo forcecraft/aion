@@ -4,10 +4,6 @@ defmodule Aion.RoomCategoryControllerTest do
   alias Aion.RoomCategory
   @valid_attrs %{}
 
-  setup do
-    Aion.TestHelpers.setup
-  end
-
   test "lists all entries on index", %{conn: conn} do
     conn = get conn, room_category_path(conn, :index)
     assert json_response(conn, 200)["data"] == []

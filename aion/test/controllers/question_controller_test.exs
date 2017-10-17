@@ -8,10 +8,6 @@ defmodule Aion.QuestionControllerTest do
   @answers "some content"
   @category 1
 
-  setup do
-    Aion.TestHelpers.setup
-  end
-
   test "lists all entries on index", %{conn: conn} do
     conn = get conn, question_path(conn, :index)
     data = json_response(conn, 200)["data"]
