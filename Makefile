@@ -79,7 +79,7 @@ populate-rooms: local-config
 	cd fixtures && python3 main.py --rooms
 
 ##################################
-## ~> DEPLOYMENT PART <~        ##
+##    ~> DEPLOYMENT PART <~     ##
 ##################################
 
 deploy: ## Create a release and run the production server
@@ -88,3 +88,4 @@ deploy: ## Create a release and run the production server
 	brunch build --production && \
 	MIX_ENV=prod mix do deps.get, phoenix.digest, deps.compile, release && \
 	sudo rel/aion/bin/aion start
+
