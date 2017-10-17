@@ -1,7 +1,7 @@
 ![Aion](https://user-images.githubusercontent.com/15965147/28745968-d496ca7a-7483-11e7-9b59-659100df5ba8.png)
 
 
-# Aion [![Build Status](https://travis-ci.org/forcecraft/aion.svg?branch=master)](https://travis-ci.org/forcecraft/aion)
+# Aion [![Build Status](https://travis-ci.org/forcecraft/aion.svg?branch=master)](https://travis-ci.org/forcecraft/aion) [![codebeat badge](https://codebeat.co/badges/6295caf3-edc7-4eba-926a-cfdb51dbe1eb)](https://codebeat.co/projects/github-com-forcecraft-aion-master)
 
 An e-learning platform written in Elixir and Elm based on real-time gameplay.
 
