@@ -85,6 +85,9 @@ populate-rooms: local-config
 deploy-stop:
 	cd aion && sudo rel/aion/bin/aion stop
 
+deploy-start:
+	cd aion && sudo rel/aion/bin/aion start
+
 deploy: ## Create a release and run the production server
 	cd aion && \
 	MIX_ENV=prod mix do deps.get, compile && \
