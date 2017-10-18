@@ -26,3 +26,18 @@ questionsUrl location =
 roomsUrl : Location -> String
 roomsUrl location =
     (host location) ++ "api/rooms"
+
+
+loginUrl : Location -> String
+loginUrl location =
+    (host location) ++ "sessions"
+
+
+registerUrl : Location -> String
+registerUrl location =
+    (host location) ++ "register"
+
+
+websocketUrl : Location -> String -> String
+websocketUrl location token =
+    "ws://" ++ (hostname location) ++ "/socket/websocket?token=" ++ token

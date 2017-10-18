@@ -9,8 +9,7 @@ import Panel.Api exposing (fetchCategories)
 import Phoenix.Socket
 import Room.Api exposing (fetchRooms)
 import Routing
-import Update exposing (update)
-import Urls exposing (host)
+import Update exposing (setHomeUrl, update)
 import User.Api exposing (fetchCurrentUser)
 import View exposing (view)
 
@@ -28,7 +27,13 @@ init flags location =
             initialModel flags currentRoute location
     in
         ( { getInitialModel | navbarState = navbarState }
-        , Cmd.batch [ setHomeUrl location, fetchRooms location, fetchCategories location, fetchCurrentUser location, navbarCmd ]
+        , Cmd.batch
+            [ setHomeUrl location
+            , navbarCmd
+            , fetchRooms location flags.token
+            , fetchCategories location flags.token
+            , fetchCurrentUser location flags.token
+            ]
         )
 
 
@@ -49,8 +54,3 @@ main =
         , update = update
         , subscriptions = subscriptions
         }
-
-
-setHomeUrl : Location -> Cmd Msg
-setHomeUrl location =
-    modifyUrl (host location)

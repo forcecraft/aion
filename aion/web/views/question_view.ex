@@ -15,4 +15,8 @@ defmodule Aion.QuestionView do
       content: question.content,
       image_name: question.image_name}
   end
+
+  def render("error.json", %{message: msg}) do
+    %{"error": msg}
+  end
 end

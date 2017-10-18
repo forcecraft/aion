@@ -1,5 +1,5 @@
 defmodule Aion.ErrorViewTest do
-  use Aion.ConnCase, async: true
+  use Aion.AuthConnCase, async: true
 
   # Bring render/3 and render_to_string/3 for testing custom views
   import Phoenix.View

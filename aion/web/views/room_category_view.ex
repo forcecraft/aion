@@ -14,4 +14,8 @@ defmodule Aion.RoomCategoryView do
       room_id: room_category.room_id,
       category_id: room_category.category_id}
   end
+
+  def render("error.json", %{message: msg}) do
+    %{"error": msg}
+  end
 end

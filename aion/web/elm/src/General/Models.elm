@@ -1,7 +1,9 @@
 module General.Models exposing (..)
 
+import Auth.Models exposing (AuthData, UnauthenticatedViewToggle(LoginView), loginForm, registrationForm)
 import Bootstrap.Navbar as Navbar
 import Forms
+import General.Constants exposing (loginFormMsg)
 import Msgs exposing (Msg(NavbarMsg))
 import Navigation exposing (Location)
 import Multiselect
@@ -11,13 +13,13 @@ import RemoteData exposing (WebData)
 import Room.Models exposing (RoomId, RoomsData, UsersInRoom, QuestionInRoom, UserGameData)
 import Toasty
 import Toasty.Defaults
-import Urls exposing (hostname)
+import Urls exposing (hostname, websocketUrl)
 import User.Models exposing (CurrentUser)
 
 
 type alias Model =
     { user : WebData CurrentUser
-    , channelToken : String
+    , authData : AuthData
     , rooms : WebData RoomsData
     , categories : WebData CategoriesData
     , route : Route
@@ -34,12 +36,13 @@ type alias Model =
 
 
 type alias Flags =
-    { channelToken : String
+    { token : String
     }
 
 
 type Route
-    = LoginRoute
+    = HomeRoute
+    | AuthRoute
     | RoomListRoute
     | RoomRoute RoomId
     | PanelRoute
@@ -47,28 +50,34 @@ type Route
     | NotFoundRoute
 
 
-type alias SimpleCardConfig =
-    { svgImage : String
-    , title : String
-    , description : String
-    , url : String
-    , buttonText : String
-    }
-
-
 initialModel : Flags -> Route -> Location -> Model
 initialModel flags route location =
     let
         ( navbarState, _ ) =
             Navbar.initialState NavbarMsg
+
+        token =
+            case String.isEmpty flags.token of
+                True ->
+                    Nothing
+
+                False ->
+                    Just flags.token
     in
         { user = RemoteData.Loading
-        , channelToken = flags.channelToken
+        , authData =
+            { loginForm = Forms.initForm loginForm
+            , registrationForm = Forms.initForm registrationForm
+            , unauthenticatedView = LoginView
+            , formMsg = loginFormMsg
+            , token = token
+            , msg = ""
+            }
         , rooms = RemoteData.Loading
         , categories = RemoteData.Loading
         , route = route
         , socket =
-            Phoenix.Socket.init ("ws://" ++ (hostname location) ++ "/socket/websocket?token=" ++ flags.channelToken)
+            Phoenix.Socket.init (websocketUrl location flags.token)
                 |> Phoenix.Socket.withDebug
         , usersInChannel = []
         , userGameData = { currentAnswer = "" }

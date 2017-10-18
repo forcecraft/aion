@@ -6,22 +6,22 @@ defmodule Aion.RoomChannel do
 
   use Phoenix.Channel, log_join: false, log_handle_in: :info
   alias Aion.RoomChannel.Monitor
-  alias Aion.{Presence, UserSocket, QuestionChronicle}
+  alias Aion.{Presence, UserSocket, QuestionChronicle, GuardianSerializer}
   require Logger
 
   @spec join(String.t, %{}, UserSocket.t) :: {:ok, UserSocket.t}
   def join("rooms:" <> room_id, _params, socket) do
-    current_user = get_user(socket)
+    username = get_user_name(socket)
     # Note: this is a temporary solution.
     # In the future, this function should return an error if a user wants to join a room that does not exist.
     if not Monitor.exists?(room_id) do
         Monitor.create(room_id)
     end
 
-    Monitor.user_joined(room_id, current_user)
-    Logger.info("[channel] #{current_user} joined room #{room_id}")
+    Monitor.user_joined(room_id, username)
+    Logger.info("[channel] #{username} joined room #{room_id}")
 
-    Presence.track(socket, current_user, %{
+    Presence.track(socket, username, %{
           online_at: inspect(System.system_time(:seconds))
     })
 
@@ -30,12 +30,12 @@ defmodule Aion.RoomChannel do
   end
 
   def terminate(msg, socket) do
-    current_user = get_user(socket)
+    username = get_user_name(socket)
     room_id = get_room_id(socket)
 
-    Monitor.user_left(room_id, current_user)
-    Presence.untrack(socket, current_user)
-    Logger.info("[channel] #{current_user} left: " <> Kernel.inspect(msg))
+    Monitor.user_left(room_id, username)
+    Presence.untrack(socket, username)
+    Logger.info("[channel] #{username} left: " <> Kernel.inspect(msg))
 
     if Monitor.get_scores(room_id) == [] do
         Monitor.shutdown(room_id)
@@ -48,7 +48,7 @@ defmodule Aion.RoomChannel do
   end
 
   def handle_in("new:answer", %{"room_id" => room_id, "answer" => answer}, socket) do
-    username = get_user(socket)
+    username = get_user_name(socket)
     evaluation = Monitor.new_answer(room_id, answer, username)
     send_feedback socket, evaluation
 
@@ -130,7 +130,8 @@ defmodule Aion.RoomChannel do
     room_id
   end
 
-  defp get_user(socket) do
-    socket.assigns.current_user.name
+  defp get_user_name(socket) do
+    {:ok, user} = GuardianSerializer.from_token(socket.assigns.guardian_default_claims["aud"])
+    user.name
   end
 end

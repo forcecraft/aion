@@ -1,6 +1,5 @@
 defmodule Aion.Router do
   use Aion.Web, :router
-  use Addict.RoutesHelper
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -12,19 +11,35 @@ defmodule Aion.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_session
+    plug :fetch_flash
   end
 
-  scope "/" do
-    addict :routes
+  pipeline :api_auth do
+    plug Guardian.Plug.VerifyHeader, realm: "Bearer"
+    plug Guardian.Plug.LoadResource
+  end
+
+  scope "/register", Aion do
+    pipe_through :api
+
+    post "/", RegistrationController, :create, only: [:new, :create]
+  end
+
+  scope "/sessions", Aion do
+    pipe_through :api
+
+    post "/", SessionController, :create, only: [:new, :create, :delete]
   end
 
   scope "/", Aion do
-    pipe_through :browser # Use the default browser stack
+    pipe_through :browser
+
     get "/", PageController, :index
   end
 
   scope "/api", Aion do
-    pipe_through :api
+    pipe_through [:api, :api_auth]
 
     get "/me", UserController, :get_user_info
     resources "/categories", CategoryController, except: [:new, :edit]

@@ -1,15 +1,9 @@
 defmodule Aion.AnswerControllerTest do
-  use Aion.ConnCase
+  use Aion.AuthConnCase
 
   alias Aion.Answer
   @valid_attrs %{content: "some content"}
   @invalid_attrs %{}
-
-  setup do
-    user = %{ email: "test@example.com", name: "something" }
-    conn = Plug.Test.init_test_session(build_conn(), %{current_user: user})
-    {:ok, conn: put_req_header(conn, "accept", "application/json")}
-  end
 
   test "lists all entries on index", %{conn: conn} do
     conn = get conn, answer_path(conn, :index)

@@ -20,6 +20,7 @@ defmodule Aion.Web do
     quote do
       use Ecto.Schema
 
+      alias Aion.Repo
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
@@ -31,13 +32,13 @@ defmodule Aion.Web do
       use Phoenix.Controller
 
       alias Aion.Repo
+      alias Aion.ControllerErrors, as: Errors
+
       import Ecto
       import Ecto.Query
 
       import Aion.Router.Helpers
       import Aion.Gettext
-
-      plug Addict.Plugs.Authenticated
     end
   end
 

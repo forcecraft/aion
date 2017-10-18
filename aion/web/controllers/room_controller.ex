@@ -3,6 +3,8 @@ defmodule Aion.RoomController do
 
   alias Aion.Room
 
+  plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
+
   def index(conn, _params) do
     rooms = Repo.all(Room)
     render(conn, "index.json", rooms: rooms)
@@ -18,9 +20,7 @@ defmodule Aion.RoomController do
         |> put_resp_header("location", room_path(conn, :show, room))
         |> render("show.json", room: room)
       {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> render(Aion.ChangesetView, "error.json", changeset: changeset)
+        Errors.unprocessable_entity(conn, changeset)
     end
   end
 
@@ -37,9 +37,7 @@ defmodule Aion.RoomController do
       {:ok, room} ->
         render(conn, "show.json", room: room)
       {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> render(Aion.ChangesetView, "error.json", changeset: changeset)
+        Errors.unprocessable_entity(conn, changeset)
     end
   end
 
@@ -51,5 +49,9 @@ defmodule Aion.RoomController do
     Repo.delete!(room)
 
     send_resp(conn, :no_content, "")
+  end
+
+  def unauthenticated(conn, _params) do
+    Errors.unauthenticated(conn)
   end
 end

@@ -1,7 +1,9 @@
 module Msgs exposing (..)
 
+import Auth.Models exposing (RegistrationResultData)
 import Bootstrap.Navbar as Navbar
 import Dom exposing (Error)
+import Http
 import Navigation exposing (Location)
 import Multiselect
 import Panel.Models exposing (CategoriesData, CategoryCreatedData, QuestionCreatedData, RoomCreatedData)
@@ -36,6 +38,14 @@ type Msg
     | CreateNewQuestionWithAnswers
     | CreateNewCategory
     | CreateNewRoom
+    | Login
+    | LoginResult (Result Http.Error String)
+    | Register
+    | RegistrationResult (WebData RegistrationResultData)
+    | Logout
+    | ChangeAuthForm
+    | UpdateLoginForm String String
+    | UpdateRegistrationForm String String
     | UpdateQuestionForm String String
     | UpdateCategoryForm String String
     | UpdateRoomForm String String

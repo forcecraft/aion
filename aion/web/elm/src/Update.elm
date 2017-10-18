@@ -1,16 +1,23 @@
 module Update exposing (..)
 
+import Auth.Api exposing (registerUser, submitCredentials)
+import Auth.Models exposing (UnauthenticatedViewToggle(LoginView, RegisterView))
+import Auth.Notifications exposing (loginErrorToast, registrationErrorToast)
 import Dom exposing (focus)
 import Forms
+import General.Constants exposing (loginFormMsg, registerFormMsg)
 import General.Models exposing (Model, Route(RoomRoute))
 import General.Notifications exposing (toastsConfig)
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Msgs exposing (Msg(..))
-import Panel.Api exposing (createCategory, createQuestionWithAnswers, createRoom)
+import Navigation exposing (Location, modifyUrl)
+import Panel.Api exposing (createCategory, createQuestionWithAnswers, createRoom, fetchCategories)
 import Panel.Models exposing (categoryNamePossibleFields, questionFormPossibleFields, roomNamePossibleFields)
 import Panel.Notifications exposing (..)
+import Ports exposing (check)
 import RemoteData
+import Room.Api exposing (fetchRooms)
 import Room.Constants exposing (answerInputFieldId, enterKeyCode)
 import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, userJoinedInfoDecoder, usersListDecoder)
 import Room.Notifications exposing (..)
@@ -20,12 +27,134 @@ import Phoenix.Push
 import Task
 import Toasty
 import Multiselect
-import Socket exposing (initializeRoom, leaveRoom)
+import Socket exposing (initSocket, initializeRoom, leaveRoom)
+import Urls exposing (host, websocketUrl)
+import User.Api exposing (fetchCurrentUser)
+
+
+updateForm : String -> String -> Forms.Form -> Forms.Form
+updateForm name value form =
+    Forms.updateFormInput form name value
+
+
+unwrapToken : Maybe String -> String
+unwrapToken token =
+    case token of
+        Just actualToken ->
+            actualToken
+
+        Nothing ->
+            ""
+
+
+setHomeUrl : Location -> Cmd Msg
+setHomeUrl location =
+    modifyUrl (host location)
+
+
+postTokenActions : String -> Location -> List (Cmd Msg)
+postTokenActions token location =
+    [ check token
+    , fetchRooms location token
+    , fetchCategories location token
+    , fetchCurrentUser location token
+    , setHomeUrl location
+    ]
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        Login ->
+            model
+                ! [ submitCredentials model.location model.authData.loginForm ]
+
+        LoginResult res ->
+            let
+                oldAuthData =
+                    model.authData
+            in
+                case res of
+                    Ok token ->
+                        { model
+                            | authData = { oldAuthData | token = Just token, msg = "" }
+                            , socket = initSocket token model.location
+                        }
+                            ! postTokenActions token model.location
+
+                    Err err ->
+                        { model | authData = { oldAuthData | msg = toString err } }
+                            ! []
+                            |> loginErrorToast
+
+        Register ->
+            model ! [ registerUser model.location model.authData.registrationForm ]
+
+        RegistrationResult response ->
+            case response of
+                RemoteData.Success responseData ->
+                    let
+                        token =
+                            responseData.token
+
+                        oldAuthData =
+                            model.authData
+
+                        oldRegistrationForm =
+                            oldAuthData.registrationForm
+
+                        newRegistrationForm =
+                            updateForm "name" "" oldRegistrationForm
+                                |> updateForm "email" ""
+                                |> updateForm "password" ""
+                    in
+                        { model
+                            | authData = { oldAuthData | registrationForm = newRegistrationForm, token = Just token }
+                            , socket = initSocket token model.location
+                        }
+                            ! postTokenActions token model.location
+
+                _ ->
+                    model
+                        ! []
+                        |> registrationErrorToast
+
+        Logout ->
+            let
+                oldAuthData =
+                    model.authData
+            in
+                { model | authData = { oldAuthData | token = Nothing } } ! [ check "" ]
+
+        ChangeAuthForm ->
+            let
+                oldAuthData =
+                    model.authData
+
+                oldUnauthenticatedView =
+                    oldAuthData.unauthenticatedView
+            in
+                case oldUnauthenticatedView of
+                    LoginView ->
+                        { model
+                            | authData =
+                                { oldAuthData
+                                    | unauthenticatedView = RegisterView
+                                    , formMsg = registerFormMsg
+                                }
+                        }
+                            ! []
+
+                    RegisterView ->
+                        { model
+                            | authData =
+                                { oldAuthData
+                                    | unauthenticatedView = LoginView
+                                    , formMsg = loginFormMsg
+                                }
+                        }
+                            ! []
+
         OnFetchRooms response ->
             { model | rooms = response } ! []
 
@@ -64,15 +193,17 @@ update msg model =
                             model.panelData.questionForm
 
                         newQuestionForm =
-                            Forms.updateFormInput oldQuestionForm "question" ""
-
-                        evenNewerQuestionForm =
-                            Forms.updateFormInput newQuestionForm "answers" ""
+                            updateForm "question" "" oldQuestionForm
+                                |> updateForm "answers" ""
                     in
-                        questionCreationSuccessfulToast ({ model | panelData = { oldPanelData | questionForm = evenNewerQuestionForm } } ! [])
+                        { model | panelData = { oldPanelData | questionForm = newQuestionForm } }
+                            ! []
+                            |> questionCreationSuccessfulToast
 
                 _ ->
-                    questionCreationErrorToast (model ! [])
+                    model
+                        ! []
+                        |> questionCreationErrorToast
 
         OnCategoryCreated response ->
             case response of
@@ -87,10 +218,14 @@ update msg model =
                         newCategoryForm =
                             Forms.updateFormInput oldCategoryForm "name" ""
                     in
-                        categoryCreationSuccessfulToast ({ model | panelData = { oldPanelData | categoryForm = newCategoryForm } } ! [])
+                        { model | panelData = { oldPanelData | categoryForm = newCategoryForm } }
+                            ! []
+                            |> categoryCreationSuccessfulToast
 
                 _ ->
-                    categoryCreationErrorToast (model ! [])
+                    model
+                        ! []
+                        |> categoryCreationErrorToast
 
         OnRoomCreated response ->
             case response of
@@ -103,15 +238,17 @@ update msg model =
                             model.panelData.roomForm
 
                         newRoomForm =
-                            Forms.updateFormInput oldRoomForm "name" ""
-
-                        evenNewerRoomForm =
-                            Forms.updateFormInput newRoomForm "description" ""
+                            updateForm "name" "" oldRoomForm
+                                |> updateForm "description" ""
                     in
-                        roomCreationSuccessfulToast ({ model | panelData = { oldPanelData | roomForm = evenNewerRoomForm } } ! [])
+                        { model | panelData = { oldPanelData | roomForm = newRoomForm } }
+                            ! []
+                            |> roomCreationSuccessfulToast
 
                 _ ->
-                    roomCreationErrorToast (model ! [])
+                    model
+                        ! []
+                        |> roomCreationErrorToast
 
         OnLocationChange location ->
             let
@@ -182,7 +319,9 @@ update msg model =
                                 _ ->
                                     Debug.crash "Unexpected Feedback"
                     in
-                        answerToast (model ! [])
+                        model
+                            ! []
+                            |> answerToast
 
                 Err error ->
                     model ! []
@@ -252,6 +391,40 @@ update msg model =
                 model ! []
 
         -- Forms
+        UpdateLoginForm name value ->
+            let
+                oldAuthData =
+                    model.authData
+
+                loginForm =
+                    oldAuthData.loginForm
+
+                updatedLoginForm =
+                    Forms.updateFormInput loginForm name value
+            in
+                { model
+                    | authData =
+                        { oldAuthData | loginForm = updatedLoginForm }
+                }
+                    ! []
+
+        UpdateRegistrationForm name value ->
+            let
+                oldAuthData =
+                    model.authData
+
+                registrationForm =
+                    oldAuthData.registrationForm
+
+                updatedRegistrationForm =
+                    Forms.updateFormInput registrationForm name value
+            in
+                { model
+                    | authData =
+                        { oldAuthData | registrationForm = updatedRegistrationForm }
+                }
+                    ! []
+
         UpdateQuestionForm name value ->
             let
                 oldPanelData =
@@ -313,16 +486,33 @@ update msg model =
                         |> List.map (\name -> Forms.errorList questionForm name)
                         |> List.foldr (++) []
                         |> List.filter (\validations -> validations /= Nothing)
+
+                token =
+                    unwrapToken model.authData.token
+
+                location =
+                    model.location
+
+                rooms =
+                    model.rooms
             in
                 if List.isEmpty validationErrors then
-                    ( model, createQuestionWithAnswers model.location model.panelData.questionForm model.rooms )
+                    model ! [ createQuestionWithAnswers location token questionForm rooms ]
                 else
-                    questionFormValidationErrorToast (model ! [])
+                    model
+                        ! []
+                        |> questionFormValidationErrorToast
 
         CreateNewCategory ->
             let
                 categoryForm =
                     model.panelData.categoryForm
+
+                token =
+                    unwrapToken model.authData.token
+
+                location =
+                    model.location
 
                 validationErrors =
                     categoryNamePossibleFields
@@ -331,9 +521,11 @@ update msg model =
                         |> List.filter (\validations -> validations /= Nothing)
             in
                 if List.isEmpty validationErrors then
-                    ( model, createCategory model.location model.panelData.categoryForm )
+                    model ! [ createCategory location token categoryForm ]
                 else
-                    categoryFormValidationErrorToast (model ! [])
+                    model
+                        ! []
+                        |> categoryFormValidationErrorToast
 
         CreateNewRoom ->
             let
@@ -345,11 +537,19 @@ update msg model =
 
                 categoryIds =
                     List.map (\( id, _ ) -> id) (Multiselect.getSelectedValues model.panelData.categoryMultiSelect)
+
+                token =
+                    unwrapToken model.authData.token
+
+                location =
+                    model.location
             in
                 if List.isEmpty validationErrors then
-                    ( model, createRoom model.location model.panelData.roomForm categoryIds )
+                    model ! [ createRoom location token roomForm categoryIds ]
                 else
-                    roomFormValidationErrorToast (model ! [])
+                    model
+                        ! []
+                        |> roomFormValidationErrorToast
 
         MultiselectMsg subMsg ->
             let

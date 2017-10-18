@@ -1,3 +1,3 @@
 defmodule Aion.PageViewTest do
-  use Aion.ConnCase, async: true
+  use Aion.AuthConnCase, async: true
 end

@@ -1,7 +1,10 @@
 module View exposing (..)
 
+import Auth.View exposing (authView)
 import Bootstrap.Navbar as Navbar
-import General.Models exposing (Model, Route(LoginRoute, NotFoundRoute, PanelRoute, RoomListRoute, RoomRoute, UserRoute))
+import Bootstrap.Button as Button
+import General.Constants exposing (panelPath, roomsPath, userPath)
+import General.Models exposing (Model, Route(HomeRoute, AuthRoute, NotFoundRoute, PanelRoute, RoomListRoute, RoomRoute, UserRoute))
 import General.View exposing (homeView, notFoundView, roomListView)
 import Html exposing (..)
 import Html.Attributes exposing (class, href, src)
@@ -9,7 +12,6 @@ import Msgs exposing (Msg(..))
 import Navigation exposing (Location)
 import Panel.View exposing (panelView)
 import Room.View exposing (roomView)
-import Routing exposing (panelPath, roomsPath, userPath)
 import Urls exposing (host)
 import User.View exposing (userView)
 
@@ -49,15 +51,38 @@ navbar location navbarState =
             , Navbar.itemLink [ href panelPath ] [ text "Workspace" ]
             , Navbar.itemLink [ href userPath ] [ text "Profile" ]
             ]
+        |> Navbar.customItems
+            [ Navbar.customItem
+                (Button.button
+                    [ Button.roleLink
+                    , Button.onClick Logout
+                    ]
+                    [ text "Logout" ]
+                )
+            ]
         |> Navbar.view navbarState
 
 
 page : Model -> Html Msg
 page model =
     let
+        currentRoute =
+            redirectIfNotAuthenticated model.authData.token model.route
+
+        includeNavbar =
+            case currentRoute of
+                AuthRoute ->
+                    \content _ _ -> content
+
+                _ ->
+                    layout
+
         content =
-            case model.route of
-                LoginRoute ->
+            case currentRoute of
+                AuthRoute ->
+                    authView model
+
+                HomeRoute ->
                     homeView model
 
                 RoomListRoute ->
@@ -75,4 +100,14 @@ page model =
                 NotFoundRoute ->
                     notFoundView
     in
-        layout content model.location model.navbarState
+        includeNavbar content model.location model.navbarState
+
+
+redirectIfNotAuthenticated : Maybe String -> Route -> Route
+redirectIfNotAuthenticated token currentRoute =
+    case token of
+        Nothing ->
+            AuthRoute
+
+        Just _ ->
+            currentRoute

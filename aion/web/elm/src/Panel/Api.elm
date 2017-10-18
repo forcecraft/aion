@@ -1,25 +1,74 @@
 module Panel.Api exposing (..)
 
 import Forms
-import Http
+import Http exposing (Body, Request)
+import Json.Decode as Decode
 import Msgs exposing (Msg)
 import Navigation exposing (Location)
 import RemoteData exposing (WebData)
 import Panel.Decoders exposing (categoriesDecoder, categoryCreatedDecoder, questionCreatedDecoder, roomCreatedDecoder)
 import Json.Encode as Encode
-import Panel.Models exposing (CategoryForm, QuestionForm, RoomForm)
+import Panel.Models exposing (CategoriesData, CategoryCreatedData, CategoryForm, QuestionCreatedData, QuestionForm, RoomCreatedData, RoomForm)
 import Room.Models exposing (RoomsData)
 import Urls exposing (categoriesUrl, questionsUrl, hostname, roomsUrl)
+
+
+-- list categories section
+
+
+fetchCategoriesRequest : String -> String -> Decode.Decoder CategoriesData -> Request CategoriesData
+fetchCategoriesRequest url token decoder =
+    Http.request
+        { method = "GET"
+        , headers = [ Http.header "Authorization" ("Bearer " ++ token) ]
+        , url = url
+        , body = Http.emptyBody
+        , expect = Http.expectJson decoder
+        , timeout = Nothing
+        , withCredentials = True
+        }
+
+
+fetchCategories : Location -> String -> Cmd Msg
+fetchCategories location token =
+    let
+        url =
+            categoriesUrl location
+    in
+        fetchCategoriesRequest url token categoriesDecoder
+            |> RemoteData.sendRequest
+            |> Cmd.map Msgs.OnFetchCategories
+
 
 
 -- create question section
 
 
-createQuestionWithAnswers : Location -> QuestionForm -> WebData RoomsData -> Cmd Msg
-createQuestionWithAnswers location form rooms =
-    Http.post (questionsUrl location) (questionCreationEncoder form rooms) questionCreatedDecoder
-        |> RemoteData.sendRequest
-        |> Cmd.map Msgs.OnQuestionCreated
+createQuestionWithAnswersRequest : String -> String -> Decode.Decoder QuestionCreatedData -> Body -> Request QuestionCreatedData
+createQuestionWithAnswersRequest url token decoder body =
+    Http.request
+        { method = "POST"
+        , headers = [ Http.header "Authorization" ("Bearer " ++ token) ]
+        , url = url
+        , body = body
+        , expect = Http.expectJson decoder
+        , timeout = Nothing
+        , withCredentials = True
+        }
+
+
+createQuestionWithAnswers : Location -> String -> QuestionForm -> WebData RoomsData -> Cmd Msg
+createQuestionWithAnswers location token form rooms =
+    let
+        body =
+            questionCreationEncoder form rooms
+
+        url =
+            questionsUrl location
+    in
+        createQuestionWithAnswersRequest url token questionCreatedDecoder body
+            |> RemoteData.sendRequest
+            |> Cmd.map Msgs.OnQuestionCreated
 
 
 questionCreationEncoder : QuestionForm -> WebData RoomsData -> Http.Body
@@ -53,11 +102,31 @@ questionCreationEncoder form rooms =
 -- create category section
 
 
-createCategory : Location -> CategoryForm -> Cmd Msg
-createCategory location form =
-    Http.post (categoriesUrl location) (categoryCreationEncoder form) categoryCreatedDecoder
-        |> RemoteData.sendRequest
-        |> Cmd.map Msgs.OnCategoryCreated
+createCategoryRequest : String -> String -> Decode.Decoder CategoryCreatedData -> Body -> Request CategoryCreatedData
+createCategoryRequest url token decoder body =
+    Http.request
+        { method = "POST"
+        , headers = [ Http.header "Authorization" ("Bearer " ++ token) ]
+        , url = url
+        , body = body
+        , expect = Http.expectJson decoder
+        , timeout = Nothing
+        , withCredentials = True
+        }
+
+
+createCategory : Location -> String -> CategoryForm -> Cmd Msg
+createCategory location token form =
+    let
+        body =
+            categoryCreationEncoder form
+
+        url =
+            categoriesUrl location
+    in
+        createCategoryRequest url token categoryCreatedDecoder body
+            |> RemoteData.sendRequest
+            |> Cmd.map Msgs.OnCategoryCreated
 
 
 categoryCreationEncoder : QuestionForm -> Http.Body
@@ -78,25 +147,34 @@ categoryCreationEncoder form =
 
 
 
--- list categories section
-
-
-fetchCategories : Location -> Cmd Msg
-fetchCategories location =
-    Http.get (categoriesUrl location) categoriesDecoder
-        |> RemoteData.sendRequest
-        |> Cmd.map Msgs.OnFetchCategories
-
-
-createRoom : Location -> RoomForm -> List String -> Cmd Msg
-createRoom location form categoryIds =
-    Http.post (roomsUrl location) (roomCreationEncoder form categoryIds) roomCreatedDecoder
-        |> RemoteData.sendRequest
-        |> Cmd.map Msgs.OnRoomCreated
-
-
-
 -- room creation section
+
+
+createRoomRequest : String -> String -> Decode.Decoder RoomCreatedData -> Body -> Request RoomCreatedData
+createRoomRequest url token decoder body =
+    Http.request
+        { method = "POST"
+        , headers = [ Http.header "Authorization" ("Bearer " ++ token) ]
+        , url = url
+        , body = body
+        , expect = Http.expectJson decoder
+        , timeout = Nothing
+        , withCredentials = True
+        }
+
+
+createRoom : Location -> String -> RoomForm -> List String -> Cmd Msg
+createRoom location token form categoryIds =
+    let
+        body =
+            roomCreationEncoder form categoryIds
+
+        url =
+            roomsUrl location
+    in
+        createRoomRequest url token roomCreatedDecoder body
+            |> RemoteData.sendRequest
+            |> Cmd.map Msgs.OnRoomCreated
 
 
 roomCreationEncoder : RoomForm -> List String -> Http.Body

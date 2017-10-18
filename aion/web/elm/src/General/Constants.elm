@@ -1,8 +1,6 @@
 module General.Constants exposing (..)
 
-import General.Models exposing (SimpleCardConfig)
 import Navigation exposing (Location)
-import Routing exposing (panelPath, roomsPath, userPath)
 import Urls exposing (host)
 
 
@@ -33,4 +31,38 @@ profileCardConfig location =
     , description = "Check your profile, match history and statistics."
     , url = userPath
     , buttonText = "Go to profile"
+    }
+
+
+loginFormMsg : String
+loginFormMsg =
+    "Don't have an account? Click here to register."
+
+
+registerFormMsg : String
+registerFormMsg =
+    "Already have an account? Click here to login."
+
+
+roomsPath : String
+roomsPath =
+    "#rooms"
+
+
+panelPath : String
+panelPath =
+    "#panel"
+
+
+userPath : String
+userPath =
+    "#profile"
+
+
+type alias SimpleCardConfig =
+    { svgImage : String
+    , title : String
+    , description : String
+    , url : String
+    , buttonText : String
     }

@@ -1,8 +1,9 @@
 defmodule Aion.QuestionController do
   use Aion.Web, :controller
 
-  alias Aion.Question
-  alias Aion.QuestionTransactions
+  alias Aion.{Question, QuestionTransactions}
+
+  plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
 
   def index(conn, _params) do
     questions = Repo.all(Question)
@@ -37,9 +38,7 @@ defmodule Aion.QuestionController do
       {:ok, question} ->
         render(conn, "show.json", question: question)
       {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> render(Aion.ChangesetView, "error.json", changeset: changeset)
+        Errors.unprocessable_entity(conn, changeset)
     end
   end
 
@@ -51,5 +50,9 @@ defmodule Aion.QuestionController do
     Repo.delete!(question)
 
     send_resp(conn, :no_content, "")
+  end
+
+  def unauthenticated(conn, _params) do
+    Errors.unauthenticated(conn)
   end
 end

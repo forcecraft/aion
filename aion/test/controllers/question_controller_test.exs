@@ -1,5 +1,5 @@
 defmodule Aion.QuestionControllerTest do
-  use Aion.ConnCase
+  use Aion.AuthConnCase
 
   alias Aion.Question
 
@@ -8,11 +8,6 @@ defmodule Aion.QuestionControllerTest do
   @answers "some content"
   @category 1
 
-  setup %{conn: _} do
-    user = %{ email: "test@example.com", name: "something" }
-    conn = Plug.Test. init_test_session(build_conn(), %{current_user: user})
-    {:ok, conn: put_req_header(conn, "accept", "application/json")}
-  end
   test "lists all entries on index", %{conn: conn} do
     conn = get conn, question_path(conn, :index)
     data = json_response(conn, 200)["data"]

@@ -3,6 +3,8 @@ defmodule Aion.AnswerController do
 
   alias Aion.Answer
 
+  plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
+
   def index(conn, _params) do
     answers = Repo.all(Answer)
     render(conn, "index.json", answers: answers)
@@ -18,9 +20,7 @@ defmodule Aion.AnswerController do
         |> put_resp_header("location", answer_path(conn, :show, answer))
         |> render("show.json", answer: answer)
       {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> render(Aion.ChangesetView, "error.json", changeset: changeset)
+        Errors.unprocessable_entity(conn, changeset)
     end
   end
 
@@ -37,9 +37,7 @@ defmodule Aion.AnswerController do
       {:ok, answer} ->
         render(conn, "show.json", answer: answer)
       {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> render(Aion.ChangesetView, "error.json", changeset: changeset)
+        Errors.unprocessable_entity(conn, changeset)
     end
   end
 
@@ -51,5 +49,9 @@ defmodule Aion.AnswerController do
     Repo.delete!(answer)
 
     send_resp(conn, :no_content, "")
+  end
+
+  def unauthenticated(conn, _params) do
+    Errors.unauthenticated(conn)
   end
 end

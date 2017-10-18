@@ -1,5 +1,6 @@
 defmodule Aion.UserSocket do
   use Phoenix.Socket
+  import Guardian.Phoenix.Socket
 
   @type t :: %Phoenix.Socket{}
 
@@ -11,13 +12,16 @@ defmodule Aion.UserSocket do
   transport :websocket, Phoenix.Transports.WebSocket
 
   def connect(%{"token" => token}, socket) do
-    case Token.verify(socket, "user", token, max_age: 86_400) do
-      {:ok, user_id} ->
-        socket = assign(socket, :current_user, Repo.get!(User, user_id))
+    case sign_in(socket, token) do
+      {:ok, auth_socket, guardian_params} ->
+        {:ok, auth_socket}
+      _ ->
         {:ok, socket}
-      {:error, _} ->
-        :error
     end
+  end
+
+  def connect(_params, socket) do
+    {:ok, socket}
   end
 
   def id(_socket), do: nil

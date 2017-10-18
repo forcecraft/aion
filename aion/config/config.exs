@@ -23,13 +23,14 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+# Configures Guardian
+config :guardian, Guardian,
+  allowed_algos: ["HS512"],
+  secret_key: System.get_env("SECRET_KEY") || "test",
+  issuer: "Aion",
+  ttl: { 30, :days },
+  serializer: Aion.GuardianSerializer
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"
-
-config :addict,
-  secret_key: "2432622431322443424641565a4939756e724773435a6d77774442692e",
-  user_schema: Aion.User,
-  repo: Aion.Repo,
-  from_email: "no-reply@example.com", # CHANGE THIS
-mail_service: nil
