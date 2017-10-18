@@ -82,10 +82,14 @@ populate-rooms: local-config
 ##    ~> DEPLOYMENT PART <~     ##
 ##################################
 
+deploy-stop:
+	sudo rel/aion/bin/aion stop
+
 deploy: ## Create a release and run the production server
+	kiex use 1.4.5 && \
 	cd aion && \
-	sudo rel/aion/bin/aion stop && \
+	MIX_ENV=prod mix do deps.get, compile && \
 	brunch build --production && \
-	MIX_ENV=prod mix do deps.get, phoenix.digest, deps.compile, release && \
+	MIX_ENV=prod mix do phoenix.digest, release && \
 	sudo rel/aion/bin/aion start
 
