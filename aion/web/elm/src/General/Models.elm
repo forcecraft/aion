@@ -45,7 +45,6 @@ type Route
     | AuthRoute
     | RoomListRoute
     | RoomRoute RoomId
-    | PanelRoute
     | UserRoute
     | NotFoundRoute
 
