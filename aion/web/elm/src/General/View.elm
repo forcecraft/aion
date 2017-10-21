@@ -5,7 +5,7 @@ import Bootstrap.Button as Button
 import Bootstrap.Card as Card
 import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Col as Col
-import General.Constants exposing (SimpleCardConfig, gameCardConfig, panelCardConfig, profileCardConfig)
+import General.Constants exposing (SimpleCardConfig, gameCardConfig, profileCardConfig)
 import General.Models exposing (Model)
 import General.Utils exposing (sliceList, roomsViewColorList, roomsDefaultColor)
 import Html exposing (Html, a, button, div, h2, h3, i, img, li, p, text, ul)
@@ -29,7 +29,6 @@ homeView model =
         , Grid.container []
             [ Grid.row []
                 [ Grid.col [] [ simpleCard <| gameCardConfig model.location ]
-                , Grid.col [] [ simpleCard <| panelCardConfig model.location ]
                 , Grid.col [] [ simpleCard <| profileCardConfig model.location ]
                 ]
             ]
