@@ -22,24 +22,4 @@ defmodule Aion.RoomCategoryControllerTest do
       get conn, room_category_path(conn, :show, -1)
     end
   end
-
-  test "creates and renders resource when data is valid", %{conn: conn} do
-    conn = post conn, room_category_path(conn, :create), room_category: @valid_attrs
-    assert json_response(conn, 201)["data"]["id"]
-    assert Repo.get_by(RoomCategory, @valid_attrs)
-  end
-
-  test "updates and renders chosen resource when data is valid", %{conn: conn} do
-    room_category = Repo.insert! %RoomCategory{}
-    conn = put conn, room_category_path(conn, :update, room_category), room_category: @valid_attrs
-    assert json_response(conn, 200)["data"]["id"]
-    assert Repo.get_by(RoomCategory, @valid_attrs)
-  end
-
-  test "deletes chosen resource", %{conn: conn} do
-    room_category = Repo.insert! %RoomCategory{}
-    conn = delete conn, room_category_path(conn, :delete, room_category)
-    assert response(conn, 204)
-    refute Repo.get(RoomCategory, room_category.id)
-  end
 end
