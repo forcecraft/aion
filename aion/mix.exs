@@ -20,7 +20,7 @@ defmodule Aion.Mixfile do
   def application do
     [mod: {Aion, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex, :simetric]]
+                    :phoenix_ecto, :postgrex, :simetric, :guardian, :comeonin]]
   end
 
   defp elixirc_paths(:test), do: ["lib", "web", "test/support"]
