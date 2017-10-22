@@ -30,7 +30,6 @@ init flags location =
         , Cmd.batch
             [ setHomeUrl location
             , navbarCmd
-            , fetchRooms location flags.token
             , fetchCategories location flags.token
             , fetchCurrentUser location flags.token
             ]
