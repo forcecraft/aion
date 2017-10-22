@@ -2,12 +2,31 @@ defmodule Aion.RoomController do
   use Aion.Web, :controller
 
   alias Aion.Room
+  alias Aion.RoomChannel.Monitor
 
-  plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
+  # plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
 
   def index(conn, _params) do
     rooms = Repo.all(Room)
     render(conn, "index.json", rooms: rooms)
+  end
+
+  def get_counts(conn, _params) do
+    counts =  Monitor.get_player_counts()
+    rooms = Room
+      |> Repo.all
+      |> Enum.map(&Map.from_struct/1)
+      |> Enum.map(&extend_with_counts(&1, counts))
+      |> Enum.map(&Map.drop(&1, [:categories, :inserted_at, :updated_at, :__meta__]))
+
+    json(conn, rooms)
+  end
+
+  defp extend_with_counts(room, counts) do
+    room_id = Integer.to_string(room.id)
+    player_count = Map.get(counts, room_id, 0)
+
+    Map.put(room, :player_count, player_count)
   end
 
   def create(conn, %{"room" => room_params}) do

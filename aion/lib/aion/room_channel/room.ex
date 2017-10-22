@@ -6,31 +6,38 @@ defmodule Aion.RoomChannel.Room do
   alias Aion.RoomChannel.{Room, UserRecord, QuestionSet}
   require Logger
 
-  @type t :: %__MODULE__{users: %{String.t => UserRecord.t},
-                         users_count: integer,
-                         questions: (list Question.t),
-                         current_question: Question.t,
-                         answers: (list Answer.t)}
+  @type t :: %__MODULE__{
+    answers: (list Answer.t),
+    current_question: Question.t,
+    questions: (list Question.t),
+    room_id: binary,
+    users: %{String.t => UserRecord.t},
+    users_count: integer,
+  }
 
-  defstruct users: %{},
-            users_count: 0,
-            questions: [],
-            current_question: nil,
-            answers: []
+  defstruct answers: [],
+    current_question: nil,
+    questions: [],
+    room_id: "",
+    users: %{},
+    users_count: 0
 
   @spec new(integer, [current_question: nil | Question.t]) :: %__MODULE__{}
   def new(room_id, state \\ []) do
     case state do
       [] ->
-        %Room{}
+        %Room{room_id: room_id}
         |> load_questions(room_id)
         |> change_question(room_id)
 
       {:current_question, question} ->
-        %Room{current_question: question}
+        %Room{
+          current_question: question,
+          room_id: room_id,
+        }
 
       _ -> Logger.error fn -> "Unexpected state passed to Room.new: #{state}" end
-           %Room{}
+           %Room{room_id: room_id}
     end
   end
 
@@ -81,6 +88,11 @@ defmodule Aion.RoomChannel.Room do
   @spec get_scores(__MODULE__.t) :: list UserRecord.t
   def get_scores(room) do
     Map.values(room.users)
+  end
+
+  @spec get_room_id(__MODULE__.t) :: binary
+  def get_room_id(room) do
+    room.room_id
   end
 
   @spec get_current_question(__MODULE__.t) :: Question.t

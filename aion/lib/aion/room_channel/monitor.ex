@@ -20,18 +20,20 @@ defmodule Aion.RoomChannel.Monitor do
       nil ->
         {:ok, pid} = Supervisor.start_child(Aion.RoomChannel.Supervisor, [room_id: room_id] ++ opts)
         Logger.info("[monitor] Spawned room GenServer " <> Kernel.inspect(pid))
-      _board ->
+      _room ->
         {:error, :room_already_exists}
     end
   end
 
   @doc """
-  This function is responsible for commanding certain room's GenServer to shut down
+    This function is responsible for commanding certain room's GenServer to shut down
   """
   def shutdown(room_id) do
     try_call(room_id, :stop)
   end
 
+  defp try_call(room_id, message) when is_integer(room_id), do: GenServer.call(Integer.to_string(room_id), message)
+  defp try_call(room_id, message) when is_pid(room_id), do: GenServer.call(room_id, message)
   defp try_call(room_id, message) do
     case GenServer.whereis(ref(room_id)) do
       nil ->
@@ -57,6 +59,15 @@ defmodule Aion.RoomChannel.Monitor do
   # Game specific interface #
   ###########################
 
+  def get_player_counts do
+    Aion.RoomChannel.Supervisor
+    |> Supervisor.which_children
+    |> Enum.map(fn({_id, pid, _type, _modules}) -> pid end)
+    |> Enum.map(fn(pid) -> {pid, get_scores(pid)} end)
+    |> Enum.map(fn({pid, scores}) -> {get_room_id(pid), Enum.count(scores)} end)
+    |> Map.new
+  end
+
   def user_joined(room_id, user) do
     try_call(room_id, {:user_joined, user})
   end
@@ -67,6 +78,10 @@ defmodule Aion.RoomChannel.Monitor do
 
   def get_scores(room_id) do
     try_call(room_id, {:get_scores})
+  end
+
+  def get_room_id(pid) do
+    try_call(pid, {:get_room_id})
   end
 
   def new_question(room_id) do
@@ -108,6 +123,10 @@ defmodule Aion.RoomChannel.Monitor do
   def handle_call({:get_scores}, _from, state) do
     users = Room.get_scores(state)
     {:reply, users, state}
+  end
+
+  def handle_call({:get_room_id}, _from, state) do
+    {:reply, Room.get_room_id(state), state}
   end
 
   def handle_call({:new_question, room_id}, _from, state) do
