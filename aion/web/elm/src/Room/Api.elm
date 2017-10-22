@@ -27,9 +27,6 @@ fetchCurrentUserRequest url token decoder =
 fetchRooms : Location -> Token -> Cmd Msg
 fetchRooms location token =
     let
-        x =
-            Debug.log "Fetching rooms" location
-
         url =
             roomsUrl location
     in
