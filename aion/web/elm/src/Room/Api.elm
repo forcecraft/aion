@@ -1,5 +1,6 @@
 module Room.Api exposing (..)
 
+import Auth.Models exposing (Token)
 import Http exposing (Request)
 import Json.Decode as Decode
 import Msgs exposing (Msg)
@@ -23,9 +24,12 @@ fetchCurrentUserRequest url token decoder =
         }
 
 
-fetchRooms : Location -> String -> Cmd Msg
+fetchRooms : Location -> Token -> Cmd Msg
 fetchRooms location token =
     let
+        x =
+            Debug.log "Fetching rooms" location
+
         url =
             roomsUrl location
     in

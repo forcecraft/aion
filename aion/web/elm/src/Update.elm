@@ -1,12 +1,12 @@
 module Update exposing (..)
 
 import Auth.Api exposing (registerUser, submitCredentials)
-import Auth.Models exposing (UnauthenticatedViewToggle(LoginView, RegisterView))
+import Auth.Models exposing (Token, UnauthenticatedViewToggle(LoginView, RegisterView))
 import Auth.Notifications exposing (loginErrorToast, registrationErrorToast)
 import Dom exposing (focus)
 import Forms
 import General.Constants exposing (loginFormMsg, registerFormMsg)
-import General.Models exposing (Model, Route(RoomRoute))
+import General.Models exposing (Model, Route(RoomListRoute, RoomRoute))
 import General.Notifications exposing (toastsConfig)
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -52,7 +52,7 @@ setHomeUrl location =
     modifyUrl (host location)
 
 
-postTokenActions : String -> Location -> List (Cmd Msg)
+postTokenActions : Token -> Location -> List (Cmd Msg)
 postTokenActions token location =
     [ check token
     , fetchRooms location token
@@ -60,6 +60,32 @@ postTokenActions token location =
     , fetchCurrentUser location token
     , setHomeUrl location
     ]
+
+
+
+-- instead of calling "unwrap token" every time, this function will do it for you
+
+
+withToken : Model -> (Token -> a) -> a
+withToken model command =
+    let
+        token =
+            unwrapToken model.authData.token
+    in
+        command token
+
+
+
+-- instead of passing location you can just pass model to this function
+
+
+withLocation : Model -> (Location -> a) -> a
+withLocation model function =
+    let
+        location =
+            model.location
+    in
+        function location
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -273,6 +299,13 @@ update msg model =
                                 ! [ Cmd.map PhoenixMsg initializeRoomCmd
                                   , Cmd.map PhoenixMsg leaveRoomCmd
                                   ]
+
+                    RoomListRoute ->
+                        { model | route = newRoute }
+                            ! [ fetchRooms
+                                    |> withLocation model
+                                    |> withToken model
+                              ]
 
                     _ ->
                         case model.route of
