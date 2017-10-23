@@ -1,14 +1,11 @@
 module General.View exposing (..)
 
 import Array
-import Bootstrap.Button as Button
-import Bootstrap.Card as Card
 import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Col as Col
-import General.Constants exposing (SimpleCardConfig, gameCardConfig, profileCardConfig)
 import General.Models exposing (Model)
 import General.Utils exposing (sliceList, roomsViewColorList, roomsDefaultColor)
-import Html exposing (Html, a, button, div, h2, h3, i, img, li, p, text, ul)
+import Html exposing (Html, a, button, div, h2, h4, i, img, li, p, text, ul)
 import Html.Attributes exposing (class, href, src, style)
 import Msgs exposing (Msg)
 import RemoteData exposing (WebData)
@@ -22,41 +19,13 @@ notFoundView =
         ]
 
 
-homeView : Model -> Html Msg
-homeView model =
-    div []
-        [ h3 [ class "welcome-title" ] [ text "Welcome to Aion!" ]
-        , Grid.container []
-            [ Grid.row []
-                [ Grid.col [] [ simpleCard <| gameCardConfig model.location ]
-                , Grid.col [] [ simpleCard <| profileCardConfig model.location ]
-                ]
-            ]
-        ]
-
-
-simpleCard : SimpleCardConfig -> Html Msg
-simpleCard cardConfig =
-    Card.config []
-        |> Card.header [ class "text-center" ]
-            [ img [ src cardConfig.svgImage ] [] ]
-        |> Card.block []
-            [ Card.titleH4 [] [ text cardConfig.title ]
-            , Card.text [] [ text cardConfig.description ]
-            , Card.custom <|
-                Button.linkButton
-                    [ Button.success
-                    , Button.attrs [ href cardConfig.url ]
-                    ]
-                    [ text cardConfig.buttonText ]
-            ]
-        |> Card.view
-
-
 roomListView : Model -> Html Msg
 roomListView model =
     div []
-        [ div [ class "room-select-title" ] [ h2 [] [ text "Select a room to play:" ] ]
+        [ div [ class "room-select-title" ]
+            [ h2 [] [ text "Welcome to Aion!" ]
+            , h4 [] [ text "Select a room to play:" ]
+            ]
         , listRooms model.rooms
         ]
 
