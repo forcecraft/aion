@@ -5,9 +5,13 @@ from src.populate_rooms import populate_one_category_rooms, populate_all_categor
 from src.connect_to_db import connect_to_db
 
 
+questions_threshold = 30
+
+
 def create_rooms(conn):
-    # populate_one_category_rooms(conn)
+    populate_one_category_rooms(conn, questions_threshold)
     populate_all_categories_rooms(conn)
+
 
 def seed_database(conn, paths):
     if paths is None:
