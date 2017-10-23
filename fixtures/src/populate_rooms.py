@@ -18,6 +18,6 @@ def populate_all_categories_rooms(conn):
     rooms_number = 5
 
     for i in range(rooms_number):
-        room_id = get_or_insert_room("wiedza ogóla {}".format(i), "room with all categories", conn)
+        room_id = get_or_insert_room("wiedza ogólna {}".format(i), "room with all categories", conn)
         for category_id in categories_id_list:
             get_or_insert_rooms_to_categories(room_id, category_id, conn)
