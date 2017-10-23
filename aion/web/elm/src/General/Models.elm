@@ -41,8 +41,7 @@ type alias Flags =
 
 
 type Route
-    = HomeRoute
-    | AuthRoute
+    = AuthRoute
     | RoomListRoute
     | RoomRoute RoomId
     | UserRoute
