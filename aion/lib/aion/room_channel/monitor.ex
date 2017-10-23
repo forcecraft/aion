@@ -15,7 +15,9 @@ defmodule Aion.RoomChannel.Monitor do
     GenServer.start_link(__MODULE__, Room.new(room_id, state), name: ref(room_id))
   end
 
-  def create(room_id, opts \\ []) do
+  def create(room_id, opts \\ [])
+  def create(room_id, opts) when is_integer(room_id), do: create(Integer.to_string(room_id), opts)
+  def create(room_id, opts) when is_binary(room_id) do
     case GenServer.whereis(ref(room_id)) do
       nil ->
         {:ok, pid} = Supervisor.start_child(Aion.RoomChannel.Supervisor, [room_id: room_id] ++ opts)
@@ -32,8 +34,8 @@ defmodule Aion.RoomChannel.Monitor do
     try_call(room_id, :stop)
   end
 
-  defp try_call(room_id, message) when is_integer(room_id), do: GenServer.call(Integer.to_string(room_id), message)
   defp try_call(room_id, message) when is_pid(room_id), do: GenServer.call(room_id, message)
+  defp try_call(room_id, message) when is_integer(room_id), do: try_call(Integer.to_string(room_id), message)
   defp try_call(room_id, message) do
     case GenServer.whereis(ref(room_id)) do
       nil ->
