@@ -31,7 +31,7 @@ defmodule Aion.RoomControllerTest do
 
   test "GET /counts with no rooms in db", %{conn: conn} do
     conn = get conn, "/api/counts"
-    assert json_response(conn, 200) == []
+    assert json_response(conn, 200)["data"] == []
   end
 
   test "GET /counts with empty room", %{conn: conn} do
@@ -41,7 +41,7 @@ defmodule Aion.RoomControllerTest do
 
     conn = get conn, "/api/counts"
 
-    assert json_response(conn, 200) == [
+    assert json_response(conn, 200)["data"] == [
       %{
         "id" => room.id,
         "name" => room.name,
@@ -59,7 +59,7 @@ defmodule Aion.RoomControllerTest do
 
     conn = get conn, "/api/counts"
 
-    assert json_response(conn, 200) == [
+    assert json_response(conn, 200)["data"] == [
       %{
         "id" => room.id,
         "name" => room.name,
