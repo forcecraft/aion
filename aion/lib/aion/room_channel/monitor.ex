@@ -65,8 +65,8 @@ defmodule Aion.RoomChannel.Monitor do
     Aion.RoomChannel.Supervisor
     |> Supervisor.which_children
     |> Enum.map(fn({_id, pid, _type, _modules}) -> pid end)
-    |> Enum.map(fn(pid) -> {pid, get_scores(pid)} end)
-    |> Enum.map(fn({pid, scores}) -> {get_room_id(pid), Enum.count(scores)} end)
+    |> Enum.map(fn(pid) -> {get_room_id(pid), get_scores(pid)} end)
+    |> Enum.map(fn({room_id, scores}) -> {room_id, Enum.count(scores)} end)
     |> Map.new
   end
 
