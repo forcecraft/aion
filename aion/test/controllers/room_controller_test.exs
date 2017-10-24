@@ -35,8 +35,7 @@ defmodule Aion.RoomControllerTest do
   end
 
   test "GET /counts with empty room", %{conn: conn} do
-    room = Repo.insert! @room
-    room_id = room.id
+    %Room{id: room_id} = room = Repo.insert! @room
 
     Monitor.create(room_id, current_question: @question)
 
@@ -53,8 +52,7 @@ defmodule Aion.RoomControllerTest do
   end
 
   test "GET /counts with players inside", %{conn: conn} do
-    room = Repo.insert! @room
-    room_id = room.id
+    %Room{id: room_id} = room = Repo.insert! @room
 
     Monitor.create(room_id, current_question: @question)
     Monitor.user_joined(room_id, @player)
