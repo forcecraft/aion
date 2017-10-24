@@ -34,3 +34,11 @@ def get_or_insert_question(question, conn):
             print("Question already in the database: {}".format(question))
 
     return get_question_id(category_id, content, image, conn)
+
+
+def get_questions_from_category(category_id, conn):
+    with conn.cursor() as cur:
+        query = """SELECT * FROM QUESTIONS WHERE category_id = {}""".format(category_id)
+        cur.execute(query)
+        questions = cur.fetchall()
+        return questions
