@@ -30,7 +30,7 @@ defmodule Aion.RoomControllerTest do
   end
 
   test "GET /counts with no rooms in db", %{conn: conn} do
-    conn = get conn, "/api/counts"
+    conn = get conn, "/api/rooms/counts"
     assert json_response(conn, 200)["data"] == []
   end
 
@@ -39,7 +39,7 @@ defmodule Aion.RoomControllerTest do
 
     Monitor.create(room_id, current_question: @question)
 
-    conn = get conn, "/api/counts"
+    conn = get conn, "/api/rooms/counts"
 
     assert json_response(conn, 200)["data"] == [
       %{
@@ -57,7 +57,7 @@ defmodule Aion.RoomControllerTest do
     Monitor.create(room_id, current_question: @question)
     Monitor.user_joined(room_id, @player)
 
-    conn = get conn, "/api/counts"
+    conn = get conn, "/api/rooms/counts"
 
     assert json_response(conn, 200)["data"] == [
       %{
