@@ -66,19 +66,15 @@ listRoomsSlice rooms =
 
 listSingleRoom : Room -> Grid.Column Msg
 listSingleRoom room =
-    let
-        x =
-            Debug.log "Room is" room
-    in
-        Grid.col [ Col.lg2, Col.md4 ]
-            [ div
-                [ style
-                    [ ( "backgroundColor", generateColor room )
-                    ]
-                , class "tile"
+    Grid.col [ Col.lg2, Col.md4 ]
+        [ div
+            [ style
+                [ ( "backgroundColor", generateColor room )
                 ]
-                [ displayRoomLabel room ]
+            , class "tile"
             ]
+            [ displayRoomLabel room ]
+        ]
 
 
 displayRoomLabel : Room -> Html Msg
