@@ -19,7 +19,7 @@ defmodule Aion.RoomController do
       |> Enum.map(&extend_with_counts(&1, counts))
       |> Enum.map(&Map.drop(&1, [:categories, :inserted_at, :updated_at, :__meta__]))
 
-    json(conn, rooms)
+    json(conn, %{data: rooms})
   end
 
   defp extend_with_counts(room, counts) do

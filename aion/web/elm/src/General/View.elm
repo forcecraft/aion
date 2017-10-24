@@ -5,7 +5,7 @@ import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Col as Col
 import General.Models exposing (Model)
 import General.Utils exposing (sliceList, roomsViewColorList, roomsDefaultColor)
-import Html exposing (Html, a, button, div, h2, h4, i, img, li, p, text, ul)
+import Html exposing (Html, a, br, button, div, h2, h4, i, img, li, p, text, ul)
 import Html.Attributes exposing (class, href, src, style)
 import Msgs exposing (Msg)
 import RemoteData exposing (WebData)
@@ -66,14 +66,42 @@ listRoomsSlice rooms =
 
 listSingleRoom : Room -> Grid.Column Msg
 listSingleRoom room =
-    Grid.col [ Col.lg2, Col.md4 ]
-        [ div
-            [ style [ ( "backgroundColor", generateColor room ) ]
-            , class "tile"
+    let
+        x =
+            Debug.log "Room is" room
+    in
+        Grid.col [ Col.lg2, Col.md4 ]
+            [ div
+                [ style
+                    [ ( "backgroundColor", generateColor room )
+                    ]
+                , class "tile"
+                ]
+                [ displayRoomLabel room ]
             ]
-            [ a [ (href ("#rooms/" ++ (toString room.id))) ] [ text room.name ]
-            ]
-        ]
+
+
+displayRoomLabel : Room -> Html Msg
+displayRoomLabel room =
+    let
+        url =
+            "#rooms/" ++ (toString room.id)
+
+        playerCount =
+            case room.player_count of
+                0 ->
+                    "empty"
+
+                1 ->
+                    "1 player"
+
+                _ ->
+                    toString (room.player_count) ++ " players"
+
+        roomLabel =
+            room.name ++ " (" ++ playerCount ++ ")"
+    in
+        a [ href url ] [ text roomLabel ]
 
 
 generateColor : Room -> String
