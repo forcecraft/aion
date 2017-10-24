@@ -1,6 +1,6 @@
 module General.Models exposing (..)
 
-import Auth.Models exposing (AuthData, UnauthenticatedViewToggle(LoginView), loginForm, registrationForm)
+import Auth.Models exposing (AuthData, Token, UnauthenticatedViewToggle(LoginView), loginForm, registrationForm)
 import Bootstrap.Navbar as Navbar
 import Forms
 import General.Constants exposing (loginFormMsg)
@@ -36,13 +36,12 @@ type alias Model =
 
 
 type alias Flags =
-    { token : String
+    { token : Token
     }
 
 
 type Route
-    = HomeRoute
-    | AuthRoute
+    = AuthRoute
     | RoomListRoute
     | RoomRoute RoomId
     | UserRoute

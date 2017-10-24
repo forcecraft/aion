@@ -8,7 +8,7 @@ type alias AuthData =
     , registrationForm : RegistrationForm
     , unauthenticatedView : UnauthenticatedViewToggle
     , formMsg : String
-    , token : Maybe String
+    , token : Maybe Token
     , msg : String
     }
 
@@ -16,6 +16,10 @@ type alias AuthData =
 type UnauthenticatedViewToggle
     = LoginView
     | RegisterView
+
+
+type alias Token =
+    String
 
 
 
@@ -60,5 +64,5 @@ registrationForm =
 
 
 type alias RegistrationResultData =
-    { token : String
+    { token : Token
     }

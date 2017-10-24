@@ -4,8 +4,8 @@ import Auth.View exposing (authView)
 import Bootstrap.Navbar as Navbar
 import Bootstrap.Button as Button
 import General.Constants exposing (roomsPath, userPath)
-import General.Models exposing (Model, Route(HomeRoute, AuthRoute, NotFoundRoute, RoomListRoute, RoomRoute, UserRoute))
-import General.View exposing (homeView, notFoundView, roomListView)
+import General.Models exposing (Model, Route(AuthRoute, NotFoundRoute, RoomListRoute, RoomRoute, UserRoute))
+import General.View exposing (notFoundView, roomListView)
 import Html exposing (..)
 import Html.Attributes exposing (class, href, src)
 import Msgs exposing (Msg(..))
@@ -79,9 +79,6 @@ page model =
             case currentRoute of
                 AuthRoute ->
                     authView model
-
-                HomeRoute ->
-                    homeView model
 
                 RoomListRoute ->
                     roomListView model
