@@ -49,7 +49,8 @@ defmodule Aion.RoomChannel do
 
   def handle_in("new:answer", %{"room_id" => room_id, "answer" => answer}, socket) do
     username = get_user_name(socket)
-    evaluation = Monitor.new_answer(room_id, answer, username)
+    user_id = get_user_id(socket)
+    evaluation = Monitor.new_answer(room_id, answer, username, user_id)
     send_feedback socket, evaluation
 
     if evaluation == 1.0 do
@@ -130,8 +131,16 @@ defmodule Aion.RoomChannel do
     room_id
   end
 
-  defp get_user_name(socket) do
+  defp get_user(socket) do
     {:ok, user} = GuardianSerializer.from_token(socket.assigns.guardian_default_claims["aud"])
-    user.name
+    user
+  end
+
+  defp get_user_name(socket) do
+    get_user(socket).name
+  end
+
+  defp get_user_id(socket) do
+    get_user(socket).id
   end
 end
