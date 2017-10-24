@@ -5,12 +5,16 @@ defmodule Aion.User do
   @type t :: %__MODULE__{name: String.t, email: String.t, password: String.t, encrypted_password: String.t}
   use Aion.Web, :model
   alias Comeonin.Bcrypt
+  alias Aion.{Repo, Category, UserCategoryScore}
 
   schema "users" do
     field :name, :string
     field :email, :string
     field :password, :string, virtual: true
     field :encrypted_password, :string
+    many_to_many :categories, Category,
+      join_through: UserCategoryScore,
+      on_delete: :delete_all
 
     timestamps()
   end
