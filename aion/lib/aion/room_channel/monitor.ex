@@ -73,8 +73,8 @@ defmodule Aion.RoomChannel.Monitor do
     try_call(room_id, {:new_question, room_id})
   end
 
-  def new_answer(room_id, answer, username) do
-    try_call(room_id, {:new_answer, answer, username})
+  def new_answer(room_id, answer, username, user_id) do
+    try_call(room_id, {:new_answer, answer, username, user_id})
   end
 
   def get_current_question(room_id) do
@@ -115,11 +115,11 @@ defmodule Aion.RoomChannel.Monitor do
     {:reply, new_state, new_state}
   end
 
-  def handle_call({:new_answer, answer, username}, _from, state) do
+  def handle_call({:new_answer, answer, username, user_id}, _from, state) do
     evaluation = Room.evaluate_answer(state, answer)
 
     if evaluation == 1.0 do
-      new_state = Room.award_user(state, username)
+      new_state = Room.award_user(state, username, user_id)
       {:reply, evaluation, new_state}
     else
       {:reply, evaluation, state}

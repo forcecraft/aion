@@ -2,7 +2,7 @@ defmodule Aion.RoomChannel.Room do
   @moduledoc """
   This module represents one game room, and fetches resources from the db
   """
-  alias Aion.{Question, Answer}
+  alias Aion.{Repo, Question, Answer, User}
   alias Aion.RoomChannel.{Room, UserRecord, QuestionSet}
   require Logger
 
@@ -43,8 +43,11 @@ defmodule Aion.RoomChannel.Room do
     |> Enum.max()
   end
 
-  @spec award_user(__MODULE__.t, String.t, integer) :: __MODULE__.t
-  def award_user(room, username, amount \\ 1) do
+  @spec award_user(__MODULE__.t, String.t, integer, integer) :: __MODULE__.t
+  def award_user(room, username, user_id, amount \\ 1) do
+    question = Repo.preload(room.current_question, :category)
+    category_id = question.category.id
+    User.score_point(user_id, category_id)
     update_in room, [Access.key!(:users), Access.key!(username)], &UserRecord.update_score(&1, amount)
   end
 

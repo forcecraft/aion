@@ -5,14 +5,24 @@ defmodule Aion.User do
   @type t :: %__MODULE__{name: String.t, email: String.t, password: String.t, encrypted_password: String.t}
   use Aion.Web, :model
   alias Comeonin.Bcrypt
+  alias Aion.{Repo, Category, UserCategoryScore}
 
   schema "users" do
     field :name, :string
     field :email, :string
     field :password, :string, virtual: true
     field :encrypted_password, :string
+    many_to_many :categories, Category,
+      join_through: UserCategoryScore,
+      on_delete: :delete_all
 
     timestamps()
+  end
+
+  def score_point(user_id, category_id) do
+    user_category_score = get_user_category_score(user_id, category_id)
+    changeset = change(user_category_score, score: user_category_score.score + 1)
+    Repo.insert_or_update(changeset)
   end
 
   @doc """
@@ -41,5 +51,10 @@ defmodule Aion.User do
       _ ->
           changeset
     end
+  end
+
+  defp get_user_category_score(user_id, category_id) do
+    Repo.get_by(UserCategoryScore, user_id: user_id, category_id: category_id)
+    || %UserCategoryScore{user_id: user_id, category_id: category_id, score: 0}
   end
 end
