@@ -4,22 +4,26 @@ defmodule Aion.RoomController do
   alias Aion.Room
   alias Aion.RoomChannel.Monitor
 
-  plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
+  # plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
 
-  def index(conn, _params) do
+  def index(conn, params) do
     rooms = Repo.all(Room)
-    render(conn, "index.json", rooms: rooms)
+
+    case params do
+      %{"with_counts" => "true"} -> index_with_counts(conn, rooms)
+      %{}                        -> render(conn, "index.json", rooms: rooms)
+    end
   end
 
-  def get_counts(conn, _params) do
+  def index_with_counts(conn, rooms) do
     counts =  Monitor.get_player_counts()
-    rooms = Room
-      |> Repo.all
+    rooms_with_counts =
+      rooms
       |> Enum.map(&Map.from_struct/1)
       |> Enum.map(&extend_with_counts(&1, counts))
       |> Enum.map(&Map.drop(&1, [:categories, :inserted_at, :updated_at, :__meta__]))
 
-    json(conn, %{data: rooms})
+    render(conn, "index_with_counts.json", rooms: rooms_with_counts)
   end
 
   defp extend_with_counts(room, counts) do

@@ -42,7 +42,6 @@ defmodule Aion.Router do
     pipe_through [:api, :api_auth]
 
     get "/me", UserController, :get_user_info
-    get "/rooms/counts", RoomController, :get_counts
     resources "/categories", CategoryController, only: [:index, :show]
     resources "/questions", QuestionController, only: [:index, :show]
     resources "/answers", AnswerController, only: [:index, :show]

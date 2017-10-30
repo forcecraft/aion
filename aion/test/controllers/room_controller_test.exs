@@ -4,8 +4,8 @@ defmodule Aion.RoomControllerTest do
   alias Aion.{Room, Question}
   alias Aion.RoomChannel.Monitor
 
-  @room %Room{description: "Here come dat boi", name: "Boi"}
-  @question %Question{content: "Content"}
+  @room %Room{description: "Here come dat boi", name: "Dat Boi"}
+  @question %Question{content: "Who dat boi?"}
   @player "Stephan"
 
   test "lists all entries on index", %{conn: conn} do
@@ -29,17 +29,17 @@ defmodule Aion.RoomControllerTest do
     end
   end
 
-  test "GET /counts with no rooms in db", %{conn: conn} do
-    conn = get conn, "/api/rooms/counts"
+  test "list rooms with counts with no rooms in db", %{conn: conn} do
+    conn = get conn, "/api/rooms?with_counts=true"
     assert json_response(conn, 200)["data"] == []
   end
 
-  test "GET /counts with empty room", %{conn: conn} do
+  test "list rooms with counts with an empty room", %{conn: conn} do
     %Room{id: room_id} = room = Repo.insert! @room
 
     Monitor.create(room_id, current_question: @question)
 
-    conn = get conn, "/api/rooms/counts"
+    conn = get conn, "/api/rooms?with_counts=true"
 
     assert json_response(conn, 200)["data"] == [
       %{
@@ -51,13 +51,13 @@ defmodule Aion.RoomControllerTest do
     ]
   end
 
-  test "GET /counts with players inside", %{conn: conn} do
+  test "list rooms with counts with players in rooms", %{conn: conn} do
     %Room{id: room_id} = room = Repo.insert! @room
 
     Monitor.create(room_id, current_question: @question)
     Monitor.user_joined(room_id, @player)
 
-    conn = get conn, "/api/rooms/counts"
+    conn = get conn, "/api/rooms?with_counts=true"
 
     assert json_response(conn, 200)["data"] == [
       %{
