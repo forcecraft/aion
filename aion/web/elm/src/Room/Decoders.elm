@@ -16,6 +16,8 @@ roomDecoder =
     decode Room
         |> required "id" Decode.int
         |> required "name" Decode.string
+        |> required "description" Decode.string
+        |> required "player_count" Decode.int
 
 
 usersListDecoder : Decode.Decoder UserList

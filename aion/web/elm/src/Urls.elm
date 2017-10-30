@@ -25,7 +25,7 @@ questionsUrl location =
 
 roomsUrl : Location -> String
 roomsUrl location =
-    (host location) ++ "api/rooms"
+    (host location) ++ "api/rooms?with_counts=true"
 
 
 loginUrl : Location -> String

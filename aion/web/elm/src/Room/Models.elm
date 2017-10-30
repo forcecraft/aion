@@ -8,6 +8,8 @@ type alias RoomId =
 type alias Room =
     { id : RoomId
     , name : String
+    , description : String
+    , player_count : Int
     }
 
 
