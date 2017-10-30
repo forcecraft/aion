@@ -65,7 +65,7 @@ defmodule Aion.RoomChannel do
     room_id = get_room_id(socket)
 
     send_scores(room_id, socket)
-    send_current_question(room_id, socket)
+    send_current_question(room_id, socket) # TODO send next question?
     {:noreply, socket}
   end
 
@@ -105,6 +105,11 @@ defmodule Aion.RoomChannel do
     send_current_question(room_id, socket)
   end
 
+  def send_next_question(room_id, socket) do
+    Monitor.get_next_question(room_id)
+
+  end
+
   defp send_current_question(room_id, socket) do
     # NOTE: This function is called every time a user joins room / the question changes
     question = Monitor.get_current_question(room_id)
@@ -115,6 +120,7 @@ defmodule Aion.RoomChannel do
 
     broadcast! socket, "new:question", %{content: question.content, image_name: image_name}
   end
+
 
   defp send_feedback(socket, evaluation) do
     feedback = cond do
