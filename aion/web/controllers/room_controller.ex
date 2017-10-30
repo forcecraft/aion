@@ -4,7 +4,7 @@ defmodule Aion.RoomController do
   alias Aion.Room
   alias Aion.RoomChannel.Monitor
 
-  # plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
+  plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
 
   def index(conn, params) do
     rooms = Repo.all(Room)
