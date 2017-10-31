@@ -7,9 +7,7 @@ defmodule Aion.RoomChannel.Room do
   require Logger
 
   @type t :: %__MODULE__{
-    answers: (list Answer.t),
-    current_question: Question.t,
-    questions: (list Question.t),
+    questions: QuestionSet.t,
     room_id: binary,
     users: %{String.t => UserRecord.t},
     users_count: integer,
@@ -63,7 +61,7 @@ defmodule Aion.RoomChannel.Room do
   """
   @spec change_question(%__MODULE__{}, integer) :: __MODULE__.t
   def change_question(room, room_id) do
-    new_questions_with_answers = QuestionSet.create(room.questions, room_id)
+    new_questions_with_answers = QuestionSet.change_question(room.questions, room_id)
     struct(room, new_questions_with_answers)
   end
 
@@ -73,7 +71,7 @@ defmodule Aion.RoomChannel.Room do
       room_id
       |> Question.get_questions_by_room_id()
       |> Enum.shuffle()
-    struct(room, %{questions: questions})
+    struct(room, %{questions: %QuestionSet{questions: questions}})
   end
 
   @spec add_user(__MODULE__.t, UserRecord.t) :: __MODULE__.t

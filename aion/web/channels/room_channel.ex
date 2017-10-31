@@ -105,10 +105,10 @@ defmodule Aion.RoomChannel do
     send_current_question(room_id, socket)
   end
 
-  def send_next_question(room_id, socket) do
-    Monitor.get_next_question(room_id)
-
-  end
+  # def send_next_question(room_id, socket) do
+    # Monitor.get_next_question(room_id)
+#
+  # end
 
   defp send_current_question(room_id, socket) do
     # NOTE: This function is called every time a user joins room / the question changes
