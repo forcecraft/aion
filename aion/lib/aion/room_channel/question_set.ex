@@ -17,9 +17,10 @@ defmodule Aion.RoomChannel.QuestionSet do
 
 
   @spec change_question(__MODULE__.t, integer) :: __MODULE__.t
-  def change_question(questions, room_id) do
-    case questions do
+  def change_question(question_set, room_id) do
+    case question_set.questions do
       [] ->
+        Logger.error "No questions loaded in room"
         %__MODULE__{}
 
       [last_question] ->

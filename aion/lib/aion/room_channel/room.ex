@@ -13,14 +13,12 @@ defmodule Aion.RoomChannel.Room do
     users_count: integer,
   }
 
-  defstruct answers: [],
-    current_question: nil,
-    questions: [],
+  defstruct questions: %QuestionSet{},
     room_id: "",
     users: %{},
     users_count: 0
 
-  @spec new(integer, [current_question: nil | Question.t]) :: %__MODULE__{}
+  @spec new(integer, [questions: nil | QuestionSet.t]) :: %__MODULE__{}
   def new(room_id, state \\ []) do
     case state do
       [] ->
@@ -28,9 +26,9 @@ defmodule Aion.RoomChannel.Room do
         |> load_questions(room_id)
         |> change_question(room_id)
 
-      {:current_question, question} ->
+      {:questions, questions} ->
         %Room{
-          current_question: question,
+          questions: questions,
           room_id: room_id,
         }
 
@@ -42,6 +40,7 @@ defmodule Aion.RoomChannel.Room do
   @spec evaluate_answer(__MODULE__.t, String.t) :: float
   def evaluate_answer(room, user_answer) do
     room
+    |> Map.get(:questions)
     |> Map.get(:answers)
     |> Enum.map(&(Map.get(&1, :content)))
     |> Enum.map(fn correct_answer -> Answer.compare_answers(correct_answer, user_answer) end)
@@ -50,9 +49,9 @@ defmodule Aion.RoomChannel.Room do
 
   @spec award_user(__MODULE__.t, String.t, integer, integer) :: __MODULE__.t
   def award_user(room, username, user_id, amount \\ 1) do
-    question = Repo.preload(room.current_question, :category)
+    question = Repo.preload(room.questions.current_question, :category)
     category_id = question.category.id
-    User.score_point(user_id, category_id)
+    User.score(user_id, category_id, amount)
     update_in room, [Access.key!(:users), Access.key!(username)], &UserRecord.update_score(&1, amount)
   end
 
@@ -62,7 +61,7 @@ defmodule Aion.RoomChannel.Room do
   @spec change_question(%__MODULE__{}, integer) :: __MODULE__.t
   def change_question(room, room_id) do
     new_questions_with_answers = QuestionSet.change_question(room.questions, room_id)
-    struct(room, new_questions_with_answers)
+    struct(room, %{questions: new_questions_with_answers})
   end
 
   @spec load_questions(%__MODULE__{}, integer) :: __MODULE__.t
@@ -71,7 +70,8 @@ defmodule Aion.RoomChannel.Room do
       room_id
       |> Question.get_questions_by_room_id()
       |> Enum.shuffle()
-    struct(room, %{questions: %QuestionSet{questions: questions}})
+    question_set = %QuestionSet{questions: questions}
+    struct(room, %{questions: question_set})
   end
 
   @spec add_user(__MODULE__.t, UserRecord.t) :: __MODULE__.t
@@ -98,6 +98,6 @@ defmodule Aion.RoomChannel.Room do
 
   @spec get_current_question(__MODULE__.t) :: Question.t
   def get_current_question(room) do
-    room.current_question
+    room.questions.current_question
   end
 end
