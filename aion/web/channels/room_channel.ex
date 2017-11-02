@@ -9,6 +9,9 @@ defmodule Aion.RoomChannel do
   alias Aion.{Presence, UserSocket, QuestionChronicle, GuardianSerializer}
   require Logger
 
+  @current_question_topic "current_question"
+  @next_question_topic "next_question"
+
   @spec join(String.t, %{}, UserSocket.t) :: {:ok, UserSocket.t}
   def join("rooms:" <> room_id, _params, socket) do
     username = get_user_name(socket)
@@ -118,7 +121,18 @@ defmodule Aion.RoomChannel do
     QuestionChronicle.update_last_change(room_id)
     :timer.send_after(QuestionChronicle.question_timeout_milli, :question_not_answered)
 
-    broadcast! socket, "new:question", %{content: question.content, image_name: image_name}
+    broadcast! socket, @current_question_topic, %{content: question.content, image_name: image_name}
+  end
+
+  defp send_next_question(room_id, socket) do
+    # NOTE: This function is called every time a user joins room / the question changes
+    question = Monitor.get_current_question(room_id)
+    image_name = if question.image_name == nil, do: "", else: question.image_name
+
+    QuestionChronicle.update_last_change(room_id)
+    :timer.send_after(QuestionChronicle.question_timeout_milli, :question_not_answered)
+
+    broadcast! socket, @next_question_topic, %{content: question.content, image_name: image_name}
   end
 
   defp send_feedback(socket, evaluation) do
