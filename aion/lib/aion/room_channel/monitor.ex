@@ -98,6 +98,10 @@ defmodule Aion.RoomChannel.Monitor do
     try_call(room_id, {:get_current_question})
   end
 
+  def get_next_question(room_id) do
+    try_call(room_id, {:get_next_question})
+  end
+
   #########################
   #     Implementation    #
   #########################
@@ -150,4 +154,9 @@ defmodule Aion.RoomChannel.Monitor do
   def handle_call({:get_current_question}, _from, state) do
     {:reply, Room.get_current_question(state), state}
   end
+
+  def handle_call({:get_next_question}, _from, state) do
+    {:reply, Room.get_next_question(state), state}
+  end
+
 end
