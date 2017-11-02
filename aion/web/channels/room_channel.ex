@@ -51,7 +51,7 @@ defmodule Aion.RoomChannel do
 
     if Monitor.get_scores(room_id) == [] do
         Monitor.shutdown(room_id)
-        # TODO: Remove entry from QuestionChronicle
+        QuestionChronicle.remove_room_state(room_id)
     end
   end
 

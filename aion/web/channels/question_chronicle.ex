@@ -51,6 +51,10 @@ defmodule Aion.QuestionChronicle do
     {:ok, question_timeout_milli()}
   end
 
+  def remove_room_state(room_id) do
+    Agent.update(__MODULE__, &Map.delete(&1, room_id))
+  end
+
   @doc "Changes room's state in the chronicle"
   @spec change_room_state(binary, function) :: :ok
   def change_room_state(room_id, time \\ &get_current_time/0) do
