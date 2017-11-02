@@ -25,6 +25,8 @@ defmodule Aion.RoomChannel do
     # In the future, this function should return an error if a user wants to join a room that does not exist.
     if not Monitor.exists?(room_id) do
         Monitor.create(room_id)
+        QuestionChronicle.change_room_state(room_id)
+        :timer.send_after(QuestionChronicle.question_timeout_milli, :room_state_timeout)
     end
 
     Monitor.user_joined(room_id, username)
@@ -92,13 +94,16 @@ defmodule Aion.RoomChannel do
       Logger.debug(fn -> "[channel] Timer went off in room: #{room_id}. Too early, though." end)
     end
 
-    timeout = QuestionChronicle.update_last_change(room_id)
+    timeout = QuestionChronicle.change_room_state(room_id)
     :timer.send_after(timeout, :room_state_timeout)
 
     {:noreply, socket}
   end
 
-  def handle_info(:next_question_timeout, socket), do: send_next_question(socket)
+  def handle_info(:next_question_timeout, socket) do
+    send_next_question(socket)
+    {:noreply, socket}
+  end
 
   intercept ["presence_diff"]
 
@@ -129,11 +134,11 @@ defmodule Aion.RoomChannel do
   end
 
   defp send_display_question(socket) do
-    broadcast! socket, @display_question_topic, ""
+    broadcast! socket, @display_question_topic, %{}
   end
 
   defp send_question_break(socket) do
-    broadcast! socket, @question_break_topic, ""
+    broadcast! socket, @question_break_topic, %{}
     :timer.send_after(1000, :next_question_timeout)
   end
 
@@ -143,7 +148,7 @@ defmodule Aion.RoomChannel do
     question = Monitor.get_current_question(room_id)
     image_name = if question.image_name == nil, do: "", else: question.image_name
 
-    QuestionChronicle.update_last_change(room_id)
+    QuestionChronicle.change_room_state(room_id)
 
     broadcast! socket, @current_question_topic, %{content: question.content, image_name: image_name}
   end
@@ -154,7 +159,7 @@ defmodule Aion.RoomChannel do
     question = Monitor.get_current_question(room_id)
     image_name = if question.image_name == nil, do: "", else: question.image_name
 
-    QuestionChronicle.update_last_change(room_id)
+    QuestionChronicle.change_room_state(room_id)
 
     broadcast! socket, @next_question_topic, %{content: question.content, image_name: image_name}
   end

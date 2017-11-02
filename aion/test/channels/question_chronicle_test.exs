@@ -5,9 +5,11 @@ defmodule Aion.QuestionChronicleTest do
   @current_time 12345
   @room_id 1
 
-  test "should_change is false when the time hasn't passed yet" do
+  test "question chronicle" do
     assert QuestionChronicle.list_entries == %{}
-    QuestionChronicle.update_last_change(@room_id, fn -> @current_time end)
+    QuestionChronicle.initialize_room_state(@room_id, fn -> @current_time end)
+
+    QuestionChronicle.change_room_state(@room_id, fn -> @current_time end)
 
     assert QuestionChronicle.list_entries == %{@room_id => {@current_time, :question}}
 

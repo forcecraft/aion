@@ -45,13 +45,14 @@ defmodule Aion.QuestionChronicle do
     time.() >= last_changed + timeout
   end
 
-  @doc "Updates question change's timestamp with default time function"
-  @spec update_last_change(binary) :: :ok
-  def update_last_change(room_id), do: update_last_change(room_id, &get_current_time/0)
+  def initialize_room_state(room_id, current_time \\ &get_current_time/0) do
+    entry = {current_time.(), :uninitialized}
+    Agent.update(__MODULE__, &Map.put(&1, room_id, entry))
+  end
 
-  @doc "Updates question change's timestamp"
-  @spec update_last_change(binary, function) :: :ok
-  def update_last_change(room_id, time) do
+  @doc "Changes room's state in the chronicle"
+  @spec change_room_state(binary, function) :: :ok
+  def change_room_state(room_id, time \\ &get_current_time/0) do
     {_timeout, state} = get_agent_entry(room_id)
     entry = {time.(), get_next_state(state)}
 
@@ -60,7 +61,7 @@ defmodule Aion.QuestionChronicle do
 
   @spec get_agent_entry(binary) :: agent_entry_t
   def get_agent_entry(room_id) do
-    Agent.get(__MODULE__, &Map.get(&1, room_id, {0, :uninitialized}))
+    Agent.get(__MODULE__, &Map.get(&1, room_id))
   end
 
   @spec get_current_time :: integer
