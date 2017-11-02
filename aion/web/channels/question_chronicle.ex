@@ -7,7 +7,7 @@ defmodule Aion.QuestionChronicle do
   """
   @type t :: %{binary => agent_entry_t}
   @type agent_entry_t :: {integer, room_state_t}
-  @type room_state_t :: :question | :break | :uninitialized
+  @type room_state_t :: :question | :break
 
   @question_timeout 10
 
@@ -39,14 +39,13 @@ defmodule Aion.QuestionChronicle do
     timeout = case current_state do
       :question -> question_timeout_micro()
       :break -> question_break_timeout_micro()
-      :uninitialized -> 0
     end
 
     time.() >= last_changed + timeout
   end
 
   def initialize_room_state(room_id, current_time \\ &get_current_time/0) do
-    entry = {current_time.(), :uninitialized}
+    entry = {current_time.(), :question}
     Agent.update(__MODULE__, &Map.put(&1, room_id, entry))
 
     {:ok, question_timeout_milli()}
@@ -73,7 +72,6 @@ defmodule Aion.QuestionChronicle do
     System.system_time(:microsecond)
   end
 
-  defp get_next_state(:uninitialized), do: :question
   defp get_next_state(:question), do: :break
   defp get_next_state(:break), do: :question
 
