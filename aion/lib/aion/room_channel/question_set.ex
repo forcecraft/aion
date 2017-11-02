@@ -15,7 +15,6 @@ defmodule Aion.RoomChannel.QuestionSet do
     current_question: nil,
     answers: []
 
-
   @spec change_question(__MODULE__.t, integer) :: __MODULE__.t
   def change_question(question_set, room_id) do
     case question_set.questions do
@@ -42,5 +41,15 @@ defmodule Aion.RoomChannel.QuestionSet do
       current_question: current_question,
       answers: answers,
     }
+  end
+
+  @spec load_questions(integer) :: __MODULE__.t
+  def load_questions(room_id) do
+    questions =
+      room_id
+      |> Question.get_questions_by_room_id()
+      |> Enum.shuffle()
+
+    %__MODULE__{questions: questions}
   end
 end

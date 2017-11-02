@@ -66,11 +66,7 @@ defmodule Aion.RoomChannel.Room do
 
   @spec load_questions(%__MODULE__{}, integer) :: __MODULE__.t
   def load_questions(room, room_id) do
-    questions =
-      room_id
-      |> Question.get_questions_by_room_id()
-      |> Enum.shuffle()
-    question_set = %QuestionSet{questions: questions}
+    question_set = QuestionSet.load_questions(room_id)
     struct(room, %{questions: question_set})
   end
 
