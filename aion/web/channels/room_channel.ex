@@ -5,12 +5,18 @@ defmodule Aion.RoomChannel do
   """
 
   use Phoenix.Channel, log_join: false, log_handle_in: :info
-  alias Aion.RoomChannel.Monitor
-  alias Aion.{Presence, UserSocket, QuestionChronicle}
+  alias Aion.{
+    Presence,
+    RoomChannel.Monitor,
+    QuestionChronicle,
+    UserSocket,
+  }
   require Logger
 
   @current_question_topic "current_question"
   @next_question_topic "next_question"
+  @display_question_topic "display_question"
+  @question_break_topic "question_break"
 
   @spec join(String.t, %{}, UserSocket.t) :: {:ok, UserSocket.t}
   def join("rooms:" <> room_id, _params, socket) do
@@ -86,10 +92,13 @@ defmodule Aion.RoomChannel do
       Logger.debug(fn -> "[channel] Timer went off in room: #{room_id}. Too early, though." end)
     end
 
-    :timer.send_after(QuestionChronicle.question_timeout_milli, :question_not_answered)
+    timeout = QuestionChronicle.update_last_change(room_id)
+    :timer.send_after(timeout, :room_state_timeout)
 
     {:noreply, socket}
   end
+
+  def handle_info(:next_question_timeout, socket), do: send_next_question(socket)
 
   intercept ["presence_diff"]
 
@@ -119,19 +128,13 @@ defmodule Aion.RoomChannel do
     send_current_question(socket)
   end
 
-  # def send_next_question(room_id, socket) do
-    # Monitor.get_next_question(room_id)
-#
-  # end
-
   defp send_display_question(socket) do
-    #TODO implement
-    nil
+    broadcast! socket, @display_question_topic, ""
   end
 
   defp send_question_break(socket) do
-    #TODO implement
-    nil
+    broadcast! socket, @question_break_topic, ""
+    :timer.send_after(1000, :next_question_timeout)
   end
 
   defp send_current_question(socket) do

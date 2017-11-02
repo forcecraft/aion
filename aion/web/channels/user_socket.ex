@@ -4,7 +4,10 @@ defmodule Aion.UserSocket do
 
   @type t :: %Phoenix.Socket{}
 
-  alias Aion.RoomChannel
+  alias Aion.{
+    RoomChannel,
+    GuardianSerializer,
+  }
 
   channel "rooms:*", RoomChannel
 

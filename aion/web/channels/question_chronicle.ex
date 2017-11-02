@@ -58,14 +58,14 @@ defmodule Aion.QuestionChronicle do
     Agent.update(__MODULE__, &Map.put(&1, room_id, entry))
   end
 
+  @spec get_agent_entry(binary) :: agent_entry_t
+  def get_agent_entry(room_id) do
+    Agent.get(__MODULE__, &Map.get(&1, room_id, {0, :uninitialized}))
+  end
+
   @spec get_current_time :: integer
   defp get_current_time do
     System.system_time(:microsecond)
-  end
-
-  @spec get_agent_entry(binary) :: agent_entry_t
-  defp get_agent_entry(room_id) do
-    Agent.get(__MODULE__, &Map.get(&1, room_id), {0, :uninitialized})
   end
 
   defp get_next_state(:uninitialized), do: :question
