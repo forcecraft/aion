@@ -2,8 +2,18 @@ defmodule Aion.RoomChannel.Room do
   @moduledoc """
   This module represents one game room, and fetches resources from the db
   """
-  alias Aion.{Repo, Question, Answer, User}
-  alias Aion.RoomChannel.{Room, UserRecord, QuestionSet}
+  alias Aion.{
+    Answer,
+    Question,
+    Repo,
+    User,
+  }
+
+  alias Aion.RoomChannel.{
+    Room,
+    UserRecord,
+    QuestionSet,
+  }
   require Logger
 
   @type t :: %__MODULE__{
@@ -94,8 +104,5 @@ defmodule Aion.RoomChannel.Room do
 
   @spec get_current_question(__MODULE__.t) :: Question.t
   def get_current_question(room), do: QuestionSet.get_current_question(room.questions)
-
-  @spec get_next_question(__MODULE__.t) :: Question.t
-  def get_next_question(room), do: QuestionSet.get_next_question(room.questions)
 
 end
