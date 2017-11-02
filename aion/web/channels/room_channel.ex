@@ -14,7 +14,6 @@ defmodule Aion.RoomChannel do
   require Logger
 
   @current_question_topic "current_question"
-  @next_question_topic "next_question"
   @display_question_topic "display_question"
   @question_break_topic "question_break"
 
@@ -25,7 +24,7 @@ defmodule Aion.RoomChannel do
     # In the future, this function should return an error if a user wants to join a room that does not exist.
     if not Monitor.exists?(room_id) do
         Monitor.create(room_id)
-        QuestionChronicle.change_room_state(room_id)
+        QuestionChronicle.initialize_room_state(room_id)
         :timer.send_after(QuestionChronicle.question_timeout_milli, :room_state_timeout)
     end
 
@@ -50,6 +49,7 @@ defmodule Aion.RoomChannel do
 
     if Monitor.get_scores(room_id) == [] do
         Monitor.shutdown(room_id)
+        # TODO: Remove entry from QuestionChronicle
     end
   end
 
@@ -66,7 +66,9 @@ defmodule Aion.RoomChannel do
 
     if evaluation == 1.0 do
       send_scores(socket)
-      change_and_broadcast_question(socket)
+      change_question(socket)
+      send_current_question(socket)
+      QuestionChronicle.change_room_state(room_id)
     end
 
     {:noreply, socket}
@@ -75,10 +77,12 @@ defmodule Aion.RoomChannel do
   def handle_info(:after_join, socket) do
     send_scores(socket)
     send_current_question(socket)
+    send_display_question(socket)
     {:noreply, socket}
   end
 
   def handle_info(:room_state_timeout, socket) do
+    Logger.debug("Room state timeout fired")
     room_id = UserSocket.get_room_id(socket)
     {_timeout, state} = QuestionChronicle.get_agent_entry(room_id)
 
@@ -94,14 +98,15 @@ defmodule Aion.RoomChannel do
       Logger.debug(fn -> "[channel] Timer went off in room: #{room_id}. Too early, though." end)
     end
 
-    timeout = QuestionChronicle.change_room_state(room_id)
+    {:ok, {timeout, state}} = QuestionChronicle.change_room_state(room_id)
     :timer.send_after(timeout, :room_state_timeout)
+    Logger.debug(fn -> "[channel] Current state is now #{state} with timeout #{timeout}" end)
 
     {:noreply, socket}
   end
 
   def handle_info(:next_question_timeout, socket) do
-    send_next_question(socket)
+    send_current_question(socket)
     {:noreply, socket}
   end
 
@@ -126,11 +131,9 @@ defmodule Aion.RoomChannel do
     broadcast! socket, "user:list", %{users: scores}
   end
 
-  defp change_and_broadcast_question(socket) do
+  defp change_question(socket) do
     room_id = UserSocket.get_room_id(socket)
-
     Monitor.new_question(room_id)
-    send_current_question(socket)
   end
 
   defp send_display_question(socket) do
@@ -139,6 +142,7 @@ defmodule Aion.RoomChannel do
 
   defp send_question_break(socket) do
     broadcast! socket, @question_break_topic, %{}
+    change_question(socket)
     :timer.send_after(1000, :next_question_timeout)
   end
 
@@ -148,20 +152,7 @@ defmodule Aion.RoomChannel do
     question = Monitor.get_current_question(room_id)
     image_name = if question.image_name == nil, do: "", else: question.image_name
 
-    QuestionChronicle.change_room_state(room_id)
-
     broadcast! socket, @current_question_topic, %{content: question.content, image_name: image_name}
-  end
-
-  defp send_next_question(socket) do
-    room_id = UserSocket.get_room_id(socket)
-
-    question = Monitor.get_current_question(room_id)
-    image_name = if question.image_name == nil, do: "", else: question.image_name
-
-    QuestionChronicle.change_room_state(room_id)
-
-    broadcast! socket, @next_question_topic, %{content: question.content, image_name: image_name}
   end
 
   defp send_feedback(socket, evaluation) do

@@ -54,9 +54,11 @@ defmodule Aion.QuestionChronicle do
   @spec change_room_state(binary, function) :: :ok
   def change_room_state(room_id, time \\ &get_current_time/0) do
     {_timeout, state} = get_agent_entry(room_id)
-    entry = {time.(), get_next_state(state)}
+    {_timeout, state} = entry = {time.(), get_next_state(state)}
 
     Agent.update(__MODULE__, &Map.put(&1, room_id, entry))
+
+    {:ok, {get_timeout_for_state(state), state}}
   end
 
   @spec get_agent_entry(binary) :: agent_entry_t
@@ -72,5 +74,8 @@ defmodule Aion.QuestionChronicle do
   defp get_next_state(:uninitialized), do: :question
   defp get_next_state(:question), do: :break
   defp get_next_state(:break), do: :question
+
+  defp get_timeout_for_state(:question), do: question_timeout_milli()
+  defp get_timeout_for_state(:break), do: question_break_timeout_milli()
 
 end
