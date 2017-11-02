@@ -16,7 +16,6 @@ type alias Room =
 type RoomState
     = QuestionDisplayed
     | QuestionBreak
-    | Uninitialized
 
 
 type alias RoomsData =

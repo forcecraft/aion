@@ -17,7 +17,8 @@ import Msgs exposing (Msg(..))
 import Html exposing (Html, a, div, img, li, p, text, ul)
 import Navigation exposing (Location)
 import Room.Constants exposing (answerInputFieldId, defaultImagePath, imagesPath)
-import Room.Models exposing (Answer, ImageName, RoomId, RoomState(QuestionBreak, QuestionDisplayed, Uninitialized), RoomsData, UserGameData, UserInRoomRecord)
+import Room.Models exposing (Answer, ImageName, RoomId, RoomState(QuestionBreak, QuestionDisplayed), RoomsData, UserGameData, UserInRoomRecord)
+import Room.Urls exposing (getImageUrl)
 import Room.Utils exposing (getRoomList, getRoomNameById)
 import Toasty
 import Toasty.Defaults
@@ -75,45 +76,48 @@ displaySingleScore userRecord =
 displayQuestion : String -> RoomState -> Html Msg
 displayQuestion question roomState =
     let
-        cardClass =
+        temporaryText =
+            "Get ready, the next question is going to appear soon!"
+
+        ( cardClass, textFieldValue ) =
             case roomState of
                 QuestionDisplayed ->
-                    "room-question"
+                    ( "room-question", question )
 
                 QuestionBreak ->
-                    "room-question-hidden"
-
-                Uninitialized ->
-                    "room-question-hidden"
+                    ( "room-question-hidden", temporaryText )
     in
         Card.config [ Card.attrs [ class cardClass ] ]
-            |> Card.block [] [ Card.text [] [ text question ] ]
+            |> Card.block [] [ Card.text [] [ text textFieldValue ] ]
             |> Card.view
 
 
 displayQuestionImage : Location -> ImageName -> RoomState -> Html Msg
 displayQuestionImage location imageName roomState =
     let
+        questionImageSource =
+            getImageUrl location imageName
+
         imageSource =
-            case imageName of
-                "" ->
-                    defaultImagePath location
-
-                _ ->
-                    (imagesPath location) ++ imageName
-
-        imageClass =
             case roomState of
                 QuestionDisplayed ->
-                    "room-image"
+                    questionImageSource
 
                 QuestionBreak ->
-                    "room-image-hidden"
+                    "https://i.ytimg.com/vi/NjlzcriYc8o/maxresdefault.jpg"
 
-                Uninitialized ->
-                    "room-question-hidden"
+        hiddenImageSource =
+            case roomState of
+                QuestionDisplayed ->
+                    ""
+
+                QuestionBreak ->
+                    questionImageSource
     in
-        img [ class imageClass, src imageSource ] []
+        div []
+            [ img [ class "room-image", src imageSource ] []
+            , img [ class "room-image-hidden", src hiddenImageSource ] []
+            ]
 
 
 displayAnswerInput : Answer -> Html Msg
