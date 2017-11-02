@@ -24,9 +24,9 @@ initializeRoom socket roomIdToString =
     in
         Phoenix.Socket.join channel
             (socket
-                |> Phoenix.Socket.on "user:list" roomTopic ReceiveUserList
-                |> Phoenix.Socket.on "answer:feedback" roomTopic ReceiveAnswerFeedback
-                |> Phoenix.Socket.on "room:user:joined" roomTopic ReceiveUserJoined
+                |> Phoenix.Socket.on "user_list" roomTopic ReceiveUserList
+                |> Phoenix.Socket.on "answer_feedback" roomTopic ReceiveAnswerFeedback
+                |> Phoenix.Socket.on "user_joined" roomTopic ReceiveUserJoined
                 |> Phoenix.Socket.on "current_question" roomTopic ReceiveQuestion
                 |> Phoenix.Socket.on "display_question" roomTopic ReceiveDisplayQuestion
                 |> Phoenix.Socket.on "question_break" roomTopic ReceiveQuestionBreak

@@ -397,7 +397,7 @@ update msg model =
                     )
 
                 push_ =
-                    Phoenix.Push.init "new:answer" ("rooms:" ++ (toString model.roomId))
+                    Phoenix.Push.init "new_answer" ("rooms:" ++ (toString model.roomId))
                         |> Phoenix.Push.withPayload payload
                         |> Phoenix.Push.onOk (\rawFeedback -> ReceiveAnswerFeedback rawFeedback)
 

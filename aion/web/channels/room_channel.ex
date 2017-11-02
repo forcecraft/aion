@@ -13,9 +13,12 @@ defmodule Aion.RoomChannel do
   }
   require Logger
 
+  @answer_feedback_topic "answer_feedback"
   @current_question_topic "current_question"
   @display_question_topic "display_question"
+  @new_answer_topic "new_answer"
   @question_break_topic "question_break"
+  @user_list_topic "user_list"
 
   @spec join(String.t, %{}, UserSocket.t) :: {:ok, UserSocket.t}
   def join("rooms:" <> room_id, _params, socket) do
@@ -55,12 +58,7 @@ defmodule Aion.RoomChannel do
     end
   end
 
-  def handle_in("new:msg", %{"body" => body}, socket) do
-    broadcast! socket, "new:msg", %{body: body}
-    {:noreply, socket}
-  end
-
-  def handle_in("new:answer", %{"room_id" => room_id, "answer" => answer}, socket) do
+  def handle_in(@new_answer_topic, %{"room_id" => room_id, "answer" => answer}, socket) do
     username = UserSocket.get_user_name(socket)
     user_id = UserSocket.get_user_id(socket)
     evaluation = Monitor.new_answer(room_id, answer, username, user_id)
@@ -129,7 +127,7 @@ defmodule Aion.RoomChannel do
     room_id = UserSocket.get_room_id(socket)
 
     scores = Monitor.get_scores(room_id)
-    broadcast! socket, "user:list", %{users: scores}
+    broadcast! socket, @user_list_topic, %{users: scores}
   end
 
   defp change_question(socket) do
@@ -163,6 +161,6 @@ defmodule Aion.RoomChannel do
       true -> :incorrect
     end
 
-    push socket, "answer:feedback", %{"feedback" => feedback}
+    push socket, @answer_feedback_topic, %{"feedback" => feedback}
   end
 end
