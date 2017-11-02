@@ -1,6 +1,6 @@
 module Socket exposing (..)
 
-import Msgs exposing (Msg(ReceiveAnswerFeedback, ReceiveQuestion, ReceiveUserJoined, ReceiveUserList))
+import Msgs exposing (Msg(ReceiveAnswerFeedback, ReceiveDisplayQuestion, ReceiveQuestion, ReceiveQuestionBreak, ReceiveUserJoined, ReceiveUserList))
 import Navigation exposing (Location)
 import Phoenix.Channel
 import Phoenix.Socket
@@ -18,13 +18,18 @@ initializeRoom socket roomIdToString =
     let
         channel =
             Phoenix.Channel.init ("rooms:" ++ roomIdToString)
+
+        roomTopic =
+            "rooms:" ++ roomIdToString
     in
         Phoenix.Socket.join channel
             (socket
-                |> Phoenix.Socket.on "user:list" ("rooms:" ++ roomIdToString) ReceiveUserList
-                |> Phoenix.Socket.on "new:question" ("rooms:" ++ roomIdToString) ReceiveQuestion
-                |> Phoenix.Socket.on "answer:feedback" ("rooms:" ++ roomIdToString) ReceiveAnswerFeedback
-                |> Phoenix.Socket.on "room:user:joined" ("rooms:" ++ roomIdToString) ReceiveUserJoined
+                |> Phoenix.Socket.on "user:list" roomTopic ReceiveUserList
+                |> Phoenix.Socket.on "answer:feedback" roomTopic ReceiveAnswerFeedback
+                |> Phoenix.Socket.on "room:user:joined" roomTopic ReceiveUserJoined
+                |> Phoenix.Socket.on "current_question" roomTopic ReceiveQuestion
+                |> Phoenix.Socket.on "display_question" roomTopic ReceiveDisplayQuestion
+                |> Phoenix.Socket.on "question_break" roomTopic ReceiveQuestionBreak
             )
 
 

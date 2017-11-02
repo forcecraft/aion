@@ -84,7 +84,6 @@ defmodule Aion.RoomChannel do
   end
 
   def handle_info(:room_state_timeout, socket) do
-    Logger.debug("Room state timeout fired")
     room_id = UserSocket.get_room_id(socket)
     {_timestamp, old_state} = QuestionChronicle.get_agent_entry(room_id)
 
@@ -94,7 +93,6 @@ defmodule Aion.RoomChannel do
       case old_state do
         :question -> send_question_break(socket)
         :break -> send_display_question(socket)
-        :uninitialized -> send_display_question(socket)
       end
 
       {:ok, {timeout, state}} = QuestionChronicle.change_room_state(room_id)

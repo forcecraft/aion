@@ -34,6 +34,8 @@ type Msg
     | NoOperation
     | ReceiveAnswerFeedback Encode.Value
     | ReceiveUserJoined Encode.Value
+    | ReceiveDisplayQuestion Encode.Value
+    | ReceiveQuestionBreak Encode.Value
     | ToastyMsg (Toasty.Msg Toasty.Defaults.Toast)
     | CreateNewQuestionWithAnswers
     | CreateNewCategory

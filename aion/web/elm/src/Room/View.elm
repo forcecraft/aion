@@ -17,7 +17,7 @@ import Msgs exposing (Msg(..))
 import Html exposing (Html, a, div, img, li, p, text, ul)
 import Navigation exposing (Location)
 import Room.Constants exposing (answerInputFieldId, defaultImagePath, imagesPath)
-import Room.Models exposing (Answer, ImageName, RoomId, RoomsData, UserGameData, UserInRoomRecord)
+import Room.Models exposing (Answer, ImageName, RoomId, RoomState(QuestionBreak, QuestionDisplayed, Uninitialized), RoomsData, UserGameData, UserInRoomRecord)
 import Room.Utils exposing (getRoomList, getRoomNameById)
 import Toasty
 import Toasty.Defaults
@@ -31,16 +31,12 @@ roomView model roomId =
 
         currentAnswer =
             model.userGameData.currentAnswer
-
-        imageName =
-            model.questionInChannel.image_name
     in
         Grid.container [ class "room-container" ]
             [ Grid.row []
                 [ Grid.col []
                     [ h4 [] [ text roomName ]
-                    , displayQuestion model.questionInChannel.content
-                    , displayQuestionImage model.location imageName
+                    , fillQuestionArea model
                     , displayAnswerInput currentAnswer
                     , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
                     ]
@@ -50,6 +46,29 @@ roomView model roomId =
                     ]
                 ]
             ]
+
+
+fillQuestionArea : Model -> Html Msg
+fillQuestionArea model =
+    let
+        imageName =
+            model.questionInChannel.image_name
+
+        roomState =
+            Debug.log "the state is" model.roomState
+    in
+        case model.roomState of
+            QuestionDisplayed ->
+                div []
+                    [ displayQuestion model.questionInChannel.content
+                    , displayQuestionImage model.location imageName
+                    ]
+
+            QuestionBreak ->
+                div [] [ text "test" ]
+
+            Uninitialized ->
+                div [] [ text "UNITITIALIZED" ]
 
 
 displayScores : Model -> Html Msg

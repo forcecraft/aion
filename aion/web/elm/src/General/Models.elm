@@ -10,7 +10,7 @@ import Multiselect
 import Panel.Models exposing (CategoriesData, PanelData, categoryForm, questionForm, roomForm)
 import Phoenix.Socket
 import RemoteData exposing (WebData)
-import Room.Models exposing (RoomId, RoomsData, UsersInRoom, QuestionInRoom, UserGameData)
+import Room.Models exposing (QuestionInRoom, RoomId, RoomState(QuestionBreak, QuestionDisplayed, Uninitialized), RoomsData, UserGameData, UsersInRoom)
 import Toasty
 import Toasty.Defaults
 import Urls exposing (hostname, websocketUrl)
@@ -32,6 +32,7 @@ type alias Model =
     , panelData : PanelData
     , navbarState : Navbar.State
     , location : Location
+    , roomState : RoomState
     }
 
 
@@ -93,4 +94,5 @@ initialModel flags route location =
             }
         , navbarState = navbarState
         , location = location
+        , roomState = Uninitialized
         }

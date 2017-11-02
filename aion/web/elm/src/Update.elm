@@ -20,6 +20,7 @@ import RemoteData
 import Room.Api exposing (fetchRooms)
 import Room.Constants exposing (answerInputFieldId, enterKeyCode)
 import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, userJoinedInfoDecoder, usersListDecoder)
+import Room.Models exposing (RoomState(QuestionBreak, QuestionDisplayed))
 import Room.Notifications exposing (..)
 import Routing exposing (parseLocation)
 import Phoenix.Socket
@@ -412,6 +413,20 @@ update msg model =
 
                 Err error ->
                     model ! []
+
+        ReceiveDisplayQuestion raw ->
+            let
+                x =
+                    Debug.log "Setting room state" raw
+            in
+                { model | roomState = QuestionDisplayed } ! []
+
+        ReceiveQuestionBreak raw ->
+            let
+                x =
+                    Debug.log "Setting room state" raw
+            in
+                { model | roomState = QuestionBreak } ! []
 
         -- HTML
         FocusResult result ->
