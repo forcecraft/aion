@@ -6,7 +6,7 @@ defmodule Aion.RoomChannel do
 
   use Phoenix.Channel, log_join: false, log_handle_in: :info
   alias Aion.RoomChannel.Monitor
-  alias Aion.{Presence, UserSocket, QuestionChronicle, GuardianSerializer}
+  alias Aion.{Presence, UserSocket, QuestionChronicle}
   require Logger
 
   @current_question_topic "current_question"
@@ -14,7 +14,7 @@ defmodule Aion.RoomChannel do
 
   @spec join(String.t, %{}, UserSocket.t) :: {:ok, UserSocket.t}
   def join("rooms:" <> room_id, _params, socket) do
-    username = get_user_name(socket)
+    username = UserSocket.get_user_name(socket)
     # Note: this is a temporary solution.
     # In the future, this function should return an error if a user wants to join a room that does not exist.
     if not Monitor.exists?(room_id) do
@@ -33,8 +33,8 @@ defmodule Aion.RoomChannel do
   end
 
   def terminate(msg, socket) do
-    username = get_user_name(socket)
-    room_id = get_room_id(socket)
+    username = UserSocket.get_user_name(socket)
+    room_id = UserSocket.get_room_id(socket)
 
     Monitor.user_left(room_id, username)
     Presence.untrack(socket, username)
@@ -51,35 +51,43 @@ defmodule Aion.RoomChannel do
   end
 
   def handle_in("new:answer", %{"room_id" => room_id, "answer" => answer}, socket) do
-    username = get_user_name(socket)
-    user_id = get_user_id(socket)
+    username = UserSocket.get_user_name(socket)
+    user_id = UserSocket.get_user_id(socket)
     evaluation = Monitor.new_answer(room_id, answer, username, user_id)
     send_feedback socket, evaluation
 
     if evaluation == 1.0 do
-      send_scores(room_id, socket)
-      send_new_question(room_id, socket)
+      send_scores(socket)
+      change_and_broadcast_question(socket)
     end
 
     {:noreply, socket}
   end
 
   def handle_info(:after_join, socket) do
-    room_id = get_room_id(socket)
-
-    send_scores(room_id, socket)
-    send_current_question(room_id, socket)
+    send_scores(socket)
+    send_current_question(socket)
     {:noreply, socket}
   end
 
-  def handle_info(:question_not_answered, socket) do
-    room_id = get_room_id(socket)
+  def handle_info(:room_state_timeout, socket) do
+    room_id = UserSocket.get_room_id(socket)
+    {_timeout, state} = QuestionChronicle.get_agent_entry(room_id)
+
     if QuestionChronicle.should_change?(room_id) do
       Logger.info("[channel] Question timed out in room: #{room_id}. Fetching a new one...")
-      send_new_question(room_id, socket)
+
+      case state do
+        :question -> send_question_break(socket)
+        :break -> send_display_question(socket)
+        :uninitialized -> send_display_question(socket)
+      end
     else
       Logger.debug(fn -> "[channel] Timer went off in room: #{room_id}. Too early, though." end)
     end
+
+    :timer.send_after(QuestionChronicle.question_timeout_milli, :question_not_answered)
+
     {:noreply, socket}
   end
 
@@ -92,20 +100,23 @@ defmodule Aion.RoomChannel do
       # 2. The send scores here is called only when there are > 1 people in
       # the room. If you're the first person joining the room, you're going
       # to receive the scores from :after_join.
-      room_id = get_room_id(socket)
-      send_scores(room_id, socket)
+      send_scores(socket)
 
       {:noreply, socket}
   end
 
-  defp send_scores(room_id, socket) do
+  defp send_scores(socket) do
+    room_id = UserSocket.get_room_id(socket)
+
     scores = Monitor.get_scores(room_id)
     broadcast! socket, "user:list", %{users: scores}
   end
 
-  defp send_new_question(room_id, socket) do
+  defp change_and_broadcast_question(socket) do
+    room_id = UserSocket.get_room_id(socket)
+
     Monitor.new_question(room_id)
-    send_current_question(room_id, socket)
+    send_current_question(socket)
   end
 
   # def send_next_question(room_id, socket) do
@@ -113,24 +124,34 @@ defmodule Aion.RoomChannel do
 #
   # end
 
-  defp send_current_question(room_id, socket) do
+  defp send_display_question(socket) do
+    #TODO implement
+    nil
+  end
+
+  defp send_question_break(socket) do
+    #TODO implement
+    nil
+  end
+
+  defp send_current_question(socket) do
+    room_id = UserSocket.get_room_id(socket)
     # NOTE: This function is called every time a user joins room / the question changes
     question = Monitor.get_current_question(room_id)
     image_name = if question.image_name == nil, do: "", else: question.image_name
 
     QuestionChronicle.update_last_change(room_id)
-    :timer.send_after(QuestionChronicle.question_timeout_milli, :question_not_answered)
 
     broadcast! socket, @current_question_topic, %{content: question.content, image_name: image_name}
   end
 
-  defp send_next_question(room_id, socket) do
-    # NOTE: This function is called every time a user joins room / the question changes
+  defp send_next_question(socket) do
+    room_id = UserSocket.get_room_id(socket)
+
     question = Monitor.get_current_question(room_id)
     image_name = if question.image_name == nil, do: "", else: question.image_name
 
     QuestionChronicle.update_last_change(room_id)
-    :timer.send_after(QuestionChronicle.question_timeout_milli, :question_not_answered)
 
     broadcast! socket, @next_question_topic, %{content: question.content, image_name: image_name}
   end
@@ -143,23 +164,5 @@ defmodule Aion.RoomChannel do
     end
 
     push socket, "answer:feedback", %{"feedback" => feedback}
-  end
-
-  defp get_room_id(socket) do
-    "rooms:" <> room_id = socket.topic
-    room_id
-  end
-
-  defp get_user(socket) do
-    {:ok, user} = GuardianSerializer.from_token(socket.assigns.guardian_default_claims["aud"])
-    user
-  end
-
-  defp get_user_name(socket) do
-    get_user(socket).name
-  end
-
-  defp get_user_id(socket) do
-    get_user(socket).id
   end
 end

@@ -5,13 +5,19 @@ defmodule Aion.QuestionChronicle do
     fires, it's easy to check if the question should be changed
     to a new one.
   """
-  @type t :: %{binary => integer}
+  @type t :: %{binary => agent_entry_t}
+  @type agent_entry_t :: {integer, room_state_t}
+  @type room_state_t :: :question | :break | :uninitialized
 
-  @question_timeout_seconds 10
-  @question_timeout_micro @question_timeout_seconds * 1_000_000
+  @question_timeout 10
 
-  def question_timeout_micro, do: @question_timeout_micro
-  def question_timeout_milli, do: div @question_timeout_micro, 1000
+  def question_timeout_micro, do: @question_timeout * 1_000_000
+  def question_timeout_milli, do: @question_timeout * 1_000
+
+  @question_break_timeout 5
+
+  def question_break_timeout_micro, do: @question_break_timeout * 1_000_000
+  def question_break_timeout_milli, do: @question_break_timeout * 1_000
 
   def start_link do
     Agent.start_link(fn -> %{} end, name: __MODULE__)
@@ -28,9 +34,15 @@ defmodule Aion.QuestionChronicle do
   @doc "Checks if a question should be changed due to a timeout"
   @spec should_change?(binary, function) :: boolean
   def should_change?(room_id, time) do
-    last_changed = Agent.get(__MODULE__, &Map.get(&1, room_id))
+    {last_changed, current_state} = get_agent_entry(room_id)
 
-    time.() >= last_changed + @question_timeout_micro
+    timeout = case current_state do
+      :question -> question_timeout_micro()
+      :break -> question_break_timeout_micro()
+      :uninitialized -> 0
+    end
+
+    time.() >= last_changed + timeout
   end
 
   @doc "Updates question change's timestamp with default time function"
@@ -40,12 +52,24 @@ defmodule Aion.QuestionChronicle do
   @doc "Updates question change's timestamp"
   @spec update_last_change(binary, function) :: :ok
   def update_last_change(room_id, time) do
-    Agent.update(__MODULE__, &Map.put(&1, room_id, time.()))
+    {_timeout, state} = get_agent_entry(room_id)
+    entry = {time.(), get_next_state(state)}
+
+    Agent.update(__MODULE__, &Map.put(&1, room_id, entry))
   end
 
   @spec get_current_time :: integer
   defp get_current_time do
     System.system_time(:microsecond)
   end
+
+  @spec get_agent_entry(binary) :: agent_entry_t
+  defp get_agent_entry(room_id) do
+    Agent.get(__MODULE__, &Map.get(&1, room_id), {0, :uninitialized})
+  end
+
+  defp get_next_state(:uninitialized), do: :question
+  defp get_next_state(:question), do: :break
+  defp get_next_state(:break), do: :question
 
 end
