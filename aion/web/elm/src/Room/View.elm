@@ -53,22 +53,11 @@ fillQuestionArea model =
     let
         imageName =
             model.questionInChannel.image_name
-
-        roomState =
-            Debug.log "the state is" model.roomState
     in
-        case model.roomState of
-            QuestionDisplayed ->
-                div []
-                    [ displayQuestion model.questionInChannel.content
-                    , displayQuestionImage model.location imageName
-                    ]
-
-            QuestionBreak ->
-                div [] [ text "test" ]
-
-            Uninitialized ->
-                div [] [ text "UNITITIALIZED" ]
+        div []
+            [ displayQuestion model.questionInChannel.content model.roomState
+            , displayQuestionImage model.location imageName model.roomState
+            ]
 
 
 displayScores : Model -> Html Msg
@@ -83,21 +72,48 @@ displaySingleScore userRecord =
     ListGroup.li [] [ text (userRecord.name ++ ": " ++ (toString userRecord.score)) ]
 
 
-displayQuestion : String -> Html Msg
-displayQuestion question =
-    Card.config [ Card.attrs [ class "room-question" ] ]
-        |> Card.block [] [ Card.text [] [ text question ] ]
-        |> Card.view
+displayQuestion : String -> RoomState -> Html Msg
+displayQuestion question roomState =
+    let
+        cardClass =
+            case roomState of
+                QuestionDisplayed ->
+                    "room-question"
+
+                QuestionBreak ->
+                    "room-question-hidden"
+
+                Uninitialized ->
+                    "room-question-hidden"
+    in
+        Card.config [ Card.attrs [ class cardClass ] ]
+            |> Card.block [] [ Card.text [] [ text question ] ]
+            |> Card.view
 
 
-displayQuestionImage : Location -> ImageName -> Html Msg
-displayQuestionImage location imageName =
-    case imageName of
-        "" ->
-            img [ class "room-image", src (defaultImagePath location) ] []
+displayQuestionImage : Location -> ImageName -> RoomState -> Html Msg
+displayQuestionImage location imageName roomState =
+    let
+        imageSource =
+            case imageName of
+                "" ->
+                    defaultImagePath location
 
-        imageName ->
-            img [ class "room-image", src ((imagesPath location) ++ imageName) ] []
+                _ ->
+                    (imagesPath location) ++ imageName
+
+        imageClass =
+            case roomState of
+                QuestionDisplayed ->
+                    "room-image"
+
+                QuestionBreak ->
+                    "room-image-hidden"
+
+                Uninitialized ->
+                    "room-question-hidden"
+    in
+        img [ class imageClass, src imageSource ] []
 
 
 displayAnswerInput : Answer -> Html Msg

@@ -415,18 +415,10 @@ update msg model =
                     model ! []
 
         ReceiveDisplayQuestion raw ->
-            let
-                x =
-                    Debug.log "Setting room state" raw
-            in
-                { model | roomState = QuestionDisplayed } ! []
+            { model | roomState = QuestionDisplayed } ! []
 
         ReceiveQuestionBreak raw ->
-            let
-                x =
-                    Debug.log "Setting room state" raw
-            in
-                { model | roomState = QuestionBreak } ! []
+            { model | roomState = QuestionBreak } ! []
 
         -- HTML
         FocusResult result ->
