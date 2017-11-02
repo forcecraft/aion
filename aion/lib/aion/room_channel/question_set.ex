@@ -54,4 +54,15 @@ defmodule Aion.RoomChannel.QuestionSet do
 
     %__MODULE__{questions: questions}
   end
+
+  @spec get_current_question(__MODULE__.t) :: Question.t
+  def get_current_question(question_set) do
+    question_set.current_question
+  end
+
+  @spec get_next_question(__MODULE__.t) :: Question.t
+  def get_next_question(question_set) do
+    question_set.current_question
+  end
+
 end

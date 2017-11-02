@@ -93,7 +93,9 @@ defmodule Aion.RoomChannel.Room do
   end
 
   @spec get_current_question(__MODULE__.t) :: Question.t
-  def get_current_question(room) do
-    room.questions.current_question
-  end
+  def get_current_question(room), do: QuestionSet.get_current_question(room.questions)
+
+  @spec get_next_question(__MODULE__.t) :: Question.t
+  def get_next_question(room), do: QuestionSet.get_next_question(room.questions)
+
 end
