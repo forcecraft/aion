@@ -21,7 +21,7 @@ defmodule Aion.RoomChannel do
   @user_list_topic "user_list"
 
   @spec join(String.t, %{}, UserSocket.t) :: {:ok, UserSocket.t}
-  def join("rooms:" <> room_id, _params, socket) do
+  def join("room:" <> room_id, _params, socket) do
     username = UserSocket.get_user_name(socket)
     # NOTE: this is a temporary solution.
     # In the future, this function should return an error if a user wants to join a room that does not exist.

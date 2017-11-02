@@ -9,7 +9,7 @@ defmodule Aion.UserSocket do
     GuardianSerializer,
   }
 
-  channel "rooms:*", RoomChannel
+  channel "room:*", RoomChannel
 
   transport :websocket, Phoenix.Transports.WebSocket
 
@@ -29,7 +29,7 @@ defmodule Aion.UserSocket do
   def id(_socket), do: nil
 
   def get_room_id(socket) do
-    "rooms:" <> room_id = socket.topic
+    "room:" <> room_id = socket.topic
     room_id
   end
 

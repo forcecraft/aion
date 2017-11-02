@@ -17,10 +17,10 @@ initializeRoom : Phoenix.Socket.Socket Msg -> String -> ( Phoenix.Socket.Socket 
 initializeRoom socket roomIdToString =
     let
         channel =
-            Phoenix.Channel.init ("rooms:" ++ roomIdToString)
+            Phoenix.Channel.init ("room:" ++ roomIdToString)
 
         roomTopic =
-            "rooms:" ++ roomIdToString
+            "room:" ++ roomIdToString
     in
         Phoenix.Socket.join channel
             (socket
@@ -35,4 +35,4 @@ initializeRoom socket roomIdToString =
 
 leaveRoom : String -> Phoenix.Socket.Socket Msg -> ( Phoenix.Socket.Socket Msg, Cmd (Phoenix.Socket.Msg Msg) )
 leaveRoom roomId socket =
-    Phoenix.Socket.leave ("rooms:" ++ roomId) socket
+    Phoenix.Socket.leave ("room:" ++ roomId) socket
