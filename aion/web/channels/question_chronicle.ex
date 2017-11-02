@@ -48,6 +48,8 @@ defmodule Aion.QuestionChronicle do
   def initialize_room_state(room_id, current_time \\ &get_current_time/0) do
     entry = {current_time.(), :uninitialized}
     Agent.update(__MODULE__, &Map.put(&1, room_id, entry))
+
+    {:ok, question_timeout_milli()}
   end
 
   @doc "Changes room's state in the chronicle"

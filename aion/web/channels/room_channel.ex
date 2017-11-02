@@ -20,12 +20,14 @@ defmodule Aion.RoomChannel do
   @spec join(String.t, %{}, UserSocket.t) :: {:ok, UserSocket.t}
   def join("rooms:" <> room_id, _params, socket) do
     username = UserSocket.get_user_name(socket)
-    # Note: this is a temporary solution.
+    # NOTE: this is a temporary solution.
     # In the future, this function should return an error if a user wants to join a room that does not exist.
     if not Monitor.exists?(room_id) do
         Monitor.create(room_id)
-        QuestionChronicle.initialize_room_state(room_id)
-        :timer.send_after(QuestionChronicle.question_timeout_milli, :room_state_timeout)
+
+        # NOTE: this is ineeded to start the room_state_timeout cycle
+        {:ok, timeout} = QuestionChronicle.initialize_room_state(room_id)
+        :timer.send_after(timeout, :room_state_timeout)
     end
 
     Monitor.user_joined(room_id, username)
@@ -84,23 +86,24 @@ defmodule Aion.RoomChannel do
   def handle_info(:room_state_timeout, socket) do
     Logger.debug("Room state timeout fired")
     room_id = UserSocket.get_room_id(socket)
-    {_timeout, state} = QuestionChronicle.get_agent_entry(room_id)
+    {_timestamp, old_state} = QuestionChronicle.get_agent_entry(room_id)
 
     if QuestionChronicle.should_change?(room_id) do
       Logger.info("[channel] Question timed out in room: #{room_id}. Fetching a new one...")
 
-      case state do
+      case old_state do
         :question -> send_question_break(socket)
         :break -> send_display_question(socket)
         :uninitialized -> send_display_question(socket)
       end
-    else
-      Logger.debug(fn -> "[channel] Timer went off in room: #{room_id}. Too early, though." end)
-    end
 
-    {:ok, {timeout, state}} = QuestionChronicle.change_room_state(room_id)
-    :timer.send_after(timeout, :room_state_timeout)
-    Logger.debug(fn -> "[channel] Current state is now #{state} with timeout #{timeout}" end)
+      {:ok, {timeout, state}} = QuestionChronicle.change_room_state(room_id)
+      Logger.debug(fn -> "[channel] Current state is now #{state} with timeout #{timeout}" end)
+
+      :timer.send_after(timeout, :room_state_timeout)
+    else
+      Logger.error(fn -> "[channel] Timer went off in room: #{room_id}. Too early, though." end)
+    end
 
     {:noreply, socket}
   end
