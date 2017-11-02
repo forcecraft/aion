@@ -65,7 +65,7 @@ defmodule Aion.RoomChannel do
     room_id = get_room_id(socket)
 
     send_scores(room_id, socket)
-    send_current_question(room_id, socket) # TODO send next question?
+    send_current_question(room_id, socket)
     {:noreply, socket}
   end
 
@@ -120,7 +120,6 @@ defmodule Aion.RoomChannel do
 
     broadcast! socket, "new:question", %{content: question.content, image_name: image_name}
   end
-
 
   defp send_feedback(socket, evaluation) do
     feedback = cond do

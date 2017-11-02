@@ -6,14 +6,16 @@ defmodule Aion.RoomChannel.QuestionSet do
   require Logger
 
   @type t :: %__MODULE__{
-    questions: (list Question.t),
-    current_question: Question.t,
     answers: (list Answer.t),
+    current_question: Question.t,
+    next_question: Question.t,
+    questions: (list Question.t),
   }
 
-  defstruct questions: [],
+  defstruct answers: [],
     current_question: nil,
-    answers: []
+    next_question: nil,
+    questions: []
 
   @spec change_question(__MODULE__.t, integer) :: __MODULE__.t
   def change_question(question_set, room_id) do
