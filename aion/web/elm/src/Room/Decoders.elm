@@ -1,7 +1,7 @@
 module Room.Decoders exposing (..)
 
-import Room.Models exposing (AnswerFeedback, QuestionInRoom, Room, RoomsData, UserInRoomRecord, UserJoinedInfo, UserList)
-import Json.Decode as Decode exposing (field, map, null, oneOf)
+import Room.Models exposing (AnswerFeedback, QuestionInRoom, Room, RoomsData, UserJoinedInfo, UserList, UserListMessage, UserRecord)
+import Json.Decode as Decode exposing (field, list, map, null, oneOf)
 import Json.Decode.Pipeline exposing (decode, required)
 
 
@@ -20,17 +20,18 @@ roomDecoder =
         |> required "player_count" Decode.int
 
 
-usersListDecoder : Decode.Decoder UserList
-usersListDecoder =
-    Decode.map UserList
+userListMessageDecoder : Decode.Decoder UserListMessage
+userListMessageDecoder =
+    Decode.map UserListMessage
         (field "users" (Decode.list userRecordDecoder))
 
 
-userRecordDecoder : Decode.Decoder UserInRoomRecord
+userRecordDecoder : Decode.Decoder UserRecord
 userRecordDecoder =
-    Decode.map2 UserInRoomRecord
+    Decode.map3 UserRecord
         (field "username" Decode.string)
         (field "score" Decode.int)
+        (field "questions_asked" Decode.int)
 
 
 questionDecoder : Decode.Decoder QuestionInRoom

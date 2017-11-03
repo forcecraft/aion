@@ -19,7 +19,7 @@ import Ports exposing (check)
 import RemoteData
 import Room.Api exposing (fetchRooms)
 import Room.Constants exposing (answerInputFieldId, enterKeyCode)
-import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, userJoinedInfoDecoder, usersListDecoder)
+import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, userJoinedInfoDecoder, userListMessageDecoder)
 import Room.Notifications exposing (..)
 import Routing exposing (parseLocation)
 import Phoenix.Socket
@@ -327,9 +327,9 @@ update msg model =
                 { model | socket = socket } ! [ Cmd.map PhoenixMsg cmd ]
 
         ReceiveUserList raw ->
-            case Decode.decodeValue usersListDecoder raw of
-                Ok usersInChannel ->
-                    { model | usersInChannel = usersInChannel.users } ! []
+            case Decode.decodeValue userListMessageDecoder raw of
+                Ok userListMessage ->
+                    { model | userList = userListMessage.users } ! []
 
                 Err error ->
                     model ! []

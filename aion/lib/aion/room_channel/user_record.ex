@@ -17,4 +17,9 @@ defmodule Aion.RoomChannel.UserRecord do
   def update_score(user_record, amount \\ 1) do
     Map.update!(user_record, :score, &(&1 + amount))
   end
+
+  @spec bump_questions_asked(__MODULE__.t) :: __MODULE__.t
+  def bump_questions_asked(user_record) do
+    Map.update!(user_record, :questions_asked, &(&1 + 1))
+  end
 end

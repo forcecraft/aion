@@ -17,18 +17,23 @@ type alias RoomsData =
     { data : List Room }
 
 
-type alias UsersInRoom =
-    List UserInRoomRecord
-
-
-type alias UserInRoomRecord =
+type alias UserRecord =
     { name : String
     , score : Int
+    , questionsAsked : Int
     }
 
 
+
+-- ^ to underscore
+
+
 type alias UserList =
-    { users : List UserInRoomRecord }
+    List UserRecord
+
+
+type alias UserListMessage =
+    { users : UserList }
 
 
 type alias UserGameData =

@@ -10,7 +10,7 @@ import Multiselect
 import Panel.Models exposing (CategoriesData, PanelData, categoryForm, questionForm, roomForm)
 import Phoenix.Socket
 import RemoteData exposing (WebData)
-import Room.Models exposing (RoomId, RoomsData, UsersInRoom, QuestionInRoom, UserGameData)
+import Room.Models exposing (QuestionInRoom, RoomId, RoomsData, UserGameData, UserList)
 import Toasty
 import Toasty.Defaults
 import Urls exposing (hostname, websocketUrl)
@@ -24,7 +24,7 @@ type alias Model =
     , categories : WebData CategoriesData
     , route : Route
     , socket : Phoenix.Socket.Socket Msg
-    , usersInChannel : UsersInRoom
+    , userList : UserList
     , userGameData : UserGameData
     , questionInChannel : QuestionInRoom
     , roomId : RoomId
@@ -77,7 +77,7 @@ initialModel flags route location =
         , socket =
             Phoenix.Socket.init (websocketUrl location flags.token)
                 |> Phoenix.Socket.withDebug
-        , usersInChannel = []
+        , userList = []
         , userGameData = { currentAnswer = "" }
         , questionInChannel =
             { content = ""

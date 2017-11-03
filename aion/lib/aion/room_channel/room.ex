@@ -102,4 +102,12 @@ defmodule Aion.RoomChannel.Room do
   def get_current_question(room) do
     room.current_question
   end
+
+  def bump_questions_asked(room) do
+    updated_users = for {user, record} <- room.users,
+      do: {user, UserRecord.bump_questions_asked(record)},
+      into: %{}
+
+    %Room{room | users: updated_users}
+  end
 end

@@ -54,7 +54,6 @@ defmodule Aion.RoomChannel do
     send_feedback socket, evaluation
 
     if evaluation == 1.0 do
-      send_scores(room_id, socket)
       send_new_question(room_id, socket)
     end
 
@@ -101,6 +100,9 @@ defmodule Aion.RoomChannel do
   end
 
   defp send_new_question(room_id, socket) do
+    Monitor.bump_questions_asked(room_id)
+    send_scores(room_id, socket)
+
     Monitor.new_question(room_id)
     send_current_question(room_id, socket)
   end
