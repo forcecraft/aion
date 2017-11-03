@@ -33,13 +33,13 @@ roomView model roomId =
             model.userGameData.currentAnswer
 
         imageName =
-            model.questionInChannel.image_name
+            model.currentQuestion.image_name
     in
         Grid.container [ class "room-container" ]
             [ Grid.row []
                 [ Grid.col []
                     [ h4 [] [ text roomName ]
-                    , displayQuestion model.questionInChannel.content
+                    , displayQuestion model.currentQuestion.content
                     , displayQuestionImage model.location imageName
                     , displayAnswerInput currentAnswer
                     , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties

@@ -408,7 +408,7 @@ update msg model =
         ReceiveQuestion raw ->
             case Decode.decodeValue questionDecoder raw of
                 Ok question ->
-                    { model | questionInChannel = question, userGameData = { currentAnswer = "" } } ! [ Task.attempt FocusResult (focus answerInputFieldId) ]
+                    { model | currentQuestion = question, userGameData = { currentAnswer = "" } } ! [ Task.attempt FocusResult (focus answerInputFieldId) ]
 
                 Err error ->
                     model ! []

@@ -40,7 +40,7 @@ type alias UserGameData =
     { currentAnswer : String }
 
 
-type alias QuestionInRoom =
+type alias CurrentQuestion =
     { content : String
     , image_name : ImageName
     }
