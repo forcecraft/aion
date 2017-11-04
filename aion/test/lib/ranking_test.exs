@@ -12,7 +12,7 @@ defmodule Aion.RankingTest do
 
       result = Ranking.general()
 
-      assert [%{user_name: "John", score: 6},%{user_name: "Michael", score: 5}] = result
+      assert [%{user_name: "John", score: 6}, %{user_name: "Michael", score: 5}] = result
     end
   end
 end
