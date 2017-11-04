@@ -3,14 +3,15 @@ module View exposing (..)
 import Auth.View exposing (authView)
 import Bootstrap.Navbar as Navbar
 import Bootstrap.Button as Button
-import General.Constants exposing (roomsPath, userPath)
-import General.Models exposing (Model, Route(AuthRoute, NotFoundRoute, RoomListRoute, RoomRoute, UserRoute))
+import General.Constants exposing (roomsPath, userPath, rankingsPath)
+import General.Models exposing (Model, Route(AuthRoute, NotFoundRoute, RoomListRoute, RoomRoute, UserRoute, RankingRoute))
 import General.View exposing (notFoundView, roomListView)
 import Html exposing (..)
 import Html.Attributes exposing (class, href, src)
 import Msgs exposing (Msg(..))
 import Navigation exposing (Location)
 import Room.View exposing (roomView)
+import Ranking.View exposing (rankingView)
 import Urls exposing (host)
 import User.View exposing (userView)
 
@@ -48,6 +49,7 @@ navbar location navbarState =
         |> Navbar.items
             [ Navbar.itemLink [ href roomsPath ] [ text "Rooms" ]
             , Navbar.itemLink [ href userPath ] [ text "Profile" ]
+            , Navbar.itemLink [ href rankingsPath ] [ text "Rankings" ]
             ]
         |> Navbar.customItems
             [ Navbar.customItem
@@ -88,6 +90,9 @@ page model =
 
                 UserRoute ->
                     userView model
+
+                RankingRoute ->
+                    rankingView model
 
                 NotFoundRoute ->
                     notFoundView

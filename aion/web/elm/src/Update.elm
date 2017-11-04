@@ -6,7 +6,7 @@ import Auth.Notifications exposing (loginErrorToast, registrationErrorToast)
 import Dom exposing (focus)
 import Forms
 import General.Constants exposing (loginFormMsg, registerFormMsg)
-import General.Models exposing (Model, Route(RoomListRoute, RoomRoute))
+import General.Models exposing (Model, Route(RoomListRoute, RoomRoute, RankingRoute))
 import General.Notifications exposing (toastsConfig)
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -16,6 +16,7 @@ import Panel.Api exposing (createCategory, createQuestionWithAnswers, createRoom
 import Panel.Models exposing (categoryNamePossibleFields, questionFormPossibleFields, roomNamePossibleFields)
 import Panel.Notifications exposing (..)
 import Ports exposing (check)
+import Ranking.Api exposing (fetchRanking)
 import RemoteData
 import Room.Api exposing (fetchRooms)
 import Room.Constants exposing (answerInputFieldId, enterKeyCode)
@@ -184,6 +185,10 @@ update msg model =
         OnFetchRooms response ->
             { model | rooms = response } ! []
 
+
+        OnFetchRanking response ->
+            { model | rankingData = response } ! []
+
         OnFetchCategories response ->
             let
                 newModel =
@@ -303,6 +308,13 @@ update msg model =
                     RoomListRoute ->
                         { model | route = newRoute }
                             ! [ fetchRooms
+                                    |> withLocation model
+                                    |> withToken model
+                              ]
+
+                    RankingRoute ->
+                        { model | route = newRoute }
+                            ! [ fetchRanking
                                     |> withLocation model
                                     |> withToken model
                               ]

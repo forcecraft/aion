@@ -27,3 +27,8 @@ panelPath =
 userPath : String
 userPath =
     "#profile"
+
+
+rankingsPath : String
+rankingsPath =
+    "#rankings"

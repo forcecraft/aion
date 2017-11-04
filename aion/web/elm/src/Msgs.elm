@@ -7,6 +7,7 @@ import Http
 import Navigation exposing (Location)
 import Multiselect
 import Panel.Models exposing (CategoriesData, CategoryCreatedData, QuestionCreatedData, RoomCreatedData)
+import Ranking.Models exposing (RankingData)
 import RemoteData exposing (WebData)
 import Phoenix.Socket
 import Json.Encode as Encode
@@ -19,6 +20,7 @@ import User.Models exposing (CurrentUser)
 type Msg
     = OnLocationChange Location
     | OnFetchRooms (WebData RoomsData)
+    | OnFetchRanking (WebData RankingData)
     | OnFetchCategories (WebData CategoriesData)
     | OnFetchCurrentUser (WebData CurrentUser)
     | OnQuestionCreated (WebData QuestionCreatedData)

@@ -28,6 +28,11 @@ roomsUrl location =
     (host location) ++ "api/rooms?with_counts=true"
 
 
+rankingUrl : Location -> String
+rankingUrl location =
+    (host location) ++ "api/ranking"
+
+
 loginUrl : Location -> String
 loginUrl location =
     (host location) ++ "sessions"
