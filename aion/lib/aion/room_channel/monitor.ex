@@ -98,6 +98,10 @@ defmodule Aion.RoomChannel.Monitor do
     try_call(room_id, {:get_current_question})
   end
 
+  def bump_questions_asked(room_id) do
+    try_call(room_id, {:bump_questions_asked})
+  end
+
   #########################
   #     Implementation    #
   #########################
@@ -133,6 +137,11 @@ defmodule Aion.RoomChannel.Monitor do
 
   def handle_call({:new_question, room_id}, _from, state) do
     new_state = Room.change_question(state, room_id)
+    {:reply, new_state, new_state}
+  end
+
+  def handle_call({:bump_questions_asked}, _from, state) do
+    new_state = Room.bump_questions_asked(state)
     {:reply, new_state, new_state}
   end
 
