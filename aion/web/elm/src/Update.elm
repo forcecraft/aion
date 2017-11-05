@@ -404,12 +404,12 @@ update msg model =
                 ( socket, cmd ) =
                     Phoenix.Socket.push push_ model.socket
             in
-                { model | socket = socket } ! [ Cmd.map PhoenixMsg cmd ]
+                { model | socket = socket, userGameData = { currentAnswer = "" } } ! [ Cmd.map PhoenixMsg cmd ]
 
         ReceiveQuestion raw ->
             case Decode.decodeValue questionDecoder raw of
                 Ok question ->
-                    { model | currentQuestion = question, userGameData = { currentAnswer = "" } } ! [ Task.attempt FocusResult (focus answerInputFieldId) ]
+                    { model | currentQuestion = question } ! [ Task.attempt FocusResult (focus answerInputFieldId) ]
 
                 Err error ->
                     model ! []
