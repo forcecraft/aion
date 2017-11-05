@@ -1,8 +1,5 @@
 module General.Constants exposing (..)
 
-import Navigation exposing (Location)
-import Urls exposing (host)
-
 
 loginFormMsg : String
 loginFormMsg =
