@@ -72,7 +72,6 @@ defmodule Aion.RoomChannel do
     send_feedback(socket, evaluation)
 
     if evaluation == 1.0 do
-      send_scores(socket)
       become_in_question_break_state(socket)
     end
 
@@ -125,6 +124,10 @@ defmodule Aion.RoomChannel do
 
   defp become_in_question_break_state(socket) do
     send_question_break(socket)
+    change_question(socket)
+    :timer.send_after(@next_question_delay, :next_question_timeout)
+
+    send_scores(socket)
     new_state_with_timer(socket)
   end
 
@@ -151,6 +154,7 @@ defmodule Aion.RoomChannel do
 
   defp change_question(socket) do
     room_id = UserSocket.get_room_id(socket)
+    Monitor.bump_questions_asked(room_id)
     Monitor.new_question(room_id)
   end
 
@@ -160,8 +164,6 @@ defmodule Aion.RoomChannel do
 
   defp send_question_break(socket) do
     broadcast!(socket, @question_break_topic, %{})
-    change_question(socket)
-    :timer.send_after(@next_question_delay, :next_question_timeout)
   end
 
   defp send_current_question(socket) do

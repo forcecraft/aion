@@ -17,7 +17,7 @@ import Msgs exposing (Msg(..))
 import Html exposing (Html, a, div, img, li, p, text, ul)
 import Navigation exposing (Location)
 import Room.Constants exposing (answerInputFieldId, defaultImagePath, imagesPath)
-import Room.Models exposing (Answer, ImageName, RoomId, RoomState(QuestionBreak, QuestionDisplayed), RoomsData, UserGameData, UserInRoomRecord)
+import Room.Models exposing (Answer, ImageName, RoomId, RoomState(QuestionBreak, QuestionDisplayed), RoomsData, UserGameData, UserRecord)
 import Room.Urls exposing (getImageUrl)
 import Room.Utils exposing (getRoomList, getRoomNameById)
 import Toasty
@@ -53,10 +53,10 @@ fillQuestionArea : Model -> Html Msg
 fillQuestionArea model =
     let
         imageName =
-            model.questionInChannel.image_name
+            model.currentQuestion.image_name
     in
         div []
-            [ displayQuestion model.questionInChannel.content model.roomState
+            [ displayQuestion model.currentQuestion.content model.roomState
             , displayQuestionImage model.location imageName model.roomState
             ]
 
@@ -65,12 +65,25 @@ displayScores : Model -> Html Msg
 displayScores model =
     div
         [ class "room-scoreboard" ]
-        [ ListGroup.ul (List.map displaySingleScore model.usersInChannel) ]
+        [ ListGroup.ul (List.map displaySingleScore model.userList) ]
 
 
-displaySingleScore : UserInRoomRecord -> ListGroup.Item msg
+displaySingleScore : UserRecord -> ListGroup.Item msg
 displaySingleScore userRecord =
-    ListGroup.li [] [ text (userRecord.name ++ ": " ++ (toString userRecord.score)) ]
+    let
+        percentage =
+            toString (userRecord.score * 100 // userRecord.questionsAsked)
+
+        score =
+            toString userRecord.score
+
+        total =
+            toString userRecord.questionsAsked
+
+        fieldValue =
+            userRecord.name ++ ": " ++ score ++ " of " ++ total ++ " (" ++ percentage ++ "%)"
+    in
+        ListGroup.li [] [ text fieldValue ]
 
 
 displayQuestion : String -> RoomState -> Html Msg
