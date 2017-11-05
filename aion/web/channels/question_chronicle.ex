@@ -5,9 +5,7 @@ defmodule Aion.QuestionChronicle do
     fires, it's easy to check if the question should be changed
     to a new one.
   """
-  @type t :: %{binary => agent_entry_t}
-  @type agent_entry_t :: {integer, room_state_t}
-  @type room_state_t :: :question | :break
+  @type t :: %{binary => {integer, atom}}
 
   @question_timeout 10
 
@@ -19,13 +17,13 @@ defmodule Aion.QuestionChronicle do
   def question_break_timeout_micro, do: @question_break_timeout * 1_000_000
   def question_break_timeout_milli, do: @question_break_timeout * 1_000
 
-  def start_link do
-    Agent.start_link(fn -> %{} end, name: __MODULE__)
+  def start_link(name \\ __MODULE__) do
+    Agent.start_link(fn -> %{} end, name: name)
   end
 
   @doc "Lists all question change entries stored by the Agent"
-  @spec list_entries :: __MODULE__.t
-  def list_entries, do: Agent.get(__MODULE__, &(&1))
+  @spec list_entries :: __MODULE__.t()
+  def list_entries, do: Agent.get(__MODULE__, & &1)
 
   @doc "Checks if a question should be changed due to a timeout using the default time function"
   @spec should_change?(binary) :: boolean
@@ -36,10 +34,11 @@ defmodule Aion.QuestionChronicle do
   def should_change?(room_id, time) do
     {last_changed, current_state} = get_agent_entry(room_id)
 
-    timeout = case current_state do
-      :question -> question_timeout_micro()
-      :break -> question_break_timeout_micro()
-    end
+    timeout =
+      case current_state do
+        :question -> question_timeout_micro()
+        :break -> question_break_timeout_micro()
+      end
 
     time.() >= last_changed + timeout
   end
@@ -56,30 +55,31 @@ defmodule Aion.QuestionChronicle do
   end
 
   @doc "Changes room's state in the chronicle"
-  @spec change_room_state(binary, function) :: :ok
+  @spec change_room_state(binary, function) :: {:ok, integer} | {:error, :called_too_early}
   def change_room_state(room_id, time \\ &get_current_time/0) do
-    {_timeout, state} = get_agent_entry(room_id)
-    {_timeout, state} = entry = {time.(), get_next_state(state)}
+    current_time = time.()
 
-    Agent.update(__MODULE__, &Map.put(&1, room_id, entry))
+    if should_change?(room_id, time) do
+      {_timeout, state} = get_agent_entry(room_id)
+      {_timeout, state} = entry = {current_time, get_next_state(state)}
 
-    {:ok, {get_timeout_for_state(state), state}}
+      Agent.update(__MODULE__, &Map.put(&1, room_id, entry))
+
+      {:ok, {get_timeout_for_state(state), state}}
+    else
+      {:error, :called_too_early}
+    end
   end
 
-  @spec get_agent_entry(binary) :: agent_entry_t
-  def get_agent_entry(room_id) do
-    Agent.get(__MODULE__, &Map.get(&1, room_id))
-  end
+  @spec get_agent_entry(binary) :: {integer, atom}
+  def get_agent_entry(room_id), do: Agent.get(__MODULE__, &Map.get(&1, room_id))
 
   @spec get_current_time :: integer
-  defp get_current_time do
-    System.system_time(:microsecond)
-  end
+  defp get_current_time, do: System.system_time(:microsecond)
 
   defp get_next_state(:question), do: :break
   defp get_next_state(:break), do: :question
 
   defp get_timeout_for_state(:question), do: question_timeout_milli()
   defp get_timeout_for_state(:break), do: question_break_timeout_milli()
-
 end
