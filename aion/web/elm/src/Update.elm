@@ -20,6 +20,7 @@ import RemoteData
 import Room.Api exposing (fetchRooms)
 import Room.Constants exposing (answerInputFieldId, enterKeyCode)
 import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, userJoinedInfoDecoder, userListMessageDecoder)
+import Room.Models exposing (RoomState(QuestionBreak, QuestionDisplayed))
 import Room.Notifications exposing (..)
 import Routing exposing (parseLocation)
 import Phoenix.Socket
@@ -396,7 +397,7 @@ update msg model =
                     )
 
                 push_ =
-                    Phoenix.Push.init "new:answer" ("rooms:" ++ (toString model.roomId))
+                    Phoenix.Push.init "new_answer" ("room:" ++ (toString model.roomId))
                         |> Phoenix.Push.withPayload payload
                         |> Phoenix.Push.onOk (\rawFeedback -> ReceiveAnswerFeedback rawFeedback)
 
@@ -412,6 +413,12 @@ update msg model =
 
                 Err error ->
                     model ! []
+
+        ReceiveDisplayQuestion raw ->
+            { model | roomState = QuestionDisplayed } ! []
+
+        ReceiveQuestionBreak raw ->
+            { model | roomState = QuestionBreak } ! []
 
         -- HTML
         FocusResult result ->

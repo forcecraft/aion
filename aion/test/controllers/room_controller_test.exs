@@ -2,10 +2,14 @@ defmodule Aion.RoomControllerTest do
   use Aion.AuthConnCase
 
   alias Aion.{Room, Question}
-  alias Aion.RoomChannel.Monitor
+  alias Aion.RoomChannel.{Monitor, QuestionSet}
 
   @room %Room{description: "Here come dat boi", name: "Dat Boi"}
-  @question %Question{content: "Who dat boi?"}
+  @question1 %Question{content: "Who dat boi?"}
+  @question2 %Question{content: "Wat do?"}
+  @questions %QuestionSet{
+    questions: [@question1, @question2]
+  }
   @player "Stephan"
 
   test "lists all entries on index", %{conn: conn} do
@@ -37,7 +41,7 @@ defmodule Aion.RoomControllerTest do
   test "list rooms with counts with an empty room", %{conn: conn} do
     %Room{id: room_id} = room = Repo.insert! @room
 
-    Monitor.create(room_id, current_question: @question)
+    Monitor.create(room_id, questions: @questions)
 
     conn = get conn, "/api/rooms?with_counts=true"
 
@@ -54,7 +58,7 @@ defmodule Aion.RoomControllerTest do
   test "list rooms with counts with players in rooms", %{conn: conn} do
     %Room{id: room_id} = room = Repo.insert! @room
 
-    Monitor.create(room_id, current_question: @question)
+    Monitor.create(room_id, questions: @questions)
     Monitor.user_joined(room_id, @player)
 
     conn = get conn, "/api/rooms?with_counts=true"

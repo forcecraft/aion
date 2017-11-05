@@ -13,6 +13,11 @@ type alias Room =
     }
 
 
+type RoomState
+    = QuestionDisplayed
+    | QuestionBreak
+
+
 type alias RoomsData =
     { data : List Room }
 
