@@ -16,12 +16,12 @@ defmodule Aion.UserTest do
     refute changeset.valid?
   end
 
-  describe "User.score_point/2" do
+  describe "User.score/3" do
     test "when user never scored in given category" do
       user = Repo.insert! User.registration_changeset(%User{}, @valid_attrs)
       category = Repo.insert! %Category{name: "Category A"}
 
-      User.score_point(user.id, category.id)
+      User.score(user.id, category.id, 1)
       user_score = Repo.get_by(UserCategoryScore, user_id: user.id, category_id: category.id)
 
       assert user_score.score == 1
@@ -30,9 +30,9 @@ defmodule Aion.UserTest do
     test "when user already scored in given category" do
       user = Repo.insert! User.registration_changeset(%User{}, @valid_attrs)
       category = Repo.insert! %Category{name: "Category A"}
-      user_category_score = Repo.insert! %UserCategoryScore{user: user, category: category, score: 4}
+      Repo.insert! %UserCategoryScore{user: user, category: category, score: 4}
 
-      User.score_point(user.id, category.id)
+      User.score(user.id, category.id, 1)
       user_score = Repo.get_by(UserCategoryScore, user_id: user.id, category_id: category.id)
 
       assert user_score.score == 5

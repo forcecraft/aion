@@ -150,4 +150,5 @@ defmodule Aion.RoomChannel.Monitor do
   def handle_call({:get_current_question}, _from, state) do
     {:reply, Room.get_current_question(state), state}
   end
+
 end
