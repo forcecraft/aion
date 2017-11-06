@@ -72,7 +72,7 @@ defmodule Aion.RoomChannel do
     send_feedback(socket, evaluation)
 
     if evaluation == 1.0 do
-      become_in_question_break_state(socket)
+      enter_question_break_state(socket)
     end
 
     {:noreply, socket}
@@ -93,8 +93,8 @@ defmodule Aion.RoomChannel do
       Logger.info("[channel] Question timed out in room: #{room_id}. Fetching a new one...")
 
       case old_state do
-        :question -> become_in_question_break_state(socket)
-        :break -> become_in_question_displayed_state(socket)
+        :question -> enter_question_break_state(socket)
+        :break -> enter_question_displayed_state(socket)
       end
     else
       Logger.error(fn -> "[channel] Timer went off in room: #{room_id}. Too early, though." end)
@@ -122,7 +122,7 @@ defmodule Aion.RoomChannel do
     {:noreply, socket}
   end
 
-  defp become_in_question_break_state(socket) do
+  defp enter_question_break_state(socket) do
     send_question_break(socket)
     change_question(socket)
     :timer.send_after(@next_question_delay, :next_question_timeout)
@@ -131,7 +131,7 @@ defmodule Aion.RoomChannel do
     new_state_with_timer(socket)
   end
 
-  defp become_in_question_displayed_state(socket) do
+  defp enter_question_displayed_state(socket) do
     send_display_question(socket)
     new_state_with_timer(socket)
   end
