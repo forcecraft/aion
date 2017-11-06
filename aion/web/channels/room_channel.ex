@@ -22,6 +22,10 @@ defmodule Aion.RoomChannel do
   @question_break_topic "question_break"
   @user_list_topic "user_list"
 
+  # Upon entering question_break state, the next question will be sent after
+  # the @next_question_delay timeout
+  @next_question_delay 1000
+
   @spec join(String.t(), %{}, UserSocket.t()) :: {:ok, UserSocket.t()}
   def join("room:" <> room_id, _params, socket) do
     username = UserSocket.get_user_name(socket)
@@ -68,10 +72,7 @@ defmodule Aion.RoomChannel do
     send_feedback(socket, evaluation)
 
     if evaluation == 1.0 do
-      change_question(socket)
-      send_scores(socket)
-      send_current_question(socket)
-      QuestionChronicle.change_room_state(room_id)
+      enter_question_break_state(socket)
     end
 
     {:noreply, socket}
@@ -92,14 +93,9 @@ defmodule Aion.RoomChannel do
       Logger.info("[channel] Question timed out in room: #{room_id}. Fetching a new one...")
 
       case old_state do
-        :question -> send_question_break(socket)
-        :break -> send_display_question(socket)
+        :question -> enter_question_break_state(socket)
+        :break -> enter_question_displayed_state(socket)
       end
-
-      {:ok, {timeout, state}} = QuestionChronicle.change_room_state(room_id)
-      Logger.debug(fn -> "[channel] Current state is now #{state} with timeout #{timeout}" end)
-
-      :timer.send_after(timeout, :room_state_timeout)
     else
       Logger.error(fn -> "[channel] Timer went off in room: #{room_id}. Too early, though." end)
     end
@@ -126,6 +122,29 @@ defmodule Aion.RoomChannel do
     {:noreply, socket}
   end
 
+  defp enter_question_break_state(socket) do
+    send_question_break(socket)
+    change_question(socket)
+    :timer.send_after(@next_question_delay, :next_question_timeout)
+
+    send_scores(socket)
+    new_state_with_timer(socket)
+  end
+
+  defp enter_question_displayed_state(socket) do
+    send_display_question(socket)
+    new_state_with_timer(socket)
+  end
+
+  defp new_state_with_timer(socket) do
+    room_id = UserSocket.get_room_id(socket)
+
+    {:ok, {timeout, state}} = QuestionChronicle.change_room_state(room_id)
+    Logger.debug(fn -> "[channel] Current state is now #{state} with timeout #{timeout}" end)
+
+    :timer.send_after(timeout, :room_state_timeout)
+  end
+
   defp send_scores(socket) do
     room_id = UserSocket.get_room_id(socket)
 
@@ -145,9 +164,6 @@ defmodule Aion.RoomChannel do
 
   defp send_question_break(socket) do
     broadcast!(socket, @question_break_topic, %{})
-    change_question(socket)
-    send_scores(socket)
-    :timer.send_after(1000, :next_question_timeout)
   end
 
   defp send_current_question(socket) do
