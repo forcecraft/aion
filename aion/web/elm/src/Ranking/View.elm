@@ -3,10 +3,10 @@ module Ranking.View exposing (..)
 import General.Models exposing (Model)
 import Html exposing (..)
 import Msgs exposing (Msg(..))
-import Material.Table as Table
+import Bootstrap.Table as Table
 import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Col as Col
-import Ranking.Models exposing (RankingData)
+import Ranking.Models exposing (PlayerScore, RankingData)
 import RemoteData exposing (WebData)
 
 
@@ -25,26 +25,30 @@ rankingView model =
 
 rankingTable : Model -> Html Msg
 rankingTable model =
-    Table.table []
-        [ Table.thead []
-            [ Table.tr []
-                [ Table.th [] [ text "User" ]
-                , Table.th [] [ text "Score" ]
-              ]
+    Table.simpleTable
+        ( Table.simpleThead
+            [ Table.th [] [ text "User" ]
+            , Table.th [] [ text "Score" ]
             ]
-        , Table.tbody [] (scores model.rankingData)
-        ]
+        , displayScores model.rankingData
+        )
 
 
-scores : WebData RankingData -> List(Html Msg)
-scores rankingData =
+displayScores : WebData RankingData -> Table.TBody Msg
+displayScores rankingData =
     case rankingData of
         RemoteData.Success rankingData ->
-            rankingData.data |>
-              List.map(\e ->
-                 Table.tr []
-                   [ Table.td [] [ text e.userName ]
-                   , Table.td [ Table.numeric ] [ text (toString e.score) ]
-                   ])
+            let
+                sortedScores = List.reverse (List.sortBy .score rankingData.data)
+            in
+                Table.tbody [] (List.map displaySingleScore sortedScores)
         _ ->
-            []
+            Table.tbody [] []
+
+
+displaySingleScore : PlayerScore -> Table.Row msg
+displaySingleScore score =
+    Table.tr []
+        [ Table.td [] [ text score.userName ]
+        , Table.td [] [ text (toString score.score) ]
+        ]
