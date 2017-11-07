@@ -34,11 +34,6 @@ defmodule Aion.QuestionChronicleTest do
     %{@room_id => {_, :break}} = QuestionChronicle.list_entries()
   end
 
-  test "cannot change state before timeout" do
-    {:error, :called_too_early} =
-      QuestionChronicle.change_room_state(@room_id, fn -> @current_time end)
-  end
-
   test "state should switch back to :question from break" do
     question_timeout = QuestionChronicle.question_timeout_micro()
     break_timeout = QuestionChronicle.question_break_timeout_micro()
