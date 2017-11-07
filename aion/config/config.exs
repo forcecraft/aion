@@ -6,17 +6,19 @@
 use Mix.Config
 
 # General application configuration
-config :aion,
-  ecto_repos: [Aion.Repo]
+config :aion, ecto_repos: [Aion.Repo]
 
 # Configures the endpoint
 config :aion, Aion.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "qILNWNsZ5dyZijpvocG45VG5ElYCLYSfSOAWVEiz+cloUiX177Dla1kbz3ZGrfbX",
   render_errors: [view: Aion.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Aion.PubSub,
-           adapter: Phoenix.PubSub.PG2],
+  pubsub: [name: Aion.PubSub, adapter: Phoenix.PubSub.PG2],
   hostname: "localhost"
+
+config :aion, Aion.Timeout,
+  question_timeout: 10,
+  question_break_timeout: 5
 
 # Configures Elixir's Logger
 config :logger, :console,
@@ -28,9 +30,9 @@ config :guardian, Guardian,
   allowed_algos: ["HS512"],
   secret_key: System.get_env("SECRET_KEY") || "test",
   issuer: "Aion",
-  ttl: { 30, :days },
+  ttl: {30, :days},
   serializer: Aion.GuardianSerializer
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
-import_config "#{Mix.env}.exs"
+import_config "#{Mix.env()}.exs"

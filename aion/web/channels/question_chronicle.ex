@@ -7,15 +7,9 @@ defmodule Aion.QuestionChronicle do
   """
   @type t :: %{binary => {integer, atom}}
 
-  @question_timeout 10
-
-  def question_timeout_micro, do: @question_timeout * 1_000_000
-  def question_timeout_milli, do: @question_timeout * 1_000
-
-  @question_break_timeout 5
-
-  def question_break_timeout_micro, do: @question_break_timeout * 1_000_000
-  def question_break_timeout_milli, do: @question_break_timeout * 1_000
+  alias Aion.Timeout
+  defdelegate question_timeout(unit), to: Timeout
+  defdelegate question_break_timeout(unit), to: Timeout
 
   def start_link(name \\ __MODULE__) do
     Agent.start_link(fn -> %{} end, name: name)
@@ -36,8 +30,8 @@ defmodule Aion.QuestionChronicle do
 
     timeout =
       case current_state do
-        :question -> question_timeout_micro()
-        :break -> question_break_timeout_micro()
+        :question -> question_timeout(:microsecond)
+        :break -> question_break_timeout(:microsecond)
       end
 
     time.() >= last_changed + timeout
@@ -47,7 +41,7 @@ defmodule Aion.QuestionChronicle do
     entry = {current_time.(), :question}
     Agent.update(__MODULE__, &Map.put(&1, room_id, entry))
 
-    {:ok, question_timeout_milli()}
+    {:ok, question_timeout(:millisecond)}
   end
 
   def remove_room_state(room_id) do
@@ -80,6 +74,6 @@ defmodule Aion.QuestionChronicle do
   defp get_next_state(:question), do: :break
   defp get_next_state(:break), do: :question
 
-  defp get_timeout_for_state(:question), do: question_timeout_milli()
-  defp get_timeout_for_state(:break), do: question_break_timeout_milli()
+  defp get_timeout_for_state(:question), do: question_timeout(:millisecond)
+  defp get_timeout_for_state(:break), do: question_break_timeout(:millisecond)
 end
