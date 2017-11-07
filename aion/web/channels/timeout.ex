@@ -25,12 +25,12 @@ defmodule Aion.Timeout do
   end
 
   @doc """
-  Returns the timeout after which the question should be changed
+  Returns the timeout after which the question should be changed.
   """
   def question_timeout(unit \\ :second), do: get_and_convert(:question_timeout, unit)
 
   @doc """
-  Returns the timeout after which the question break should end
+  Returns the timeout after which the question break should end.
   """
   def question_break_timeout(unit \\ :second), do: get_and_convert(:question_break_timeout, unit)
 
