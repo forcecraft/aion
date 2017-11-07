@@ -18,7 +18,8 @@ config :aion, Aion.Endpoint,
 
 config :aion, Aion.Timeout,
   question_timeout: 10,
-  question_break_timeout: 5
+  question_break_timeout: 5,
+  next_question_delay: 1
 
 # Configures Elixir's Logger
 config :logger, :console,
