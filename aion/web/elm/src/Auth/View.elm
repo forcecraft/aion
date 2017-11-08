@@ -9,7 +9,7 @@ import Bootstrap.Grid as Grid
 import Forms
 import General.Models exposing (Model)
 import General.Notifications exposing (toastsConfig)
-import Html exposing (Html, br, div, h2, text)
+import Html exposing (Html, br, div, h2, p, span, text)
 import Html.Attributes exposing (class, for)
 import Msgs exposing (Msg(..))
 import Toasty
@@ -18,22 +18,47 @@ import Toasty.Defaults
 
 authView : Model -> Html Msg
 authView model =
-    Grid.container [ class "auth-container" ]
-        [ Grid.container []
-            [ Grid.row []
-                [ Grid.col []
-                    [ case model.authData.unauthenticatedView of
-                        LoginView ->
-                            loginFormView model.authData.loginForm model.authData.formMsg
+    let
+        unauthenticatedView =
+            model.authData.unauthenticatedView
 
-                        RegisterView ->
-                            registrationFormView model.authData.registrationForm model.authData.formMsg
+        loginForm =
+            model.authData.loginForm
+
+        registrationForm =
+            model.authData.registrationForm
+
+        formMsg =
+            model.authData.formMsg
+    in
+        Grid.container [ class "auth-container" ]
+            [ Grid.container []
+                [ Grid.row []
+                    [ Grid.col []
+                        [ case unauthenticatedView of
+                            LoginView ->
+                                loginFormView loginForm formMsg
+
+                            RegisterView ->
+                                registrationFormView registrationForm formMsg
+                        ]
+                    , Grid.col []
+                        [ h2 []
+                            [ text "Welcome to "
+                            , span [ class "highlight-aion" ] [ text "Aion" ]
+                            , text "!"
+                            ]
+                        , div
+                            [ class "auth-page-content" ]
+                            [ p [] [ text "Aion is an e-learning platform written in Elixir and Elm based on real-time gameplay." ]
+                            , p [] [ text "It's basically an erudite quiz with over 4000 questions." ]
+                            , p [] [ text "Challenge your friends, gather points and climb up the rankings." ]
+                            ]
+                        ]
                     ]
-                , Grid.col [] []
                 ]
+            , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
             ]
-        , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
-        ]
 
 
 

@@ -61,6 +61,31 @@ footer p {
     width: 100%;
 }
 
+.auth-page-content {
+    margin-top: 20px;
+}
+
+.auth-page-content p {
+    position: relative;
+}
+
+.auth-page-content p::before {
+    content: "\f04e";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    color: #5CB85C;
+    font-size: 18px;
+    position: relative;
+    top: 0;
+    left: 2px;
+    margin-right: 10px;
+}
+
+.highlight-aion {
+    color: #5CB85C;
+}
+
 .tile:hover {
     cursor: pointer;
     opacity: 1;
