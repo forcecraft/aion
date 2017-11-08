@@ -40,15 +40,25 @@ footer p {
 }
 
 .auth-container {
-    padding-top: 50px;
+    padding-top: 40px;
 }
 
 .auth-toggle-button {
-    color: red !important;
+    color: #FF385F !important;
     font-weight: bolder !important;
     font-size: 10px !important;
     padding-left: 0 !important;
     margin-bottom: 20px;
+}
+
+.auth-button {
+    margin-top: 15px;
+    width: 100%;
+}
+
+.auth-button {
+    margin-top: 15px;
+    width: 100%;
 }
 
 .tile:hover {

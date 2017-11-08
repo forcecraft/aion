@@ -65,8 +65,9 @@ loginFormView loginForm formMsg =
             , Button.button
                 [ Button.success
                 , Button.onClick Login
+                , Button.attrs [ class "auth-button" ]
                 ]
-                [ text "submit" ]
+                [ text "Sign in" ]
             ]
         ]
 
@@ -113,8 +114,9 @@ registrationFormView registrationForm formMsg =
             , Button.button
                 [ Button.success
                 , Button.onClick Register
+                , Button.attrs [ class "auth-button" ]
                 ]
-                [ text "submit" ]
+                [ text "Sign up" ]
             ]
         ]
 
