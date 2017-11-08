@@ -2,8 +2,7 @@ module View exposing (..)
 
 import Auth.View exposing (authView)
 import Bootstrap.Navbar as Navbar
-import Bootstrap.Button as Button
-import General.Constants exposing (roomsPath, userPath)
+import General.Constants exposing (footerContent, roomsPath, userPath)
 import General.Models exposing (Model, Route(AuthRoute, NotFoundRoute, RoomListRoute, RoomRoute, UserRoute))
 import General.View exposing (notFoundView, roomListView)
 import Html exposing (..)
@@ -21,44 +20,44 @@ view model =
         [ page model ]
 
 
-layout : Html Msg -> Location -> Navbar.State -> Html Msg
-layout content location navbarState =
-    div
-        [ class "layout" ]
-        [ navbar location navbarState
-        , content
+layout : Html Msg -> Route -> Location -> Navbar.State -> Html Msg
+layout content route location navbarState =
+    div []
+        [ navbar route location navbarState
+        , div
+            [ class "layout" ]
+            [ content ]
+        , customFooter footerContent
         ]
 
 
-navbar : Location -> Navbar.State -> Html Msg
-navbar location navbarState =
-    Navbar.config NavbarMsg
-        |> Navbar.withAnimation
-        |> Navbar.success
-        |> Navbar.container
-        |> Navbar.brand
-            [ href "#" ]
-            [ img
-                [ src ((host location) ++ "svg/hemp.svg")
-                , class "header-aion-logo"
-                ]
-                []
-            , text "Aion"
-            ]
-        |> Navbar.items
-            [ Navbar.itemLink [ href roomsPath ] [ text "Rooms" ]
-            , Navbar.itemLink [ href userPath ] [ text "Profile" ]
-            ]
-        |> Navbar.customItems
-            [ Navbar.customItem
-                (Button.button
-                    [ Button.roleLink
-                    , Button.onClick Logout
+customFooter : List String -> Html Msg
+customFooter footerContent =
+    footer []
+        (List.map
+            (\paragraph -> p [] [ text paragraph ])
+            footerContent
+        )
+
+
+navbar : Route -> Location -> Navbar.State -> Html Msg
+navbar route location navbarState =
+    case route of
+        _ ->
+            Navbar.config NavbarMsg
+                |> Navbar.withAnimation
+                |> Navbar.success
+                |> Navbar.container
+                |> Navbar.brand
+                    [ href "#" ]
+                    [ img
+                        [ src ((host location) ++ "images/aion_logo.png")
+                        , class "header-aion-logo"
+                        ]
+                        []
+                    , text "Aion"
                     ]
-                    [ text "Logout" ]
-                )
-            ]
-        |> Navbar.view navbarState
+                |> Navbar.view navbarState
 
 
 page : Model -> Html Msg
@@ -66,14 +65,6 @@ page model =
     let
         currentRoute =
             redirectIfNotAuthenticated model.authData.token model.route
-
-        includeNavbar =
-            case currentRoute of
-                AuthRoute ->
-                    \content _ _ -> content
-
-                _ ->
-                    layout
 
         content =
             case currentRoute of
@@ -92,7 +83,7 @@ page model =
                 NotFoundRoute ->
                     notFoundView
     in
-        includeNavbar content model.location model.navbarState
+        layout content model.route model.location model.navbarState
 
 
 redirectIfNotAuthenticated : Maybe String -> Route -> Route
