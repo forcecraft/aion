@@ -10,7 +10,7 @@ import Multiselect
 import Panel.Models exposing (CategoriesData, PanelData, categoryForm, questionForm, roomForm)
 import Phoenix.Socket
 import RemoteData exposing (WebData)
-import Room.Models exposing (RoomId, RoomsData, UsersInRoom, QuestionInRoom, UserGameData)
+import Room.Models exposing (CurrentQuestion, RoomId, RoomState(QuestionBreak), RoomsData, UserGameData, UserList)
 import Ranking.Models exposing (RankingData)
 import Toasty
 import Toasty.Defaults
@@ -25,15 +25,16 @@ type alias Model =
     , categories : WebData CategoriesData
     , route : Route
     , socket : Phoenix.Socket.Socket Msg
-    , usersInChannel : UsersInRoom
+    , userList : UserList
     , userGameData : UserGameData
-    , questionInChannel : QuestionInRoom
+    , currentQuestion : CurrentQuestion
     , roomId : RoomId
     , toasties : Toasty.Stack Toasty.Defaults.Toast
     , panelData : PanelData
     , rankingData : WebData RankingData
     , navbarState : Navbar.State
     , location : Location
+    , roomState : RoomState
     }
 
 
@@ -80,9 +81,9 @@ initialModel flags route location =
         , socket =
             Phoenix.Socket.init (websocketUrl location flags.token)
                 |> Phoenix.Socket.withDebug
-        , usersInChannel = []
+        , userList = []
         , userGameData = { currentAnswer = "" }
-        , questionInChannel =
+        , currentQuestion =
             { content = ""
             , image_name = ""
             }
@@ -97,4 +98,5 @@ initialModel flags route location =
         , rankingData = RemoteData.Loading
         , navbarState = navbarState
         , location = location
+        , roomState = QuestionBreak
         }

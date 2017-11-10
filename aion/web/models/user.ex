@@ -19,9 +19,9 @@ defmodule Aion.User do
     timestamps()
   end
 
-  def score_point(user_id, category_id) do
+  def score(user_id, category_id, amount) do
     user_category_score = get_user_category_score(user_id, category_id)
-    changeset = change(user_category_score, score: user_category_score.score + 1)
+    changeset = change(user_category_score, score: user_category_score.score + amount)
     Repo.insert_or_update(changeset)
   end
 

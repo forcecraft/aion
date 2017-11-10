@@ -17,7 +17,8 @@ import Msgs exposing (Msg(..))
 import Html exposing (Html, a, div, img, li, p, text, ul)
 import Navigation exposing (Location)
 import Room.Constants exposing (answerInputFieldId, defaultImagePath, imagesPath)
-import Room.Models exposing (Answer, ImageName, RoomId, RoomsData, UserGameData, UserInRoomRecord)
+import Room.Models exposing (Answer, ImageName, RoomId, RoomState(QuestionBreak, QuestionDisplayed), RoomsData, UserGameData, UserRecord)
+import Room.Urls exposing (getImageUrl)
 import Room.Utils exposing (getRoomList, getRoomNameById)
 import Toasty
 import Toasty.Defaults
@@ -31,16 +32,12 @@ roomView model roomId =
 
         currentAnswer =
             model.userGameData.currentAnswer
-
-        imageName =
-            model.questionInChannel.image_name
     in
         Grid.container [ class "room-container" ]
             [ Grid.row []
                 [ Grid.col []
                     [ h4 [] [ text roomName ]
-                    , displayQuestion model.questionInChannel.content
-                    , displayQuestionImage model.location imageName
+                    , fillQuestionArea model
                     , displayAnswerInput currentAnswer
                     , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
                     ]
@@ -52,33 +49,88 @@ roomView model roomId =
             ]
 
 
+fillQuestionArea : Model -> Html Msg
+fillQuestionArea model =
+    let
+        imageName =
+            model.currentQuestion.image_name
+    in
+        div []
+            [ displayQuestion model.currentQuestion.content model.roomState
+            , displayQuestionImage model.location imageName model.roomState
+            ]
+
+
 displayScores : Model -> Html Msg
 displayScores model =
     div
         [ class "room-scoreboard" ]
-        [ ListGroup.ul (List.map displaySingleScore model.usersInChannel) ]
+        [ ListGroup.ul (List.map displaySingleScore model.userList) ]
 
 
-displaySingleScore : UserInRoomRecord -> ListGroup.Item msg
+displaySingleScore : UserRecord -> ListGroup.Item msg
 displaySingleScore userRecord =
-    ListGroup.li [] [ text (userRecord.name ++ ": " ++ (toString userRecord.score)) ]
+    let
+        percentage =
+            toString (userRecord.score * 100 // userRecord.questionsAsked)
+
+        score =
+            toString userRecord.score
+
+        total =
+            toString userRecord.questionsAsked
+
+        fieldValue =
+            userRecord.name ++ ": " ++ score ++ " of " ++ total ++ " (" ++ percentage ++ "%)"
+    in
+        ListGroup.li [] [ text fieldValue ]
 
 
-displayQuestion : String -> Html Msg
-displayQuestion question =
-    Card.config [ Card.attrs [ class "room-question" ] ]
-        |> Card.block [] [ Card.text [] [ text question ] ]
-        |> Card.view
+displayQuestion : String -> RoomState -> Html Msg
+displayQuestion question roomState =
+    let
+        temporaryText =
+            "Get ready, the next question is going to appear soon!"
+
+        ( cardClass, textFieldValue ) =
+            case roomState of
+                QuestionDisplayed ->
+                    ( "room-question", question )
+
+                QuestionBreak ->
+                    ( "room-question-hidden", temporaryText )
+    in
+        Card.config [ Card.attrs [ class cardClass ] ]
+            |> Card.block [] [ Card.text [] [ text textFieldValue ] ]
+            |> Card.view
 
 
-displayQuestionImage : Location -> ImageName -> Html Msg
-displayQuestionImage location imageName =
-    case imageName of
-        "" ->
-            img [ class "room-image", src (defaultImagePath location) ] []
+displayQuestionImage : Location -> ImageName -> RoomState -> Html Msg
+displayQuestionImage location imageName roomState =
+    let
+        questionImageSource =
+            getImageUrl location imageName
 
-        imageName ->
-            img [ class "room-image", src ((imagesPath location) ++ imageName) ] []
+        imageSource =
+            case roomState of
+                QuestionDisplayed ->
+                    questionImageSource
+
+                QuestionBreak ->
+                    "https://i.ytimg.com/vi/NjlzcriYc8o/maxresdefault.jpg"
+
+        hiddenImageSource =
+            case roomState of
+                QuestionDisplayed ->
+                    ""
+
+                QuestionBreak ->
+                    questionImageSource
+    in
+        div []
+            [ img [ class "room-image", src imageSource ] []
+            , img [ class "room-image-hidden", src hiddenImageSource ] []
+            ]
 
 
 displayAnswerInput : Answer -> Html Msg

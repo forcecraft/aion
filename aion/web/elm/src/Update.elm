@@ -20,7 +20,8 @@ import Ranking.Api exposing (fetchRanking)
 import RemoteData
 import Room.Api exposing (fetchRooms)
 import Room.Constants exposing (answerInputFieldId, enterKeyCode)
-import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, userJoinedInfoDecoder, usersListDecoder)
+import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, userJoinedInfoDecoder, userListMessageDecoder)
+import Room.Models exposing (RoomState(QuestionBreak, QuestionDisplayed))
 import Room.Notifications exposing (..)
 import Routing exposing (parseLocation)
 import Phoenix.Socket
@@ -339,9 +340,9 @@ update msg model =
                 { model | socket = socket } ! [ Cmd.map PhoenixMsg cmd ]
 
         ReceiveUserList raw ->
-            case Decode.decodeValue usersListDecoder raw of
-                Ok usersInChannel ->
-                    { model | usersInChannel = usersInChannel.users } ! []
+            case Decode.decodeValue userListMessageDecoder raw of
+                Ok userListMessage ->
+                    { model | userList = userListMessage.users } ! []
 
                 Err error ->
                     model ! []
@@ -408,22 +409,28 @@ update msg model =
                     )
 
                 push_ =
-                    Phoenix.Push.init "new:answer" ("rooms:" ++ (toString model.roomId))
+                    Phoenix.Push.init "new_answer" ("room:" ++ (toString model.roomId))
                         |> Phoenix.Push.withPayload payload
                         |> Phoenix.Push.onOk (\rawFeedback -> ReceiveAnswerFeedback rawFeedback)
 
                 ( socket, cmd ) =
                     Phoenix.Socket.push push_ model.socket
             in
-                { model | socket = socket } ! [ Cmd.map PhoenixMsg cmd ]
+                { model | socket = socket, userGameData = { currentAnswer = "" } } ! [ Cmd.map PhoenixMsg cmd ]
 
         ReceiveQuestion raw ->
             case Decode.decodeValue questionDecoder raw of
                 Ok question ->
-                    { model | questionInChannel = question, userGameData = { currentAnswer = "" } } ! [ Task.attempt FocusResult (focus answerInputFieldId) ]
+                    { model | currentQuestion = question } ! [ Task.attempt FocusResult (focus answerInputFieldId) ]
 
                 Err error ->
                     model ! []
+
+        ReceiveDisplayQuestion raw ->
+            { model | roomState = QuestionDisplayed } ! []
+
+        ReceiveQuestionBreak raw ->
+            { model | roomState = QuestionBreak } ! []
 
         -- HTML
         FocusResult result ->
