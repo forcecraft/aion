@@ -42,8 +42,8 @@ customFooter footerContent =
 
 navbar : Route -> Location -> Navbar.State -> Html Msg
 navbar route location navbarState =
-    case route of
-        _ ->
+    let
+        baseNavbar =
             Navbar.config NavbarMsg
                 |> Navbar.withAnimation
                 |> Navbar.success
@@ -57,17 +57,29 @@ navbar route location navbarState =
                         []
                     , text "Aion"
                     ]
-                |> Navbar.view navbarState
+    in
+        case route of
+            AuthRoute ->
+                baseNavbar
+                    |> Navbar.view navbarState
+
+            _ ->
+                baseNavbar
+                    |> Navbar.items
+                        [ Navbar.itemLink [ href roomsPath ] [ text "Rooms" ]
+                        , Navbar.itemLink [ href userPath ] [ text "Profile" ]
+                        ]
+                    |> Navbar.view navbarState
 
 
 page : Model -> Html Msg
 page model =
     let
-        currentRoute =
+        route =
             redirectIfNotAuthenticated model.authData.token model.route
 
         content =
-            case currentRoute of
+            case route of
                 AuthRoute ->
                     authView model
 
@@ -82,8 +94,14 @@ page model =
 
                 NotFoundRoute ->
                     notFoundView
+
+        location =
+            model.location
+
+        navbarState =
+            model.navbarState
     in
-        layout content model.route model.location model.navbarState
+        layout content route location navbarState
 
 
 redirectIfNotAuthenticated : Maybe String -> Route -> Route
