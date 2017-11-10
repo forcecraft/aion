@@ -3,7 +3,11 @@ defmodule Aion.Ranking do
   This module provides logic for generating rankings
   """
   import Ecto.Query, only: [from: 2]
-  alias Aion.{Repo, User, UserCategoryScore}
+  alias Aion.{
+    Repo,
+    User,
+    UserCategoryScore
+  }
 
   @type user_general_score :: %{user_name: String.t, score: integer}
 
