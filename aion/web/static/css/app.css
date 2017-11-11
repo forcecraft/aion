@@ -27,7 +27,7 @@ body {
     max-width: 980px;
     position: relative;
     padding: 20px 40px;
-    min-height: calc(100vh - 168px);
+    min-height: calc(100vh - 135px);
 }
 
 footer {
