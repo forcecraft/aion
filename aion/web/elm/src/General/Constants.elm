@@ -26,6 +26,11 @@ userPath =
     "#profile"
 
 
+rankingsPath : String
+rankingsPath =
+    "#rankings"
+
+
 footerContent : List String
 footerContent =
     [ "JPKS jest projektem niekomercyjnym, stworzonym ku nauce oraz uciesze uczniów i wszystkich osób lubiących tego typu rozrywki."

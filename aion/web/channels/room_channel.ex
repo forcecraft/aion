@@ -24,7 +24,7 @@ defmodule Aion.RoomChannel do
 
   # Upon entering question_break state, the next question will be sent after
   # the @next_question_delay timeout
-  @next_question_delay 1000
+  defdelegate next_question_delay(unit), to: Aion.Timeout
 
   @spec join(String.t(), %{}, UserSocket.t()) :: {:ok, UserSocket.t()}
   def join("room:" <> room_id, _params, socket) do
@@ -125,7 +125,7 @@ defmodule Aion.RoomChannel do
   defp enter_question_break_state(socket) do
     send_question_break(socket)
     change_question(socket)
-    :timer.send_after(@next_question_delay, :next_question_timeout)
+    :timer.send_after(next_question_delay(:millisecond), :next_question_timeout)
 
     send_scores(socket)
     new_state_with_timer(socket)
