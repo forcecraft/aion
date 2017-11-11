@@ -55,20 +55,14 @@ defmodule Aion.QuestionChronicle do
   end
 
   @doc "Changes room's state in the chronicle"
-  @spec change_room_state(binary, function) :: {:ok, integer} | {:error, :called_too_early}
+  @spec change_room_state(binary, (() -> integer())) :: {:ok, {integer, atom}}
   def change_room_state(room_id, time \\ &get_current_time/0) do
-    current_time = time.()
+    {_timeout, state} = get_agent_entry(room_id)
+    {_timeout, state} = entry = {time.(), get_next_state(state)}
 
-    if should_change?(room_id, time) do
-      {_timeout, state} = get_agent_entry(room_id)
-      {_timeout, state} = entry = {current_time, get_next_state(state)}
+    Agent.update(__MODULE__, &Map.put(&1, room_id, entry))
 
-      Agent.update(__MODULE__, &Map.put(&1, room_id, entry))
-
-      {:ok, {get_timeout_for_state(state), state}}
-    else
-      {:error, :called_too_early}
-    end
+    {:ok, {get_timeout_for_state(state), state}}
   end
 
   @spec get_agent_entry(binary) :: {integer, atom}
