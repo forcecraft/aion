@@ -43,6 +43,9 @@ customFooter footerContent =
 navbar : Route -> Location -> Navbar.State -> Html Msg
 navbar route location navbarState =
     let
+        logoUrl =
+            (host location) ++ "images/aion_logo.png"
+
         baseNavbar =
             Navbar.config NavbarMsg
                 |> Navbar.withAnimation
@@ -50,11 +53,7 @@ navbar route location navbarState =
                 |> Navbar.container
                 |> Navbar.brand
                     [ href "#" ]
-                    [ img
-                        [ src ((host location) ++ "images/aion_logo.png")
-                        , class "header-aion-logo"
-                        ]
-                        []
+                    [ img [ src logoUrl, class "header-aion-logo" ] []
                     , text "Aion"
                     ]
     in

@@ -7,6 +7,7 @@ import Bootstrap.Form as Form
 import Bootstrap.Form.Input as Input
 import Bootstrap.Grid as Grid
 import Forms
+import General.Constants exposing (authPageRightColumnContent)
 import General.Models exposing (Model)
 import General.Notifications exposing (toastsConfig)
 import Html exposing (Html, br, div, h2, p, span, text)
@@ -34,31 +35,39 @@ authView model =
         Grid.container [ class "auth-container" ]
             [ Grid.container []
                 [ Grid.row []
-                    [ Grid.col []
-                        [ case unauthenticatedView of
-                            LoginView ->
-                                loginFormView loginForm formMsg
-
-                            RegisterView ->
-                                registrationFormView registrationForm formMsg
-                        ]
-                    , Grid.col []
-                        [ h2 []
-                            [ text "Welcome to "
-                            , span [ class "highlight-aion" ] [ text "Aion" ]
-                            , text "!"
-                            ]
-                        , div
-                            [ class "auth-page-content" ]
-                            [ p [] [ text "Aion is an e-learning platform written in Elixir and Elm based on real-time gameplay." ]
-                            , p [] [ text "It's basically an erudite quiz with over 4000 questions." ]
-                            , p [] [ text "Challenge your friends, gather points and climb up the rankings." ]
-                            ]
-                        ]
+                    [ Grid.col [] [ authForm unauthenticatedView loginForm registrationForm formMsg ]
+                    , Grid.col [] [ authPageRightColumn ]
                     ]
                 ]
             , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
             ]
+
+
+authForm : UnauthenticatedViewToggle -> LoginForm -> RegistrationForm -> String -> Html Msg
+authForm unauthenticatedView loginForm registrationForm formMsg =
+    case unauthenticatedView of
+        LoginView ->
+            loginFormView loginForm formMsg
+
+        RegisterView ->
+            registrationFormView registrationForm formMsg
+
+
+authPageRightColumn : Html Msg
+authPageRightColumn =
+    div []
+        [ h2 []
+            [ text "Welcome to "
+            , span [ class "highlight-aion" ] [ text "Aion" ]
+            , text "!"
+            ]
+        , div
+            [ class "auth-page-content" ]
+            (List.map
+                (\paragraph -> p [] [ text paragraph ])
+                authPageRightColumnContent
+            )
+        ]
 
 
 
