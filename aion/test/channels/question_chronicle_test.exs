@@ -12,12 +12,12 @@ defmodule Aion.QuestionChronicleTest do
   end
 
   test "should_change? equals false when the time has not exceeded timeout" do
-    time_called = @current_time + QuestionChronicle.question_timeout_micro() - 1000
+    time_called = @current_time + QuestionChronicle.question_timeout(:microsecond) - 1000
     assert not QuestionChronicle.should_change?(@room_id, fn -> time_called end)
   end
 
   test "should_change? equals true when the time has exceeded the timeout" do
-    time_called = @current_time + QuestionChronicle.question_timeout_micro()
+    time_called = @current_time + QuestionChronicle.question_timeout(:microsecond)
     assert QuestionChronicle.should_change?(@room_id, fn -> time_called end)
   end
 
@@ -28,15 +28,15 @@ defmodule Aion.QuestionChronicleTest do
   test "state should switch from :question to :break when change_room_state is called" do
     %{@room_id => {_, :question}} = QuestionChronicle.list_entries()
 
-    after_timeout = @current_time + QuestionChronicle.question_timeout_micro()
+    after_timeout = @current_time + QuestionChronicle.question_timeout(:microsecond)
     QuestionChronicle.change_room_state(@room_id, fn -> after_timeout end)
 
     %{@room_id => {_, :break}} = QuestionChronicle.list_entries()
   end
 
   test "state should switch back to :question from break" do
-    question_timeout = QuestionChronicle.question_timeout_micro()
-    break_timeout = QuestionChronicle.question_break_timeout_micro()
+    question_timeout = QuestionChronicle.question_timeout(:microsecond)
+    break_timeout = QuestionChronicle.question_break_timeout(:microsecond)
 
     QuestionChronicle.change_room_state(@room_id, fn -> @current_time + question_timeout end)
 
