@@ -12,15 +12,16 @@ import RemoteData exposing (WebData)
 
 rankingView : Model -> Html Msg
 rankingView model =
-      Grid.container []
-          [ Grid.row []
-              [ Grid.col [ Col.xs4 ]
-                  [ h4 []  [ text "General" ] ] ]
-          , Grid.row []
-              [ Grid.col [ Col.xs4 ]
-                  [ rankingTable model ]
-              ]
-          ]
+    Grid.container []
+        [ Grid.row []
+            [ Grid.col [ Col.xs4 ]
+                [ h4 [] [ text "General" ] ]
+            ]
+        , Grid.row []
+            [ Grid.col [ Col.xs4 ]
+                [ rankingTable model ]
+            ]
+        ]
 
 
 rankingTable : Model -> Html Msg
@@ -39,9 +40,11 @@ displayScores rankingData =
     case rankingData of
         RemoteData.Success rankingData ->
             let
-                sortedScores = List.reverse (List.sortBy .score rankingData.data)
+                sortedScores =
+                    List.reverse (List.sortBy .score rankingData.data)
             in
                 Table.tbody [] (List.map displaySingleScore sortedScores)
+
         _ ->
             Table.tbody [] []
 

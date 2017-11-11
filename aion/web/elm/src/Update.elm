@@ -186,7 +186,6 @@ update msg model =
         OnFetchRooms response ->
             { model | rooms = response } ! []
 
-
         OnFetchRanking response ->
             { model | rankingData = response } ! []
 

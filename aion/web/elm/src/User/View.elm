@@ -1,6 +1,7 @@
 module User.View exposing (..)
 
 import Bootstrap.Alert as Alert
+import Bootstrap.Button as Button
 import General.Models exposing (Model)
 import Html exposing (..)
 import Html.Attributes exposing (class)
@@ -28,6 +29,11 @@ userView model =
 renderUserView : CurrentUser -> Html Msg
 renderUserView user =
     div [ class "profile-container" ]
-        [ Alert.info [ text ("username: " ++ user.name) ]
-        , Alert.info [ text ("e-mail: " ++ user.email) ]
+        [ Alert.success [ text ("username: " ++ user.name) ]
+        , Alert.success [ text ("e-mail: " ++ user.email) ]
+        , Button.button
+            [ Button.outlineDanger
+            , Button.onClick Logout
+            ]
+            [ text "Logout" ]
         ]
