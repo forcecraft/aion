@@ -11,6 +11,7 @@ import Panel.Models exposing (CategoriesData, PanelData, categoryForm, questionF
 import Phoenix.Socket
 import RemoteData exposing (WebData)
 import Room.Models exposing (CurrentQuestion, RoomId, RoomState(QuestionBreak), RoomsData, UserGameData, UserList)
+import Ranking.Models exposing (RankingData)
 import Toasty
 import Toasty.Defaults
 import Urls exposing (hostname, websocketUrl)
@@ -30,6 +31,7 @@ type alias Model =
     , roomId : RoomId
     , toasties : Toasty.Stack Toasty.Defaults.Toast
     , panelData : PanelData
+    , rankingData : WebData RankingData
     , navbarState : Navbar.State
     , location : Location
     , roomState : RoomState
@@ -46,6 +48,7 @@ type Route
     | RoomListRoute
     | RoomRoute RoomId
     | UserRoute
+    | RankingRoute
     | NotFoundRoute
 
 
@@ -92,6 +95,7 @@ initialModel flags route location =
             , roomForm = Forms.initForm roomForm
             , categoryMultiSelect = Multiselect.initModel [] "id"
             }
+        , rankingData = RemoteData.Loading
         , navbarState = navbarState
         , location = location
         , roomState = QuestionBreak
