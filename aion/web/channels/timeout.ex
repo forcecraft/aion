@@ -20,7 +20,7 @@ defmodule Aion.Timeout do
 
   defp get_and_convert(key, unit) do
     key
-    |> get_env
+    |> get_env()
     |> from_seconds(unit)
   end
 
