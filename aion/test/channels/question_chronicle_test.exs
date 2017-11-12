@@ -1,7 +1,7 @@
 defmodule Aion.QuestionChronicleTest do
   use ExUnit.Case, async: false
 
-  alias Aion.QuestionChronicle
+  alias Aion.Channels.Room.QuestionChronicle
   @current_time 12345
   @room_id 1
 
