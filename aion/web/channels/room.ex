@@ -18,12 +18,15 @@ defmodule Aion.Channels.Room do
 
   require Logger
 
-  @answer_feedback_topic "answer_feedback"
-  @current_question_topic "current_question"
-  @display_question_topic "display_question"
-  @new_answer_topic "new_answer"
-  @question_break_topic "question_break"
-  @user_list_topic "user_list"
+  # gameplay only related topics
+  @answer_feedback_topic "question:answer_feedback"
+  @current_question_topic "question:current_question"
+  @display_question_topic "question:display_question"
+  @new_answer_topic "question:new_answer"
+  @question_break_topic "question:question_break"
+
+  # event related topics
+  @user_list_topic "event:user_list"
 
   # Upon entering question_break state, the next question will be sent after
   # the @next_question_delay timeout

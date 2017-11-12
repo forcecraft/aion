@@ -29,7 +29,7 @@ import Phoenix.Push
 import Task
 import Toasty
 import Multiselect
-import Socket exposing (initSocket, initializeRoom, leaveRoom)
+import Socket exposing (initSocket, initializeRoom, leaveRoom, sendAnswer)
 import Urls exposing (host, websocketUrl)
 import User.Api exposing (fetchCurrentUser)
 
@@ -407,13 +407,8 @@ update msg model =
                         ]
                     )
 
-                push_ =
-                    Phoenix.Push.init "new_answer" ("room:" ++ (toString model.roomId))
-                        |> Phoenix.Push.withPayload payload
-                        |> Phoenix.Push.onOk (\rawFeedback -> ReceiveAnswerFeedback rawFeedback)
-
                 ( socket, cmd ) =
-                    Phoenix.Socket.push push_ model.socket
+                    sendAnswer (toString model.roomId) payload model.socket
             in
                 { model | socket = socket, userGameData = { currentAnswer = "" } } ! [ Cmd.map PhoenixMsg cmd ]
 
