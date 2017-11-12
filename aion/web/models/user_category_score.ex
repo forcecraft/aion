@@ -5,9 +5,9 @@ defmodule Aion.UserCategoryScore do
   use Aion.Web, :model
 
   schema "user_category_scores" do
-    field :score, :integer
-    belongs_to :user, Aion.User
-    belongs_to :category, Aion.Category
+    field(:score, :integer)
+    belongs_to(:user, Aion.User)
+    belongs_to(:category, Aion.Category)
 
     timestamps()
   end

@@ -5,8 +5,8 @@ defmodule Aion.RoomCategory do
   use Aion.Web, :model
 
   schema "room_categories" do
-    belongs_to :room, Aion.Room
-    belongs_to :category, Aion.Category
+    belongs_to(:room, Aion.Room)
+    belongs_to(:category, Aion.Category)
 
     timestamps()
   end

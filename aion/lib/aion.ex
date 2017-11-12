@@ -14,7 +14,7 @@ defmodule Aion do
       supervisor(Endpoint, []),
       supervisor(Aion.RoomChannel.Supervisor, []),
       supervisor(Aion.Presence, []),
-      worker(Aion.QuestionChronicle, [], []),
+      worker(Aion.QuestionChronicle, [], [])
     ]
 
     opts = [strategy: :one_for_one, name: Aion.Supervisor]

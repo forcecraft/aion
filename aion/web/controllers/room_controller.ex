@@ -4,19 +4,20 @@ defmodule Aion.RoomController do
   alias Aion.Room
   alias Aion.RoomChannel.Monitor
 
-  plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
+  plug(Guardian.Plug.EnsureAuthenticated, handler: __MODULE__)
 
   def index(conn, params) do
     rooms = Repo.all(Room)
 
     case params do
       %{"with_counts" => "true"} -> index_with_counts(conn, rooms)
-      %{}                        -> render(conn, "index.json", rooms: rooms)
+      %{} -> render(conn, "index.json", rooms: rooms)
     end
   end
 
   def index_with_counts(conn, rooms) do
-    counts =  Monitor.get_player_counts()
+    counts = Monitor.get_player_counts()
+
     rooms_with_counts =
       rooms
       |> Enum.map(&Map.from_struct/1)
@@ -42,6 +43,7 @@ defmodule Aion.RoomController do
         |> put_status(:created)
         |> put_resp_header("location", room_path(conn, :show, room))
         |> render("show.json", room: room)
+
       {:error, changeset} ->
         Errors.unprocessable_entity(conn, changeset)
     end
@@ -59,6 +61,7 @@ defmodule Aion.RoomController do
     case Repo.update(changeset) do
       {:ok, room} ->
         render(conn, "show.json", room: room)
+
       {:error, changeset} ->
         Errors.unprocessable_entity(conn, changeset)
     end

@@ -14,20 +14,19 @@ defmodule Aion.RoomView do
   end
 
   def render("room.json", %{room: room}) do
-    %{id: room.id,
-      name: room.name,
-      description: room.description}
+    %{id: room.id, name: room.name, description: room.description}
   end
 
   def render("room_with_counts.json", %{room: room}) do
-    %{id: room.id,
+    %{
+      id: room.id,
       name: room.name,
       description: room.description,
-      player_count: room.player_count,
+      player_count: room.player_count
     }
   end
 
   def render("error.json", %{message: msg}) do
-    %{"error": msg}
+    %{error: msg}
   end
 end
