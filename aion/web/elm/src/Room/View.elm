@@ -92,9 +92,6 @@ displayQuestion question roomState =
         temporaryText =
             "Get ready, the next question is going to appear soon!"
 
-        x =
-            Debug.log "This is crazy now" roomState
-
         ( cardClass, textFieldValue ) =
             case roomState of
                 QuestionDisplayed ->

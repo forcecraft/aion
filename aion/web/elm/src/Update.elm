@@ -25,7 +25,6 @@ import Room.Models exposing (RoomState(QuestionBreak, QuestionDisplayed))
 import Room.Notifications exposing (..)
 import Routing exposing (parseLocation)
 import Phoenix.Socket
-import Phoenix.Push
 import Task
 import Toasty
 import Multiselect
