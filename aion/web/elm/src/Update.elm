@@ -6,7 +6,7 @@ import Auth.Notifications exposing (loginErrorToast, registrationErrorToast)
 import Dom exposing (focus)
 import Forms
 import General.Constants exposing (loginFormMsg, registerFormMsg)
-import General.Models exposing (Model, Route(RoomListRoute, RoomRoute, RankingRoute))
+import General.Models exposing (Model, Route(RankingRoute, RoomListRoute, RoomRoute), asEventLogIn)
 import General.Notifications exposing (toastsConfig)
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -20,8 +20,8 @@ import Ranking.Api exposing (fetchRanking)
 import RemoteData
 import Room.Api exposing (fetchRooms)
 import Room.Constants exposing (answerInputFieldId, enterKeyCode)
-import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, userJoinedInfoDecoder, userListMessageDecoder)
-import Room.Models exposing (RoomState(QuestionBreak, QuestionDisplayed))
+import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, questionSummaryDecoder, userJoinedInfoDecoder, userListMessageDecoder)
+import Room.Models exposing (Event(MkQuestionSummaryLog, MkUserJoinedLog), EventLog, RoomState(QuestionBreak, QuestionDisplayed), asLogIn)
 import Room.Notifications exposing (..)
 import Routing exposing (parseLocation)
 import Phoenix.Socket
@@ -337,14 +337,6 @@ update msg model =
             in
                 { model | socket = socket } ! [ Cmd.map PhoenixMsg cmd ]
 
-        ReceiveUserList raw ->
-            case Decode.decodeValue userListMessageDecoder raw of
-                Ok userListMessage ->
-                    { model | userList = userListMessage.users } ! []
-
-                Err error ->
-                    model ! []
-
         ReceiveAnswerFeedback rawFeedback ->
             case Decode.decodeValue answerFeedbackDecoder rawFeedback of
                 Ok answerFeedback ->
@@ -372,27 +364,6 @@ update msg model =
 
         LeaveRoom roomId ->
             model ! []
-
-        -- room join/leave
-        ReceiveUserJoined rawUserJoinedInfo ->
-            case Decode.decodeValue userJoinedInfoDecoder rawUserJoinedInfo of
-                Ok userJoinedInfo ->
-                    let
-                        log =
-                            case model.user of
-                                RemoteData.Success currentUser ->
-                                    if currentUser.name == userJoinedInfo.user then
-                                        Debug.log currentUser.name "you have successfully joined the room!"
-                                    else
-                                        Debug.log userJoinedInfo.user "user joined."
-
-                                _ ->
-                                    ""
-                    in
-                        model ! []
-
-                Err error ->
-                    model ! []
 
         SetAnswer newAnswer ->
             { model | userGameData = { currentAnswer = newAnswer } } ! []
@@ -617,3 +588,48 @@ update msg model =
         -- NoOp
         NoOperation ->
             model ! []
+
+        ReceiveUserJoined rawUserJoinedInfo ->
+            case Decode.decodeValue userJoinedInfoDecoder rawUserJoinedInfo of
+                Ok userJoinedInfo ->
+                    let
+                        oldEventLog =
+                            model.eventLog
+
+                        log =
+                            case model.user of
+                                RemoteData.Success currentUser ->
+                                    { currentPlayer = currentUser.name
+                                    , newPlayer = userJoinedInfo.user
+                                    }
+                                        |> MkUserJoinedLog
+                                        |> asLogIn oldEventLog
+
+                                _ ->
+                                    oldEventLog
+                    in
+                        { model | eventLog = log } ! []
+
+                Err error ->
+                    model ! []
+
+        ReceiveUserList raw ->
+            case Decode.decodeValue userListMessageDecoder raw of
+                Ok userListMessage ->
+                    { model | userList = userListMessage.users } ! []
+
+                Err error ->
+                    model ! []
+
+        ReceiveQuestionSummary raw ->
+            case Decode.decodeValue questionSummaryDecoder raw of
+                Ok questionSummary ->
+                    (questionSummary
+                        |> MkQuestionSummaryLog
+                        |> asLogIn model.eventLog
+                        |> asEventLogIn model
+                    )
+                        ! []
+
+                Err error ->
+                    model ! []

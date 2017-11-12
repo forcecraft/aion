@@ -17,11 +17,15 @@ defmodule Aion.RoomChannel.Monitor do
 
   def create(room_id, opts \\ [])
   def create(room_id, opts) when is_integer(room_id), do: create(Integer.to_string(room_id), opts)
+
   def create(room_id, opts) when is_binary(room_id) do
     case GenServer.whereis(ref(room_id)) do
       nil ->
-        {:ok, pid} = Supervisor.start_child(Aion.RoomChannel.Supervisor, [room_id: room_id] ++ opts)
+        {:ok, pid} =
+          Supervisor.start_child(Aion.RoomChannel.Supervisor, [room_id: room_id] ++ opts)
+
         Logger.info("[monitor] Spawned room GenServer " <> Kernel.inspect(pid))
+
       _room ->
         {:error, :room_already_exists}
     end
@@ -35,11 +39,15 @@ defmodule Aion.RoomChannel.Monitor do
   end
 
   defp try_call(room_id, message) when is_pid(room_id), do: GenServer.call(room_id, message)
-  defp try_call(room_id, message) when is_integer(room_id), do: try_call(Integer.to_string(room_id), message)
+
+  defp try_call(room_id, message) when is_integer(room_id),
+    do: try_call(Integer.to_string(room_id), message)
+
   defp try_call(room_id, message) do
     case GenServer.whereis(ref(room_id)) do
       nil ->
         {:error, :room_does_not_exist}
+
       room ->
         GenServer.call(room, message)
     end
@@ -52,7 +60,7 @@ defmodule Aion.RoomChannel.Monitor do
   @doc """
     Checks if a given room exists
   """
-  @spec exists?(String.t) :: boolean
+  @spec exists?(String.t()) :: boolean
   def exists?(room_id) do
     GenServer.whereis(ref(room_id)) != nil
   end
@@ -63,11 +71,15 @@ defmodule Aion.RoomChannel.Monitor do
 
   def get_player_counts do
     Aion.RoomChannel.Supervisor
-    |> Supervisor.which_children
-    |> Enum.map(fn({_id, pid, _type, _modules}) -> pid end)
-    |> Enum.map(fn(pid) -> {get_room_id(pid), get_scores(pid)} end)
-    |> Enum.map(fn({room_id, scores}) -> {room_id, Enum.count(scores)} end)
-    |> Map.new
+    |> Supervisor.which_children()
+    |> Enum.map(fn {_id, pid, _type, _modules} -> pid end)
+    |> Enum.map(fn pid -> {get_room_id(pid), get_scores(pid)} end)
+    |> Enum.map(fn {room_id, scores} -> {room_id, Enum.count(scores)} end)
+    |> Map.new()
+  end
+
+  def get_answers(room_id) do
+    try_call(room_id, {:get_answers})
   end
 
   def user_joined(room_id, user) do
@@ -107,7 +119,9 @@ defmodule Aion.RoomChannel.Monitor do
   #########################
 
   def terminate(reason, _state) do
-    Logger.info("[monitor] One of the room GenServers has been stopped with a following reason: #{reason}")
+    Logger.info(
+      "[monitor] One of the room GenServers has been stopped with a following reason: #{reason}"
+    )
   end
 
   def handle_call(:stop, _from, state) do
@@ -129,6 +143,11 @@ defmodule Aion.RoomChannel.Monitor do
   def handle_call({:get_scores}, _from, state) do
     users = Room.get_scores(state)
     {:reply, users, state}
+  end
+
+  def handle_call({:get_answers}, _from, state) do
+    answers = Room.get_answers(state)
+    {:reply, answers, state}
   end
 
   def handle_call({:get_room_id}, _from, state) do
@@ -159,5 +178,4 @@ defmodule Aion.RoomChannel.Monitor do
   def handle_call({:get_current_question}, _from, state) do
     {:reply, Room.get_current_question(state), state}
   end
-
 end

@@ -27,7 +27,8 @@ defmodule Aion.Channels.Room do
 
   # event related topics
   @user_list_topic "event:user_list"
-
+  @user_joined_topic "event:user_joined"
+  @post_question_summary_topic "event:post_question_summary"
   # Upon entering question_break state, the next question will be sent after
   # the @next_question_delay timeout
   defdelegate next_question_delay(unit), to: Aion.Timeout
@@ -78,7 +79,7 @@ defmodule Aion.Channels.Room do
     send_feedback(socket, evaluation)
 
     if evaluation == 1.0 do
-      enter_question_break_state(socket)
+      enter_question_break_state(socket, username)
     end
 
     {:noreply, socket}
@@ -88,6 +89,7 @@ defmodule Aion.Channels.Room do
     send_scores(socket)
     send_current_question(socket)
     send_display_question(socket)
+    broadcast!(socket, @user_joined_topic, %{user: UserSocket.get_user_name(socket)})
     {:noreply, socket}
   end
 
@@ -128,13 +130,26 @@ defmodule Aion.Channels.Room do
     {:noreply, socket}
   end
 
-  defp enter_question_break_state(socket) do
+  defp enter_question_break_state(socket, round_winner \\ "") do
     send_question_break(socket)
+    send_post_question_summary(socket, round_winner)
     change_question(socket)
     :timer.send_after(next_question_delay(:millisecond), :next_question_timeout)
 
     send_scores(socket)
     new_state_with_timer(socket)
+  end
+
+  defp send_post_question_summary(socket, round_winner) do
+    room_id = UserSocket.get_room_id(socket)
+    answers = Monitor.get_answers(room_id)
+
+    payload = %{
+      answers: answers,
+      winner: round_winner
+    }
+
+    broadcast!(socket, @post_question_summary_topic, payload)
   end
 
   defp enter_question_displayed_state(socket) do

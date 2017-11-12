@@ -17,7 +17,7 @@ import Msgs exposing (Msg(..))
 import Html exposing (Html, a, div, img, li, p, text, ul)
 import Navigation exposing (Location)
 import Room.Constants exposing (answerInputFieldId, defaultImagePath, imagesPath)
-import Room.Models exposing (Answer, ImageName, RoomId, RoomState(QuestionBreak, QuestionDisplayed), RoomsData, UserGameData, UserRecord)
+import Room.Models exposing (Answer, Event(MkQuestionSummaryLog, MkUserJoinedLog), EventLog, ImageName, RoomId, RoomState(QuestionBreak, QuestionDisplayed), RoomsData, UserGameData, UserRecord)
 import Room.Urls exposing (getImageUrl)
 import Room.Utils exposing (getRoomList, getRoomNameById)
 import Toasty
@@ -46,7 +46,54 @@ roomView model roomId =
                     , displayScores model
                     ]
                 ]
+            , Grid.row []
+                [ Grid.col []
+                    [ displayEventLog model.eventLog
+                    ]
+                ]
             ]
+
+
+displayEventLog : EventLog -> Html Msg
+displayEventLog eventLog =
+    let
+        logList =
+            eventLog
+                |> List.take 3
+                |> List.map displaySingleLog
+    in
+        div
+            [ class "room-events" ]
+            [ ListGroup.ul logList ]
+
+
+displaySingleLog : Event -> ListGroup.Item msg
+displaySingleLog event =
+    let
+        log =
+            case event of
+                MkUserJoinedLog userJoinedLog ->
+                    if userJoinedLog.currentPlayer == userJoinedLog.newPlayer then
+                        "You have joined the room."
+                    else
+                        userJoinedLog.newPlayer ++ " has joined the room."
+
+                MkQuestionSummaryLog questionSummaryLog ->
+                    let
+                        winnerAnnouncement =
+                            case questionSummaryLog.winner of
+                                "" ->
+                                    ""
+
+                                winner ->
+                                    winner ++ " was the first one to answer correctly! "
+                    in
+                        winnerAnnouncement
+                            ++ "The correct answers were: "
+                            ++ String.join ", "
+                                questionSummaryLog.answers
+    in
+        ListGroup.li [] [ text log ]
 
 
 fillQuestionArea : Model -> Html Msg
