@@ -1,4 +1,4 @@
-defmodule Aion.Presence do
+defmodule Aion.Channels.Room.Presence do
   @moduledoc """
   Provides presence tracking to channels and processes.
 
@@ -72,6 +72,7 @@ defmodule Aion.Presence do
   information, while maintaining the required `:metas` field from the
   original presence data.
   """
-  use Phoenix.Presence, otp_app: :aion,
-                        pubsub_server: Aion.PubSub
+  use Phoenix.Presence,
+    otp_app: :aion,
+    pubsub_server: Aion.PubSub
 end

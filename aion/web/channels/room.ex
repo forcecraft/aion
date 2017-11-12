@@ -1,4 +1,4 @@
-defmodule Aion.RoomChannel do
+defmodule Aion.Channels.Room do
   @moduledoc """
   This module is responsible for providing a commucation between Elixir and Elm. It describes how the backend part
   should react to new messages or events.
@@ -6,11 +6,14 @@ defmodule Aion.RoomChannel do
 
   use Phoenix.Channel, log_join: false, log_handle_in: :info
 
-  alias Aion.{
+  alias Aion.Channels.Room.{
     Presence,
-    RoomChannel.Monitor,
     QuestionChronicle,
     UserSocket
+  }
+
+  alias Aion.{
+    RoomChannel.Monitor
   }
 
   require Logger
