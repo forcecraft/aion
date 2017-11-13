@@ -284,51 +284,56 @@ update msg model =
             let
                 newRoute =
                     parseLocation location
+
+                ( newModel, afterLeaveCmd ) =
+                    update LeaveRoom model
             in
                 case newRoute of
                     RoomRoute roomId ->
                         let
-                            ( leaveRoomSocket, leaveRoomCmd ) =
-                                leaveRoom (toString roomId) model.socket
-
                             ( initializeRoomSocket, initializeRoomCmd ) =
-                                initializeRoom leaveRoomSocket (toString roomId)
+                                initializeRoom newModel.socket (toString roomId)
                         in
-                            { model
+                            { newModel
                                 | socket = initializeRoomSocket
                                 , route = newRoute
                                 , roomId = roomId
                                 , toasties = Toasty.initialState
                             }
-                                ! [ Cmd.map PhoenixMsg initializeRoomCmd
-                                  , Cmd.map PhoenixMsg leaveRoomCmd
+                                ! [ afterLeaveCmd
+                                  , Cmd.map PhoenixMsg initializeRoomCmd
                                   ]
 
                     RoomListRoute ->
-                        { model | route = newRoute }
-                            ! [ fetchRooms
+                        { newModel | route = newRoute }
+                            ! [ afterLeaveCmd
+                              , fetchRooms
                                     |> withLocation model
                                     |> withToken model
                               ]
 
                     RankingRoute ->
                         { model | route = newRoute }
-                            ! [ fetchRanking
+                            ! [ afterLeaveCmd
+                              , fetchRanking
                                     |> withLocation model
                                     |> withToken model
                               ]
 
                     _ ->
-                        case model.route of
-                            RoomRoute oldRoomId ->
-                                let
-                                    ( socket, cmd ) =
-                                        leaveRoom (toString oldRoomId) model.socket
-                                in
-                                    { model | route = newRoute } ! [ Cmd.map PhoenixMsg cmd ]
+                        { newModel | route = newRoute } ! [ afterLeaveCmd ]
 
-                            _ ->
-                                { model | route = newRoute } ! []
+        LeaveRoom ->
+            case model.route of
+                RoomRoute id ->
+                    let
+                        ( leaveRoomSocket, leaveRoomCmd ) =
+                            leaveRoom (toString id) model.socket
+                    in
+                        { model | socket = leaveRoomSocket } ! [ Cmd.map PhoenixMsg leaveRoomCmd ]
+
+                _ ->
+                    model ! []
 
         PhoenixMsg msg ->
             let
@@ -361,9 +366,6 @@ update msg model =
 
                 Err error ->
                     model ! []
-
-        LeaveRoom roomId ->
-            model ! []
 
         SetAnswer newAnswer ->
             { model | userGameData = { currentAnswer = newAnswer } } ! []

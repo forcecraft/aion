@@ -36,7 +36,10 @@ initializeRoom socket roomIdToString =
             )
 
 
-leaveRoom : String -> Phoenix.Socket.Socket Msg -> ( Phoenix.Socket.Socket Msg, Cmd (Phoenix.Socket.Msg Msg) )
+leaveRoom :
+    String
+    -> Phoenix.Socket.Socket Msg
+    -> ( Phoenix.Socket.Socket Msg, Cmd (Phoenix.Socket.Msg Msg) )
 leaveRoom roomId socket =
     Phoenix.Socket.leave ("room:" ++ roomId) socket
 

@@ -53,7 +53,7 @@ type Msg
     | UpdateRoomForm String String
     | MultiselectMsg Multiselect.Msg
     | NavbarMsg Navbar.State
-    | LeaveRoom RoomId
     | ReceiveUserJoined Encode.Value
     | ReceiveUserList Encode.Value
     | ReceiveQuestionSummary Encode.Value
+    | LeaveRoom
