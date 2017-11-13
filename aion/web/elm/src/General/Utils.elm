@@ -26,18 +26,3 @@ sliceList n list =
 
         ( n, list ) ->
             (List.take n list) :: (sliceList n (List.drop n list))
-
-
-withUnpackRaw :
-    Decode.Value
-    -> Decode.Decoder a
-    -> Model
-    -> (a -> ( Model, Cmd msg ))
-    -> ( Model, Cmd msg )
-withUnpackRaw raw decoder model fun =
-    case Decode.decodeValue decoder raw of
-        Ok value ->
-            fun value
-
-        Err error ->
-            model ! []

@@ -8,7 +8,6 @@ import Forms
 import General.Constants exposing (loginFormMsg, registerFormMsg)
 import General.Models exposing (Model, Route(RoomListRoute, RoomRoute, RankingRoute))
 import General.Notifications exposing (toastsConfig)
-import General.Utils exposing (withUnpackRaw)
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Msgs exposing (Msg(..))
@@ -38,6 +37,21 @@ import User.Api exposing (fetchCurrentUser)
 updateForm : String -> String -> Forms.Form -> Forms.Form
 updateForm name value form =
     Forms.updateFormInput form name value
+
+
+decodeAndUpdate :
+    Decode.Value
+    -> Decode.Decoder a
+    -> Model
+    -> (a -> ( Model, Cmd msg ))
+    -> ( Model, Cmd msg )
+decodeAndUpdate encodedValue decoder model updateFun =
+    case Decode.decodeValue decoder encodedValue of
+        Ok value ->
+            updateFun value
+
+        Err error ->
+            model ! []
 
 
 unwrapToken : Maybe String -> String
@@ -340,7 +354,7 @@ update msg model =
                 { model | socket = socket } ! [ Cmd.map PhoenixMsg cmd ]
 
         ReceiveUserList raw ->
-            withUnpackRaw raw
+            decodeAndUpdate raw
                 userListMessageDecoder
                 model
                 (\userListMessage ->
@@ -348,8 +362,10 @@ update msg model =
                 )
 
         ReceiveAnswerFeedback rawFeedback ->
-            case Decode.decodeValue answerFeedbackDecoder rawFeedback of
-                Ok answerFeedback ->
+            decodeAndUpdate rawFeedback
+                answerFeedbackDecoder
+                model
+                (\answerFeedback ->
                     let
                         answerToast =
                             case answerFeedback.feedback of
@@ -368,17 +384,17 @@ update msg model =
                         model
                             ! []
                             |> answerToast
-
-                Err error ->
-                    model ! []
+                )
 
         LeaveRoom roomId ->
             model ! []
 
         -- room join/leave
         ReceiveUserJoined rawUserJoinedInfo ->
-            case Decode.decodeValue userJoinedInfoDecoder rawUserJoinedInfo of
-                Ok userJoinedInfo ->
+            decodeAndUpdate rawUserJoinedInfo
+                userJoinedInfoDecoder
+                model
+                (\userJoinedInfo ->
                     let
                         log =
                             case model.user of
@@ -392,9 +408,7 @@ update msg model =
                                     ""
                     in
                         model ! []
-
-                Err error ->
-                    model ! []
+                )
 
         SetAnswer newAnswer ->
             { model | userGameData = { currentAnswer = newAnswer } } ! []
@@ -411,7 +425,7 @@ update msg model =
                 push_ =
                     Phoenix.Push.init "new_answer" ("room:" ++ (toString model.roomId))
                         |> Phoenix.Push.withPayload payload
-                        |> Phoenix.Push.onOk (\rawFeedback -> ReceiveAnswerFeedback rawFeedback)
+                        |> Phoenix.Push.onOk ReceiveAnswerFeedback
 
                 ( socket, cmd ) =
                     Phoenix.Socket.push push_ model.socket
@@ -419,14 +433,15 @@ update msg model =
                 { model | socket = socket, userGameData = { currentAnswer = "" } } ! [ Cmd.map PhoenixMsg cmd ]
 
         ReceiveQuestion raw ->
-            case Decode.decodeValue questionDecoder raw of
-                Ok question ->
-                    { model | currentQuestion = question } ! [ Task.attempt FocusResult (focus answerInputFieldId) ]
+            decodeAndUpdate raw
+                questionDecoder
+                model
+                (\question ->
+                    { model | currentQuestion = question }
+                        ! [ Task.attempt FocusResult (focus answerInputFieldId) ]
+                )
 
-                Err error ->
-                    model ! []
-
-        ReceiveDisplayQuestion raw ->
+        ReceiveDisplayQuestion _ ->
             { model | roomState = QuestionDisplayed } ! []
 
         ReceiveQuestionBreak raw ->
