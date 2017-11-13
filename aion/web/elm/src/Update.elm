@@ -342,6 +342,14 @@ update msg model =
             in
                 { model | socket = socket } ! [ Cmd.map PhoenixMsg cmd ]
 
+        ReceiveUserList raw ->
+            case Decode.decodeValue userListMessageDecoder raw of
+                Ok userListMessage ->
+                    { model | userList = userListMessage.users } ! []
+
+                Err error ->
+                    model ! []
+
         ReceiveAnswerFeedback rawFeedback ->
             case Decode.decodeValue answerFeedbackDecoder rawFeedback of
                 Ok answerFeedback ->
@@ -363,6 +371,56 @@ update msg model =
                         model
                             ! []
                             |> answerToast
+
+                Err error ->
+                    model ! []
+
+        ReceiveUserJoined rawUserJoinedInfo ->
+            case Decode.decodeValue userJoinedInfoDecoder rawUserJoinedInfo of
+                Ok userJoinedInfo ->
+                    let
+                        oldEventLog =
+                            model.eventLog
+
+                        log =
+                            case model.user of
+                                RemoteData.Success currentUser ->
+                                    { currentPlayer = currentUser.name
+                                    , newPlayer = userJoinedInfo.user
+                                    }
+                                        |> MkUserJoinedLog
+                                        |> asLogIn oldEventLog
+
+                                _ ->
+                                    oldEventLog
+                    in
+                        { model | eventLog = log } ! []
+
+                Err error ->
+                    model ! []
+
+        ReceiveUserLeft rawUserLeftInfo ->
+            case Decode.decodeValue userLeftDecoder rawUserLeftInfo of
+                Ok userLeftInfo ->
+                    (userLeftInfo
+                        |> MkUserLeftLog
+                        |> asLogIn model.eventLog
+                        |> asEventLogIn model
+                    )
+                        ! []
+
+                Err error ->
+                    model ! []
+
+        ReceiveQuestionSummary raw ->
+            case Decode.decodeValue questionSummaryDecoder raw of
+                Ok questionSummary ->
+                    (questionSummary
+                        |> MkQuestionSummaryLog
+                        |> asLogIn model.eventLog
+                        |> asEventLogIn model
+                    )
+                        ! []
 
                 Err error ->
                     model ! []
@@ -590,61 +648,3 @@ update msg model =
         -- NoOp
         NoOperation ->
             model ! []
-
-        ReceiveUserJoined rawUserJoinedInfo ->
-            case Decode.decodeValue userJoinedInfoDecoder rawUserJoinedInfo of
-                Ok userJoinedInfo ->
-                    let
-                        oldEventLog =
-                            model.eventLog
-
-                        log =
-                            case model.user of
-                                RemoteData.Success currentUser ->
-                                    { currentPlayer = currentUser.name
-                                    , newPlayer = userJoinedInfo.user
-                                    }
-                                        |> MkUserJoinedLog
-                                        |> asLogIn oldEventLog
-
-                                _ ->
-                                    oldEventLog
-                    in
-                        { model | eventLog = log } ! []
-
-                Err error ->
-                    model ! []
-
-        ReceiveUserLeft rawUserLeftInfo ->
-            case Decode.decodeValue userLeftDecoder rawUserLeftInfo of
-                Ok userLeftInfo ->
-                    (userLeftInfo
-                        |> MkUserLeftLog
-                        |> asLogIn model.eventLog
-                        |> asEventLogIn model
-                    )
-                        ! []
-
-                Err error ->
-                    model ! []
-
-        ReceiveUserList raw ->
-            case Decode.decodeValue userListMessageDecoder raw of
-                Ok userListMessage ->
-                    { model | userList = userListMessage.users } ! []
-
-                Err error ->
-                    model ! []
-
-        ReceiveQuestionSummary raw ->
-            case Decode.decodeValue questionSummaryDecoder raw of
-                Ok questionSummary ->
-                    (questionSummary
-                        |> MkQuestionSummaryLog
-                        |> asLogIn model.eventLog
-                        |> asEventLogIn model
-                    )
-                        ! []
-
-                Err error ->
-                    model ! []
