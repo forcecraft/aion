@@ -1,6 +1,6 @@
 module Room.Decoders exposing (..)
 
-import Room.Models exposing (Answer, AnswerFeedback, CurrentQuestion, QuestionSummary, Room, RoomsData, UserJoinedInfo, UserList, UserListMessage, UserRecord)
+import Room.Models exposing (Answer, AnswerFeedback, CurrentQuestion, QuestionSummary, Room, RoomsData, UserJoinedInfo, UserLeft, UserList, UserListMessage, UserRecord)
 import Json.Decode as Decode exposing (field, list, map, null, oneOf)
 import Json.Decode.Pipeline exposing (decode, required)
 
@@ -49,6 +49,11 @@ answerFeedbackDecoder =
 userJoinedInfoDecoder : Decode.Decoder UserJoinedInfo
 userJoinedInfoDecoder =
     Decode.map UserJoinedInfo (field "user" Decode.string)
+
+
+userLeftDecoder : Decode.Decoder UserLeft
+userLeftDecoder =
+    Decode.map UserLeft (field "user" Decode.string)
 
 
 questionSummaryDecoder : Decode.Decoder QuestionSummary

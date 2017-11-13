@@ -64,6 +64,7 @@ defmodule Aion.Channels.Room do
     room_id = UserSocket.get_room_id(socket)
 
     Monitor.user_left(room_id, username)
+    send_user_left(socket, username)
     Presence.untrack(socket, username)
     Logger.info("[channel] #{username} left: " <> Kernel.inspect(msg))
 
@@ -119,16 +120,13 @@ defmodule Aion.Channels.Room do
 
   intercept(["presence_diff"])
 
-  def handle_out("presence_diff", %{joins: _joins, leaves: leaves}, socket) do
+  def handle_out("presence_diff", %{joins: _joins, leaves: _leaves}, socket) do
     # NOTE: This function currently sends scores.
     # 1. We may update it later to only send the presence diff and handle it
     # properly on the frontend side
     # 2. The send scores here is called only when there are > 1 people in
     # the room. If you're the first person joining the room, you're going
     # to receive the scores from :after_join.
-    for {user, _} <- leaves do
-      send_user_left(socket, user)
-    end
 
     send_scores(socket)
 

@@ -20,8 +20,8 @@ import Ranking.Api exposing (fetchRanking)
 import RemoteData
 import Room.Api exposing (fetchRooms)
 import Room.Constants exposing (answerInputFieldId, enterKeyCode)
-import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, questionSummaryDecoder, userJoinedInfoDecoder, userListMessageDecoder)
-import Room.Models exposing (Event(MkQuestionSummaryLog, MkUserJoinedLog), EventLog, RoomState(QuestionBreak, QuestionDisplayed), asLogIn)
+import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, questionSummaryDecoder, userJoinedInfoDecoder, userLeftDecoder, userListMessageDecoder)
+import Room.Models exposing (Event(MkQuestionSummaryLog, MkUserJoinedLog, MkUserLeftLog), EventLog, RoomState(QuestionBreak, QuestionDisplayed), asLogIn)
 import Room.Notifications exposing (..)
 import Routing exposing (parseLocation)
 import Phoenix.Socket
@@ -611,6 +611,19 @@ update msg model =
                                     oldEventLog
                     in
                         { model | eventLog = log } ! []
+
+                Err error ->
+                    model ! []
+
+        ReceiveUserLeft rawUserLeftInfo ->
+            case Decode.decodeValue userLeftDecoder rawUserLeftInfo of
+                Ok userLeftInfo ->
+                    (userLeftInfo
+                        |> MkUserLeftLog
+                        |> asLogIn model.eventLog
+                        |> asEventLogIn model
+                    )
+                        ! []
 
                 Err error ->
                     model ! []

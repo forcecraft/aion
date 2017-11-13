@@ -1,7 +1,7 @@
 module Socket exposing (..)
 
 import Json.Encode
-import Msgs exposing (Msg(ReceiveAnswerFeedback, ReceiveDisplayQuestion, ReceiveQuestion, ReceiveQuestionBreak, ReceiveQuestionSummary, ReceiveUserJoined, ReceiveUserList))
+import Msgs exposing (Msg(ReceiveAnswerFeedback, ReceiveDisplayQuestion, ReceiveQuestion, ReceiveQuestionBreak, ReceiveQuestionSummary, ReceiveUserJoined, ReceiveUserLeft, ReceiveUserList))
 import Navigation exposing (Location)
 import Phoenix.Channel
 import Phoenix.Push
@@ -29,6 +29,7 @@ initializeRoom socket roomIdToString =
                 |> Phoenix.Socket.on "question:question_break" roomTopic ReceiveQuestionBreak
                 |> Phoenix.Socket.on "event:user_list" roomTopic ReceiveUserList
                 |> Phoenix.Socket.on "event:user_joined" roomTopic ReceiveUserJoined
+                |> Phoenix.Socket.on "event:user_left" roomTopic ReceiveUserLeft
                 |> Phoenix.Socket.on "event:post_question_summary" roomTopic ReceiveQuestionSummary
                 |> Phoenix.Socket.on "question:answer_feedback" roomTopic ReceiveAnswerFeedback
                 |> Phoenix.Socket.on "question:current_question" roomTopic ReceiveQuestion

@@ -54,6 +54,7 @@ type Msg
     | MultiselectMsg Multiselect.Msg
     | NavbarMsg Navbar.State
     | ReceiveUserJoined Encode.Value
+    | ReceiveUserLeft Encode.Value
     | ReceiveUserList Encode.Value
     | ReceiveQuestionSummary Encode.Value
     | LeaveRoom

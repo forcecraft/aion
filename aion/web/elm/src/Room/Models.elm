@@ -74,12 +74,8 @@ type alias EventLog =
 
 type Event
     = MkUserJoinedLog UserJoined
+    | MkUserLeftLog UserLeft
     | MkQuestionSummaryLog QuestionSummary
-
-
-initialLog : EventLog
-initialLog =
-    []
 
 
 type alias UserJoined =
@@ -88,10 +84,19 @@ type alias UserJoined =
     }
 
 
+type alias UserLeft =
+    { user : String
+    }
+
+
 type alias QuestionSummary =
     { winner : String
     , answers : List String
     }
+
+
+
+-- TODO: Remove log or aslogin
 
 
 asLogIn : EventLog -> Event -> EventLog
@@ -102,3 +107,8 @@ asLogIn =
 logEvent : Event -> EventLog -> EventLog
 logEvent event eventLog =
     event :: eventLog
+
+
+initialLog : EventLog
+initialLog =
+    []

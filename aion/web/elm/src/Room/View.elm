@@ -17,7 +17,7 @@ import Msgs exposing (Msg(..))
 import Html exposing (Html, a, div, img, li, p, text, ul)
 import Navigation exposing (Location)
 import Room.Constants exposing (answerInputFieldId, defaultImagePath, imagesPath)
-import Room.Models exposing (Answer, Event(MkQuestionSummaryLog, MkUserJoinedLog), EventLog, ImageName, RoomId, RoomState(QuestionBreak, QuestionDisplayed), RoomsData, UserGameData, UserRecord)
+import Room.Models exposing (Answer, Event(MkQuestionSummaryLog, MkUserJoinedLog, MkUserLeftLog), EventLog, ImageName, RoomId, RoomState(QuestionBreak, QuestionDisplayed), RoomsData, UserGameData, UserRecord)
 import Room.Urls exposing (getImageUrl)
 import Room.Utils exposing (getRoomList, getRoomNameById)
 import Toasty
@@ -76,7 +76,10 @@ displaySingleLog event =
                     if userJoinedLog.currentPlayer == userJoinedLog.newPlayer then
                         "You have joined the room."
                     else
-                        userJoinedLog.newPlayer ++ " has joined the room."
+                        userJoinedLog.newPlayer ++ " joined the room."
+
+                MkUserLeftLog userLeftLog ->
+                    userLeftLog.user ++ " left."
 
                 MkQuestionSummaryLog questionSummaryLog ->
                     let
