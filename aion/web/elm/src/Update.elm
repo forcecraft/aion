@@ -8,6 +8,7 @@ import Forms
 import General.Constants exposing (loginFormMsg, registerFormMsg)
 import General.Models exposing (Model, Route(RoomListRoute, RoomRoute, RankingRoute))
 import General.Notifications exposing (toastsConfig)
+import General.Utils exposing (withUnpackRaw)
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Msgs exposing (Msg(..))
@@ -339,12 +340,12 @@ update msg model =
                 { model | socket = socket } ! [ Cmd.map PhoenixMsg cmd ]
 
         ReceiveUserList raw ->
-            case Decode.decodeValue userListMessageDecoder raw of
-                Ok userListMessage ->
+            withUnpackRaw raw
+                userListMessageDecoder
+                model
+                (\userListMessage ->
                     { model | userList = userListMessage.users } ! []
-
-                Err error ->
-                    model ! []
+                )
 
         ReceiveAnswerFeedback rawFeedback ->
             case Decode.decodeValue answerFeedbackDecoder rawFeedback of

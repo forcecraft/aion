@@ -1,6 +1,8 @@
 module General.Utils exposing (..)
 
 import Array exposing (Array, fromList)
+import General.Models exposing (Model)
+import Json.Decode as Decode
 
 
 roomsViewColorList : Array String
@@ -24,3 +26,18 @@ sliceList n list =
 
         ( n, list ) ->
             (List.take n list) :: (sliceList n (List.drop n list))
+
+
+withUnpackRaw :
+    Decode.Value
+    -> Decode.Decoder a
+    -> Model
+    -> (a -> ( Model, Cmd msg ))
+    -> ( Model, Cmd msg )
+withUnpackRaw raw decoder model fun =
+    case Decode.decodeValue decoder raw of
+        Ok value ->
+            fun value
+
+        Err error ->
+            model ! []
