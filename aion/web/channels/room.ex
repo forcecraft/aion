@@ -28,6 +28,7 @@ defmodule Aion.Channels.Room do
   # event related topics
   @user_list_topic "event:user_list"
   @user_joined_topic "event:user_joined"
+  @user_left_topic "event:user_left"
   @post_question_summary_topic "event:post_question_summary"
   # Upon entering question_break state, the next question will be sent after
   # the @next_question_delay timeout
@@ -89,7 +90,7 @@ defmodule Aion.Channels.Room do
     send_scores(socket)
     send_current_question(socket)
     send_display_question(socket)
-    broadcast!(socket, @user_joined_topic, %{user: UserSocket.get_user_name(socket)})
+    send_user_joined(socket, UserSocket.get_user_name(socket))
     {:noreply, socket}
   end
 
@@ -118,16 +119,28 @@ defmodule Aion.Channels.Room do
 
   intercept(["presence_diff"])
 
-  def handle_out("presence_diff", %{joins: _, leaves: _}, socket) do
+  def handle_out("presence_diff", %{joins: _joins, leaves: leaves}, socket) do
     # NOTE: This function currently sends scores.
     # 1. We may update it later to only send the presence diff and handle it
     # properly on the frontend side
     # 2. The send scores here is called only when there are > 1 people in
     # the room. If you're the first person joining the room, you're going
     # to receive the scores from :after_join.
+    for {user, _} <- leaves do
+      send_user_left(socket, user)
+    end
+
     send_scores(socket)
 
     {:noreply, socket}
+  end
+
+  defp send_user_left(socket, user) do
+    broadcast!(socket, @user_left_topic, %{user: user})
+  end
+
+  defp send_user_joined(socket, user) do
+    broadcast!(socket, @user_joined_topic, %{user: user})
   end
 
   defp enter_question_break_state(socket, round_winner \\ "") do
