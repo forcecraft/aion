@@ -30,6 +30,7 @@ defmodule Aion.Channels.Room do
   @user_joined_topic "event:user_joined"
   @user_left_topic "event:user_left"
   @post_question_summary_topic "event:post_question_summary"
+
   # Upon entering question_break state, the next question will be sent after
   # the @next_question_delay timeout
   defdelegate next_question_delay(unit), to: Aion.Timeout
@@ -126,7 +127,8 @@ defmodule Aion.Channels.Room do
     # properly on the frontend side
     # 2. The send scores here is called only when there are > 1 people in
     # the room. If you're the first person joining the room, you're going
-    # to receive the scores from :after_join.
+    # to receive the scores from :after_join. Similarly, you can handle leave
+    # events in terminate/2
 
     send_scores(socket)
 

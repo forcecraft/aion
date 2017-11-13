@@ -95,17 +95,8 @@ type alias QuestionSummary =
     }
 
 
-
--- TODO: Remove log or aslogin
-
-
 asLogIn : EventLog -> Event -> EventLog
-asLogIn =
-    flip logEvent
-
-
-logEvent : Event -> EventLog -> EventLog
-logEvent event eventLog =
+asLogIn eventLog event =
     event :: eventLog
 
 
