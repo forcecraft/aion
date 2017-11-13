@@ -1,8 +1,6 @@
 module General.Utils exposing (..)
 
 import Array exposing (Array, fromList)
-import General.Models exposing (Model)
-import Json.Decode as Decode
 
 
 roomsViewColorList : Array String
