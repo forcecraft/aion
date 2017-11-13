@@ -5,7 +5,7 @@ defmodule Aion.Endpoint do
 
   plug Plug.Static,
     at: "/", from: :aion, gzip: false,
-    only: ~w(css fonts images svg js favicon.ico robots.txt)
+    only: ~w(css fonts images placeholders svg js favicon.ico robots.txt)
 
   if code_reloading? do
     socket "/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket
