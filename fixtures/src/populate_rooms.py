@@ -9,7 +9,7 @@ def populate_one_category_rooms(conn, questions_threshold):
     for category_id, category_name in category_dict.items():
         questions = get_questions_from_category(category_id, conn)
         if questions and len(questions) > questions_threshold:
-            room_id = get_or_insert_room(category_name, category_name, conn)
+            room_id = get_or_insert_room(category_name.title(), category_name, conn)
             get_or_insert_rooms_to_categories(room_id, category_id, conn)
 
 
