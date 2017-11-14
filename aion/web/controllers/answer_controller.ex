@@ -3,7 +3,7 @@ defmodule Aion.AnswerController do
 
   alias Aion.Answer
 
-  plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
+  plug(Guardian.Plug.EnsureAuthenticated, handler: __MODULE__)
 
   def index(conn, _params) do
     answers = Repo.all(Answer)
@@ -19,6 +19,7 @@ defmodule Aion.AnswerController do
         |> put_status(:created)
         |> put_resp_header("location", answer_path(conn, :show, answer))
         |> render("show.json", answer: answer)
+
       {:error, changeset} ->
         Errors.unprocessable_entity(conn, changeset)
     end
@@ -36,6 +37,7 @@ defmodule Aion.AnswerController do
     case Repo.update(changeset) do
       {:ok, answer} ->
         render(conn, "show.json", answer: answer)
+
       {:error, changeset} ->
         Errors.unprocessable_entity(conn, changeset)
     end

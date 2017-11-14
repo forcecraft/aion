@@ -45,7 +45,7 @@ navbar : Route -> Location -> Navbar.State -> Html Msg
 navbar route location navbarState =
     let
         logoUrl =
-            (host location) ++ "images/aion_logo.png"
+            (host location) ++ "logo/aion_logo.png"
 
         baseNavbar =
             Navbar.config NavbarMsg
