@@ -17,23 +17,28 @@ defmodule Aion.QuestionTest do
   end
 
   test "get_questions_by_room_id when there are no questions" do
-    room1 = Repo.insert! %Room{}
+    room1 = Repo.insert!(%Room{})
 
     result = Question.get_questions_by_room_id(room1.id)
     assert length(result) == 0
   end
 
   test "get_questions_by_room_id when there are some questions" do
-    room1 = Repo.insert! %Room{}
-    room2 = Repo.insert! %Room{}
+    room1 = Repo.insert!(%Room{})
+    room2 = Repo.insert!(%Room{})
 
-    question_1 = Repo.insert! %Question{category: (Repo.insert! %Category{})}
-    question_2 = Repo.insert! %Question{category: (Repo.insert! %Category{})}
-    question_3 = Repo.insert! %Question{category: (Repo.insert! %Category{})}
+    question_1 = Repo.insert!(%Question{category: Repo.insert!(%Category{})})
+    question_2 = Repo.insert!(%Question{category: Repo.insert!(%Category{})})
+    question_3 = Repo.insert!(%Question{category: Repo.insert!(%Category{})})
 
-    room_category1 = Repo.insert! %RoomCategory{room_id: room1.id, category_id: question_1.category_id}
-    room_category2 = Repo.insert! %RoomCategory{room_id: room1.id, category_id: question_2.category_id}
-    room_category2 = Repo.insert! %RoomCategory{room_id: room2.id, category_id: question_3.category_id}
+    room_category1 =
+      Repo.insert!(%RoomCategory{room_id: room1.id, category_id: question_1.category_id})
+
+    room_category2 =
+      Repo.insert!(%RoomCategory{room_id: room1.id, category_id: question_2.category_id})
+
+    room_category2 =
+      Repo.insert!(%RoomCategory{room_id: room2.id, category_id: question_3.category_id})
 
     result = Question.get_questions_by_room_id(room1.id)
     assert length(result) == 2
@@ -44,11 +49,11 @@ defmodule Aion.QuestionTest do
   end
 
   def get_random_question(category_id) do
-    query = from q in Question, where: q.category_id == ^category_id
+    query = from(q in Question, where: q.category_id == ^category_id)
+
     question =
       query
       |> Repo.all()
       |> Enum.random()
   end
-
 end

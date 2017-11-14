@@ -15,11 +15,14 @@ defmodule Aion.Auth do
   def login_by_username_and_pass(conn, email, given_pass, opts) do
     repo = Keyword.fetch!(opts, :repo)
     user = repo.get_by(Aion.User, email: email)
+
     cond do
       user && checkpw(given_pass, user.encrypted_password) ->
         {:ok, login(conn, user)}
+
       user ->
         {:error, :unauthorized, conn}
+
       true ->
         dummy_checkpw()
         {:error, :not_found, conn}

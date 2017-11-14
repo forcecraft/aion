@@ -3,7 +3,7 @@ defmodule Aion.RoomCategoryController do
 
   alias Aion.RoomCategory
 
-  plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
+  plug(Guardian.Plug.EnsureAuthenticated, handler: __MODULE__)
 
   def index(conn, _params) do
     room_categories = Repo.all(RoomCategory)
@@ -19,6 +19,7 @@ defmodule Aion.RoomCategoryController do
         |> put_status(:created)
         |> put_resp_header("location", room_category_path(conn, :show, room_category))
         |> render("show.json", room_category: room_category)
+
       {:error, changeset} ->
         Errors.unprocessable_entity(conn, changeset)
     end
@@ -36,6 +37,7 @@ defmodule Aion.RoomCategoryController do
     case Repo.update(changeset) do
       {:ok, room_category} ->
         render(conn, "show.json", room_category: room_category)
+
       {:error, changeset} ->
         Errors.unprocessable_entity(conn, changeset)
     end

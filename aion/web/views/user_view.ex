@@ -5,6 +5,6 @@ defmodule Aion.UserView do
   def render("user.json", %{user: user}), do: Map.take(user, [:id, :name, :email])
 
   def render("error.json", %{message: msg}) do
-    %{"error": msg}
+    %{error: msg}
   end
 end

@@ -31,9 +31,12 @@ defmodule Aion.AuthConnCase do
 
     user = %Aion.User{email: "test@example.com", name: "something", password: "2131231", id: 1}
     {:ok, jwt, _} = Guardian.encode_and_sign(user)
-    conn = Phoenix.ConnTest.build_conn()
+
+    conn =
+      Phoenix.ConnTest.build_conn()
       |> Plug.Conn.put_req_header("authorization", "Bearer #{jwt}")
       |> Plug.Conn.put_req_header("accept", "application/json")
+
     {:ok, conn: conn}
   end
 end

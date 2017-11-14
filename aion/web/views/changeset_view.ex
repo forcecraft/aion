@@ -2,6 +2,7 @@ defmodule Aion.ChangesetView do
   use Aion.Web, :view
 
   alias Ecto.Changeset
+
   @doc """
   Traverses and translates changeset errors.
 

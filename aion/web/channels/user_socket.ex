@@ -6,17 +6,18 @@ defmodule Aion.UserSocket do
 
   alias Aion.{
     RoomChannel,
-    GuardianSerializer,
+    GuardianSerializer
   }
 
-  channel "room:*", RoomChannel
+  channel("room:*", RoomChannel)
 
-  transport :websocket, Phoenix.Transports.WebSocket
+  transport(:websocket, Phoenix.Transports.WebSocket)
 
   def connect(%{"token" => token}, socket) do
     case sign_in(socket, token) do
       {:ok, auth_socket, _guardian_params} ->
         {:ok, auth_socket}
+
       _ ->
         {:ok, socket}
     end
