@@ -9,23 +9,26 @@ defmodule Aion.QuestionControllerTest do
   @category 1
 
   test "lists all entries on index", %{conn: conn} do
-    conn = get conn, question_path(conn, :index)
+    conn = get(conn, question_path(conn, :index))
     data = json_response(conn, 200)["data"]
-    assert is_list data
+    assert is_list(data)
   end
 
   test "shows chosen resource", %{conn: conn} do
-    question = Repo.insert! %Question{}
-    conn = get conn, question_path(conn, :show, question)
-    assert json_response(conn, 200)["data"] == %{"id" => question.id,
-      "category_id" => question.category_id,
-      "content" => question.content,
-      "image_name" => question.image_name}
+    question = Repo.insert!(%Question{})
+    conn = get(conn, question_path(conn, :show, question))
+
+    assert json_response(conn, 200)["data"] == %{
+             "id" => question.id,
+             "category_id" => question.category_id,
+             "content" => question.content,
+             "image_name" => question.image_name
+           }
   end
 
   test "renders page not found when id is nonexistent", %{conn: conn} do
-    assert_error_sent 404, fn ->
-      get conn, question_path(conn, :show, -1)
-    end
+    assert_error_sent(404, fn ->
+      get(conn, question_path(conn, :show, -1))
+    end)
   end
 end

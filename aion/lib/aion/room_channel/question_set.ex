@@ -6,20 +6,20 @@ defmodule Aion.RoomChannel.QuestionSet do
   require Logger
 
   @type t :: %__MODULE__{
-    answers: (list Answer.t),
-    current_question: Question.t,
-    questions: (list Question.t),
-  }
+          answers: list(Answer.t()),
+          current_question: Question.t(),
+          questions: list(Question.t())
+        }
 
   defstruct answers: [],
-    current_question: nil,
-    questions: []
+            current_question: nil,
+            questions: []
 
-  @spec change_question(__MODULE__.t, integer) :: __MODULE__.t
+  @spec change_question(__MODULE__.t(), integer) :: __MODULE__.t()
   def change_question(question_set, room_id) do
     case question_set.questions do
       [] ->
-        Logger.error "No questions loaded in room"
+        Logger.error("No questions loaded in room")
         %__MODULE__{}
 
       [last_question] ->
@@ -31,19 +31,22 @@ defmodule Aion.RoomChannel.QuestionSet do
     end
   end
 
-  @spec new(Question.t, (list Question.t)) :: __MODULE__.t
+  @spec new(Question.t(), list(Question.t())) :: __MODULE__.t()
   defp new(current_question, remaining_questions) do
     answers = Answer.get_answers(current_question.id)
-    Logger.debug fn -> "Answers: #{inspect(Enum.map(answers, fn answer -> answer.content end))}" end
+
+    Logger.debug(fn ->
+      "Answers: #{inspect(Enum.map(answers, fn answer -> answer.content end))}"
+    end)
 
     %__MODULE__{
       questions: remaining_questions,
       current_question: current_question,
-      answers: answers,
+      answers: answers
     }
   end
 
-  @spec load_questions(integer) :: __MODULE__.t
+  @spec load_questions(integer) :: __MODULE__.t()
   def load_questions(room_id) do
     questions =
       room_id

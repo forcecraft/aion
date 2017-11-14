@@ -28,5 +28,4 @@ defmodule Aion.MonitorTest do
   test "room already exists" do
     assert Monitor.create(@room_id) == {:error, :room_already_exists}
   end
-
 end

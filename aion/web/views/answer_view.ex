@@ -10,12 +10,10 @@ defmodule Aion.AnswerView do
   end
 
   def render("answer.json", %{answer: answer}) do
-    %{id: answer.id,
-      question_id: answer.question_id,
-      content: answer.content}
+    %{id: answer.id, question_id: answer.question_id, content: answer.content}
   end
 
   def render("error.json", %{message: msg}) do
-    %{"error": msg}
+    %{error: msg}
   end
 end

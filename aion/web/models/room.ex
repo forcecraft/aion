@@ -6,13 +6,17 @@ defmodule Aion.Room do
   alias Aion.{Category, RoomCategory, Repo}
 
   schema "rooms" do
-    field :name, :string
-    field :description, :string
-    many_to_many :categories, Category,
+    field(:name, :string)
+    field(:description, :string)
+
+    many_to_many(
+      :categories,
+      Category,
       join_through: RoomCategory,
       on_delete: :delete_all
+    )
 
-      timestamps()
+    timestamps()
   end
 
   @doc """
@@ -29,6 +33,6 @@ defmodule Aion.Room do
 
   def parse_category_ids(params) do
     (params["category_ids"] || [])
-    |> Enum.map(fn(id) -> Repo.get(Category, id) end)
+    |> Enum.map(fn id -> Repo.get(Category, id) end)
   end
 end

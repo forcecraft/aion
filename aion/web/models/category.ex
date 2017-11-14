@@ -6,13 +6,21 @@ defmodule Aion.Category do
   alias Aion.{Room, RoomCategory, User, UserCategoryScore}
 
   schema "categories" do
-    field :name, :string
-    many_to_many :rooms, Room,
+    field(:name, :string)
+
+    many_to_many(
+      :rooms,
+      Room,
       join_through: RoomCategory,
       on_delete: :delete_all
-    many_to_many :users, User,
+    )
+
+    many_to_many(
+      :users,
+      User,
       join_through: UserCategoryScore,
       on_delete: :delete_all
+    )
 
     timestamps()
   end
