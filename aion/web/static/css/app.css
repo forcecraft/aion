@@ -192,10 +192,6 @@ footer p {
     margin-top: 20px;
 }
 
-.profile-container {
-    padding: 30px 30px 0 30px;
-}
-
 .multiselectWrap {
     position: relative;
     width: 100%;
@@ -379,4 +375,51 @@ footer p {
 .multiselectMenuItemHovered {
     background-color: rgba(0, 126, 255, 0.08);
     color: #333;
+}
+
+.profile-container {
+    padding: 30px 30px 0 20px;
+}
+
+.user-avatar {
+    height: 200px;
+    float: left;
+    clear: both;
+    border-radius: 25px;
+    border: 2px solid #5CB85C;
+}
+
+.user-info-block {
+    display: inline-block;
+    margin-left: 50px;
+    margin-top: 10px;
+    font-size: 24px;
+}
+
+.user-name::before {
+    content: "\f007";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    color: #5CB85C;
+    position: relative;
+    top: 1px;
+    left: 5px;
+    margin-right: 25px;
+}
+
+.user-email::before {
+    content: "\f0e0";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    color: #5CB85C;
+    position: relative;
+    top: 1px;
+    left: 2px;
+    margin-right: 20px;
+}
+
+.user-logut {
+    margin-top: 30px;
 }

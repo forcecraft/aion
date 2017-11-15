@@ -8,7 +8,7 @@ defmodule Aion.Endpoint do
     at: "/",
     from: :aion,
     gzip: false,
-    only: ~w(css fonts images logo js favicon.ico robots.txt)
+    only: ~w(css fonts images logo placeholders js favicon.ico robots.txt)
   )
 
   if code_reloading? do
