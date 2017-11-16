@@ -1,7 +1,7 @@
 defmodule Aion.RoomControllerTest do
   use Aion.AuthConnCase
 
-  alias Aion.{Room, Question}
+  alias Aion.{Room, Question, User}
   alias Aion.RoomChannel.{Monitor, QuestionSet}
 
   @room %Room{description: "Here come dat boi", name: "Dat Boi"}
@@ -10,7 +10,7 @@ defmodule Aion.RoomControllerTest do
   @questions %QuestionSet{
     questions: [@question1, @question2]
   }
-  @player "Stephan"
+  @player %User{id: 5, name: "Stephan"}
 
   test "lists all entries on index", %{conn: conn} do
     conn = get conn, room_path(conn, :index)

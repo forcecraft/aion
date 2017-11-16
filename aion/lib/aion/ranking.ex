@@ -17,7 +17,8 @@ defmodule Aion.Ranking do
   @spec data :: list category_score_t
   def data do
     query_data()
-      |> Enum.group_by(&%{category_id: &1.category_id, category_name: &1.category_name} , &%{user_name: &1.user_name, score: &1.score})
+      |> Enum.group_by(&%{category_id: &1.category_id, category_name: &1.category_name},
+                       &%{user_name: &1.user_name, score: &1.score})
       |> Map.to_list()
       |> Enum.map(&Map.put(elem(&1, 0), :scores, elem(&1, 1)))
   end

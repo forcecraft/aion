@@ -5,7 +5,7 @@ defmodule Aion.User do
   @type t :: %__MODULE__{name: String.t, email: String.t, password: String.t, encrypted_password: String.t}
   use Aion.Web, :model
   alias Comeonin.Bcrypt
-  alias Aion.{Repo, Category, UserCategoryScore}
+  alias Aion.{Repo, Category, UserCategoryScore, RatingSystem}
 
   schema "users" do
     field :name, :string
@@ -19,7 +19,7 @@ defmodule Aion.User do
     timestamps()
   end
 
-  def score(user_id, category_id, amount) do
+  def change_score_by(user_id, category_id, amount) do
     user_category_score = get_user_category_score(user_id, category_id)
     changeset = change(user_category_score, score: user_category_score.score + amount)
     Repo.insert_or_update(changeset)
@@ -53,8 +53,8 @@ defmodule Aion.User do
     end
   end
 
-  defp get_user_category_score(user_id, category_id) do
+  def get_user_category_score(user_id, category_id) do
     Repo.get_by(UserCategoryScore, user_id: user_id, category_id: category_id)
-    || %UserCategoryScore{user_id: user_id, category_id: category_id, score: 0}
+    || %UserCategoryScore{user_id: user_id, category_id: category_id, score: RatingSystem.initial_value}
   end
 end
