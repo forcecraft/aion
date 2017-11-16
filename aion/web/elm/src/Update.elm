@@ -310,9 +310,10 @@ update msg model =
                                 initializeRoom newModel.socket (toString roomId)
                         in
                             { newModel
-                                | socket = initializeRoomSocket
+                                | eventLog = []
                                 , route = newRoute
                                 , roomId = roomId
+                                , socket = initializeRoomSocket
                                 , toasties = Toasty.initialState
                             }
                                 ! [ afterLeaveCmd
