@@ -1,4 +1,4 @@
-defmodule Aion.Presence do
+defmodule Aion.Channels.Room.Presence do
   @moduledoc """
   Provides presence tracking to channels and processes.
 

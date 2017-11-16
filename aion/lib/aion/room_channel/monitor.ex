@@ -78,6 +78,10 @@ defmodule Aion.RoomChannel.Monitor do
     |> Map.new()
   end
 
+  def get_answers(room_id) do
+    try_call(room_id, {:get_answers})
+  end
+
   def user_joined(room_id, user) do
     try_call(room_id, {:user_joined, user})
   end
@@ -139,6 +143,11 @@ defmodule Aion.RoomChannel.Monitor do
   def handle_call({:get_scores}, _from, state) do
     users = Room.get_scores(state)
     {:reply, users, state}
+  end
+
+  def handle_call({:get_answers}, _from, state) do
+    answers = Room.get_answers(state)
+    {:reply, answers, state}
   end
 
   def handle_call({:get_room_id}, _from, state) do

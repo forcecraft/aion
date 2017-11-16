@@ -170,6 +170,12 @@ footer p {
     z-index: 0;
 }
 
+.room-events {
+    margin-top: 10px;
+    position: relative;
+    z-index: 0;
+}
+
 .room-question {
     margin-top: 20px;
     margin-bottom: 20px;

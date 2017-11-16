@@ -1,7 +1,7 @@
 defmodule Aion.Endpoint do
   use Phoenix.Endpoint, otp_app: :aion
 
-  socket("/socket", Aion.UserSocket)
+  socket("/socket", Aion.Channels.Room.UserSocket)
 
   plug(
     Plug.Static,

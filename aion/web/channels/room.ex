@@ -1,4 +1,4 @@
-defmodule Aion.RoomChannel do
+defmodule Aion.Channels.Room do
   @moduledoc """
   This module is responsible for providing a commucation between Elixir and Elm. It describes how the backend part
   should react to new messages or events.
@@ -6,21 +6,30 @@ defmodule Aion.RoomChannel do
 
   use Phoenix.Channel, log_join: false, log_handle_in: :info
 
-  alias Aion.{
+  alias Aion.Channels.Room.{
     Presence,
-    RoomChannel.Monitor,
     QuestionChronicle,
     UserSocket
   }
 
+  alias Aion.{
+    RoomChannel.Monitor
+  }
+
   require Logger
 
-  @answer_feedback_topic "answer_feedback"
-  @current_question_topic "current_question"
-  @display_question_topic "display_question"
-  @new_answer_topic "new_answer"
-  @question_break_topic "question_break"
-  @user_list_topic "user_list"
+  # event related topics
+  @post_question_summary_topic "event:post_question_summary"
+  @user_joined_topic "event:user_joined"
+  @user_left_topic "event:user_left"
+  @user_list_topic "event:user_list"
+
+  # gameplay only related topics
+  @answer_feedback_topic "question:answer_feedback"
+  @current_question_topic "question:current_question"
+  @display_question_topic "question:display_question"
+  @new_answer_topic "question:new_answer"
+  @question_break_topic "question:question_break"
 
   # Upon entering question_break state, the next question will be sent after
   # the @next_question_delay timeout
@@ -56,6 +65,7 @@ defmodule Aion.RoomChannel do
     room_id = UserSocket.get_room_id(socket)
 
     Monitor.user_left(room_id, username)
+    send_user_left(socket, username)
     Presence.untrack(socket, username)
     Logger.info("[channel] #{username} left: " <> Kernel.inspect(msg))
 
@@ -72,7 +82,7 @@ defmodule Aion.RoomChannel do
     send_feedback(socket, evaluation)
 
     if evaluation == 1.0 do
-      enter_question_break_state(socket)
+      enter_question_break_state(socket, username)
     end
 
     {:noreply, socket}
@@ -82,6 +92,7 @@ defmodule Aion.RoomChannel do
     send_scores(socket)
     send_current_question(socket)
     send_display_question(socket)
+    send_user_joined(socket, UserSocket.get_user_name(socket))
     {:noreply, socket}
   end
 
@@ -110,25 +121,48 @@ defmodule Aion.RoomChannel do
 
   intercept(["presence_diff"])
 
-  def handle_out("presence_diff", %{joins: _, leaves: _}, socket) do
+  def handle_out("presence_diff", %{joins: _joins, leaves: _leaves}, socket) do
     # NOTE: This function currently sends scores.
     # 1. We may update it later to only send the presence diff and handle it
     # properly on the frontend side
     # 2. The send scores here is called only when there are > 1 people in
     # the room. If you're the first person joining the room, you're going
-    # to receive the scores from :after_join.
+    # to receive the scores from :after_join. Similarly, you can handle leave
+    # events in terminate/2
+
     send_scores(socket)
 
     {:noreply, socket}
   end
 
-  defp enter_question_break_state(socket) do
+  defp send_user_left(socket, user) do
+    broadcast!(socket, @user_left_topic, %{user: user})
+  end
+
+  defp send_user_joined(socket, user) do
+    broadcast!(socket, @user_joined_topic, %{user: user})
+  end
+
+  defp enter_question_break_state(socket, round_winner \\ "") do
     send_question_break(socket)
+    send_post_question_summary(socket, round_winner)
     change_question(socket)
     :timer.send_after(next_question_delay(:millisecond), :next_question_timeout)
 
     send_scores(socket)
     new_state_with_timer(socket)
+  end
+
+  defp send_post_question_summary(socket, round_winner) do
+    room_id = UserSocket.get_room_id(socket)
+    answers = Monitor.get_answers(room_id)
+
+    payload = %{
+      answers: answers,
+      winner: round_winner
+    }
+
+    broadcast!(socket, @post_question_summary_topic, payload)
   end
 
   defp enter_question_displayed_state(socket) do

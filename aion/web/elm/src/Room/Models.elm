@@ -66,3 +66,40 @@ type alias ImageName =
 
 type alias Answer =
     String
+
+
+type alias EventLog =
+    List Event
+
+
+type Event
+    = MkUserJoinedLog UserJoined
+    | MkUserLeftLog UserLeft
+    | MkQuestionSummaryLog QuestionSummary
+
+
+type alias UserJoined =
+    { currentPlayer : String
+    , newPlayer : String
+    }
+
+
+type alias UserLeft =
+    { user : String
+    }
+
+
+type alias QuestionSummary =
+    { winner : String
+    , answers : List String
+    }
+
+
+asLogIn : EventLog -> Event -> EventLog
+asLogIn eventLog event =
+    event :: eventLog
+
+
+initialLog : EventLog
+initialLog =
+    []

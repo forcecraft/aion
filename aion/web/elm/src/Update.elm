@@ -6,7 +6,7 @@ import Auth.Notifications exposing (loginErrorToast, registrationErrorToast)
 import Dom exposing (focus)
 import Forms
 import General.Constants exposing (loginFormMsg, registerFormMsg)
-import General.Models exposing (Model, Route(RoomListRoute, RoomRoute, RankingRoute))
+import General.Models exposing (Model, Route(RankingRoute, RoomListRoute, RoomRoute), asEventLogIn)
 import General.Notifications exposing (toastsConfig)
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -20,16 +20,15 @@ import Ranking.Api exposing (fetchRanking)
 import RemoteData
 import Room.Api exposing (fetchRooms)
 import Room.Constants exposing (answerInputFieldId, enterKeyCode)
-import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, userJoinedInfoDecoder, userListMessageDecoder)
-import Room.Models exposing (RoomState(QuestionBreak, QuestionDisplayed))
+import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, questionSummaryDecoder, userJoinedInfoDecoder, userLeftDecoder, userListMessageDecoder)
+import Room.Models exposing (Event(MkQuestionSummaryLog, MkUserJoinedLog, MkUserLeftLog), EventLog, RoomState(QuestionBreak, QuestionDisplayed), asLogIn)
 import Room.Notifications exposing (..)
 import Routing exposing (parseLocation)
 import Phoenix.Socket
-import Phoenix.Push
 import Task
 import Toasty
 import Multiselect
-import Socket exposing (initSocket, initializeRoom, leaveRoom)
+import Socket exposing (initSocket, initializeRoom, leaveRoom, sendAnswer)
 import Urls exposing (host, websocketUrl)
 import User.Api exposing (fetchCurrentUser)
 
@@ -300,51 +299,56 @@ update msg model =
             let
                 newRoute =
                     parseLocation location
+
+                ( newModel, afterLeaveCmd ) =
+                    update LeaveRoom model
             in
                 case newRoute of
                     RoomRoute roomId ->
                         let
-                            ( leaveRoomSocket, leaveRoomCmd ) =
-                                leaveRoom (toString roomId) model.socket
-
                             ( initializeRoomSocket, initializeRoomCmd ) =
-                                initializeRoom leaveRoomSocket (toString roomId)
+                                initializeRoom newModel.socket (toString roomId)
                         in
-                            { model
+                            { newModel
                                 | socket = initializeRoomSocket
                                 , route = newRoute
                                 , roomId = roomId
                                 , toasties = Toasty.initialState
                             }
-                                ! [ Cmd.map PhoenixMsg initializeRoomCmd
-                                  , Cmd.map PhoenixMsg leaveRoomCmd
+                                ! [ afterLeaveCmd
+                                  , Cmd.map PhoenixMsg initializeRoomCmd
                                   ]
 
                     RoomListRoute ->
-                        { model | route = newRoute }
-                            ! [ fetchRooms
+                        { newModel | route = newRoute }
+                            ! [ afterLeaveCmd
+                              , fetchRooms
                                     |> withLocation model
                                     |> withToken model
                               ]
 
                     RankingRoute ->
                         { model | route = newRoute }
-                            ! [ fetchRanking
+                            ! [ afterLeaveCmd
+                              , fetchRanking
                                     |> withLocation model
                                     |> withToken model
                               ]
 
                     _ ->
-                        case model.route of
-                            RoomRoute oldRoomId ->
-                                let
-                                    ( socket, cmd ) =
-                                        leaveRoom (toString oldRoomId) model.socket
-                                in
-                                    { model | route = newRoute } ! [ Cmd.map PhoenixMsg cmd ]
+                        { newModel | route = newRoute } ! [ afterLeaveCmd ]
 
-                            _ ->
-                                { model | route = newRoute } ! []
+        LeaveRoom ->
+            case model.route of
+                RoomRoute id ->
+                    let
+                        ( leaveRoomSocket, leaveRoomCmd ) =
+                            leaveRoom (toString id) model.socket
+                    in
+                        { model | socket = leaveRoomSocket } ! [ Cmd.map PhoenixMsg leaveRoomCmd ]
+
+                _ ->
+                    model ! []
 
         PhoenixMsg msg ->
             let
@@ -386,28 +390,54 @@ update msg model =
                             |> answerToast
                 )
 
-        LeaveRoom roomId ->
-            model ! []
-
-        -- room join/leave
         ReceiveUserJoined rawUserJoinedInfo ->
             decodeAndUpdate rawUserJoinedInfo
                 userJoinedInfoDecoder
                 model
                 (\userJoinedInfo ->
                     let
+                        oldEventLog =
+                            model.eventLog
+
                         log =
                             case model.user of
                                 RemoteData.Success currentUser ->
-                                    if currentUser.name == userJoinedInfo.user then
-                                        Debug.log currentUser.name "you have successfully joined the room!"
-                                    else
-                                        Debug.log userJoinedInfo.user "user joined."
+                                    { currentPlayer = currentUser.name
+                                    , newPlayer = userJoinedInfo.user
+                                    }
+                                        |> MkUserJoinedLog
+                                        |> asLogIn oldEventLog
 
                                 _ ->
-                                    ""
+                                    oldEventLog
                     in
-                        model ! []
+                        { model | eventLog = log } ! []
+                )
+
+        ReceiveUserLeft rawUserLeftInfo ->
+            decodeAndUpdate rawUserLeftInfo
+                userLeftDecoder
+                model
+                (\userLeftInfo ->
+                    (userLeftInfo
+                        |> MkUserLeftLog
+                        |> asLogIn model.eventLog
+                        |> asEventLogIn model
+                    )
+                        ! []
+                )
+
+        ReceiveQuestionSummary rawQuestionSummary ->
+            decodeAndUpdate rawQuestionSummary
+                questionSummaryDecoder
+                model
+                (\questionSummary ->
+                    (questionSummary
+                        |> MkQuestionSummaryLog
+                        |> asLogIn model.eventLog
+                        |> asEventLogIn model
+                    )
+                        ! []
                 )
 
         SetAnswer newAnswer ->
@@ -422,13 +452,8 @@ update msg model =
                         ]
                     )
 
-                push_ =
-                    Phoenix.Push.init "new_answer" ("room:" ++ (toString model.roomId))
-                        |> Phoenix.Push.withPayload payload
-                        |> Phoenix.Push.onOk ReceiveAnswerFeedback
-
                 ( socket, cmd ) =
-                    Phoenix.Socket.push push_ model.socket
+                    sendAnswer (toString model.roomId) payload model.socket
             in
                 { model | socket = socket, userGameData = { currentAnswer = "" } } ! [ Cmd.map PhoenixMsg cmd ]
 

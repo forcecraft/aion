@@ -57,4 +57,10 @@ defmodule Aion.RoomChannel.QuestionSet do
   end
 
   def get_current_question(question_set), do: question_set.current_question
+
+  def get_answers(question_set) do
+    question_set
+    |> Map.get(:answers)
+    |> Enum.map(&Map.get(&1, :content))
+  end
 end

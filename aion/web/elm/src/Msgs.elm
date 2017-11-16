@@ -27,7 +27,6 @@ type Msg
     | OnCategoryCreated (WebData CategoryCreatedData)
     | OnRoomCreated (WebData RoomCreatedData)
     | PhoenixMsg (Phoenix.Socket.Msg Msg)
-    | ReceiveUserList Encode.Value
     | SetAnswer String
     | SubmitAnswer
     | ReceiveQuestion Encode.Value
@@ -35,7 +34,6 @@ type Msg
     | KeyDown Int
     | NoOperation
     | ReceiveAnswerFeedback Encode.Value
-    | ReceiveUserJoined Encode.Value
     | ReceiveDisplayQuestion Encode.Value
     | ReceiveQuestionBreak Encode.Value
     | ToastyMsg (Toasty.Msg Toasty.Defaults.Toast)
@@ -55,4 +53,8 @@ type Msg
     | UpdateRoomForm String String
     | MultiselectMsg Multiselect.Msg
     | NavbarMsg Navbar.State
-    | LeaveRoom RoomId
+    | ReceiveUserJoined Encode.Value
+    | ReceiveUserLeft Encode.Value
+    | ReceiveUserList Encode.Value
+    | ReceiveQuestionSummary Encode.Value
+    | LeaveRoom

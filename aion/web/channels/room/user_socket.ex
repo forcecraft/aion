@@ -1,15 +1,15 @@
-defmodule Aion.UserSocket do
+defmodule Aion.Channels.Room.UserSocket do
   use Phoenix.Socket
   import Guardian.Phoenix.Socket
 
   @type t :: %Phoenix.Socket{}
 
   alias Aion.{
-    RoomChannel,
+    Channels.Room,
     GuardianSerializer
   }
 
-  channel("room:*", RoomChannel)
+  channel("room:*", Room)
 
   transport(:websocket, Phoenix.Transports.WebSocket)
 
