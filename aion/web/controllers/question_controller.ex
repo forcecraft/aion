@@ -3,7 +3,7 @@ defmodule Aion.QuestionController do
 
   alias Aion.{Question, QuestionTransactions}
 
-  plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
+  plug(Guardian.Plug.EnsureAuthenticated, handler: __MODULE__)
 
   def index(conn, _params) do
     questions = Repo.all(Question)
@@ -11,14 +11,18 @@ defmodule Aion.QuestionController do
   end
 
   def create(conn, %{"question" => question, "answers" => answers, "category" => category_id}) do
-    transaction = QuestionTransactions.create_question_with_answers(question, answers, category_id)
+    transaction =
+      QuestionTransactions.create_question_with_answers(question, answers, category_id)
+
     transaction_result = Repo.transaction(transaction)
+
     case transaction_result do
       {:ok, %{insert_question: question}} ->
         conn
         |> put_status(:created)
         |> put_resp_header("location", question_path(conn, :show, question))
         |> render("show.json", question: question)
+
       {:error, _, _, _} ->
         conn
         |> send_resp(500, "error processing entity")
@@ -37,6 +41,7 @@ defmodule Aion.QuestionController do
     case Repo.update(changeset) do
       {:ok, question} ->
         render(conn, "show.json", question: question)
+
       {:error, changeset} ->
         Errors.unprocessable_entity(conn, changeset)
     end

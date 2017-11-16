@@ -95,31 +95,20 @@ footer p {
 .tile:hover {
     cursor: pointer;
     opacity: 1;
-    text-decoration: underline;
+    text-decoration: none;
     -webkit-transform: scale(1.2);
-}
-
-.room-select-title {
-    margin-top: 25px;
-    margin-bottom: 25px;
-}
-
-.room-select-title h2 {
-    text-align: center;
 }
 
 .tile {
     transition: 0.5s ease;
     opacity: 0.65;
-    margin-bottom: 15px;
-    text-align: center;
-    font-size: 17px;
+    margin-bottom: 0px;
     border-radius: 3px;
+    background-color: #5CB85C;
 }
 
 .tile a {
     cursor: pointer;
-    line-height: 50px;
     color: white;
     display: block;
 }
@@ -129,11 +118,30 @@ footer p {
     color: white;
 }
 
-.welcome-title {
+.tile a p {
     text-align: center;
-    margin-top: 50px;
-    font-size: 3.25rem;
-    margin-bottom: 60px;
+    line-height: 0.5;
+}
+
+.tile-room-name {
+    padding-top: 30px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.tile-player-count {
+    padding-bottom: 30px;
+    font-size: 12px;
+}
+
+.tile-player-count::before {
+    content: "\f007";
+    font-family: FontAwesome;
+    color: white;
+    position: relative;
+    top: 1px;
+    left: 2px;
+    margin-right: 8px;
 }
 
 .panel-container {
@@ -196,10 +204,6 @@ footer p {
 
 .room-answer-button {
     margin-top: 20px;
-}
-
-.profile-container {
-    padding: 30px 30px 0 30px;
 }
 
 .multiselectWrap {
@@ -385,4 +389,51 @@ footer p {
 .multiselectMenuItemHovered {
     background-color: rgba(0, 126, 255, 0.08);
     color: #333;
+}
+
+.profile-container {
+    padding: 30px 30px 0 20px;
+}
+
+.user-avatar {
+    height: 200px;
+    float: left;
+    clear: both;
+    border-radius: 25px;
+    border: 2px solid #5CB85C;
+}
+
+.user-info-block {
+    display: inline-block;
+    margin-left: 50px;
+    margin-top: 10px;
+    font-size: 24px;
+}
+
+.user-name::before {
+    content: "\f007";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    color: #5CB85C;
+    position: relative;
+    top: 1px;
+    left: 5px;
+    margin-right: 25px;
+}
+
+.user-email::before {
+    content: "\f0e0";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    color: #5CB85C;
+    position: relative;
+    top: 1px;
+    left: 2px;
+    margin-right: 20px;
+}
+
+.user-logut {
+    margin-top: 30px;
 }

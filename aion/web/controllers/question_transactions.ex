@@ -10,9 +10,9 @@ defmodule Aion.QuestionTransactions do
   @answer_separator ","
 
   def create_question_with_answers(question, answers, category_id) do
-      Multi.new
-      |> Multi.insert(:insert_question, create_question_changeset(category_id, question))
-      |> Multi.run(:insert_answers, &insert_answers(&1.insert_question, answers))
+    Multi.new()
+    |> Multi.insert(:insert_question, create_question_changeset(category_id, question))
+    |> Multi.run(:insert_answers, &insert_answers(&1.insert_question, answers))
   end
 
   defp create_question_changeset(category_id, question) do
@@ -24,10 +24,16 @@ defmodule Aion.QuestionTransactions do
     answers_inserted? =
       answers
       |> String.split(@answer_separator)
-      |> Enum.map(fn answer_content -> Answer.changeset(%Answer{}, %{"content" => answer_content, "belongs_to" => question}) end)
+      |> Enum.map(fn answer_content ->
+           Answer.changeset(%Answer{}, %{"content" => answer_content, "belongs_to" => question})
+         end)
       |> Enum.map(fn answer_changeset -> Repo.insert(answer_changeset) end)
       |> Enum.all?(fn {insert_result, _} -> insert_result == :ok end)
 
-    if answers_inserted? do {:ok, true} else {:error, false} end
+    if answers_inserted? do
+      {:ok, true}
+    else
+      {:error, false}
+    end
   end
 end

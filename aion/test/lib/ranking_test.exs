@@ -7,11 +7,11 @@ defmodule Aion.RankingTest do
 
   describe "Ranking.general" do
     test "returns scored points in each category for each user" do
-      user1 = Repo.insert! User.registration_changeset(%User{}, @user1_attrs)
-      user2 = Repo.insert! User.registration_changeset(%User{}, @user2_attrs)
-      Repo.insert! %UserCategoryScore{user: user1, score: 2}
-      Repo.insert! %UserCategoryScore{user: user1, score: 4}
-      Repo.insert! %UserCategoryScore{user: user2, score: 5}
+      user1 = Repo.insert!(User.registration_changeset(%User{}, @user1_attrs))
+      user2 = Repo.insert!(User.registration_changeset(%User{}, @user2_attrs))
+      Repo.insert!(%UserCategoryScore{user: user1, score: 2})
+      Repo.insert!(%UserCategoryScore{user: user1, score: 4})
+      Repo.insert!(%UserCategoryScore{user: user2, score: 5})
 
       result = Ranking.general()
 

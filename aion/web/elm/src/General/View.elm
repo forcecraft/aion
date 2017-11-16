@@ -1,11 +1,10 @@
 module General.View exposing (..)
 
-import Array
 import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Col as Col
 import General.Models exposing (Model)
-import General.Utils exposing (sliceList, roomsViewColorList, roomsDefaultColor)
-import Html exposing (Html, a, br, button, div, h2, h4, i, img, li, p, text, ul)
+import General.Utils exposing (sliceList)
+import Html exposing (Html, a, br, button, div, h2, h4, i, img, li, p, span, text, ul)
 import Html.Attributes exposing (class, href, src, style)
 import Msgs exposing (Msg)
 import RemoteData exposing (WebData)
@@ -21,13 +20,7 @@ notFoundView =
 
 roomListView : Model -> Html Msg
 roomListView model =
-    div []
-        [ div [ class "room-select-title" ]
-            [ h2 [] [ text "Welcome to Aion!" ]
-            , h4 [] [ text "Select a room to play:" ]
-            ]
-        , listRooms model.rooms
-        ]
+    div [] [ listRooms model.rooms ]
 
 
 listRooms : WebData RoomsData -> Html Msg
@@ -67,14 +60,7 @@ listRoomsSlice rooms =
 listSingleRoom : Room -> Grid.Column Msg
 listSingleRoom room =
     Grid.col [ Col.lg2, Col.md4 ]
-        [ div
-            [ style
-                [ ( "backgroundColor", generateColor room )
-                ]
-            , class "tile"
-            ]
-            [ displayRoomLabel room ]
-        ]
+        [ div [ class "tile" ] [ displayRoomLabel room ] ]
 
 
 displayRoomLabel : Room -> Html Msg
@@ -82,6 +68,9 @@ displayRoomLabel room =
     let
         url =
             "#rooms/" ++ (toString room.id)
+
+        roomName =
+            room.name
 
         playerCount =
             case room.player_count of
@@ -93,25 +82,8 @@ displayRoomLabel room =
 
                 _ ->
                     toString (room.player_count) ++ " players"
-
-        roomLabel =
-            room.name ++ " (" ++ playerCount ++ ")"
     in
-        a [ href url ] [ text roomLabel ]
-
-
-generateColor : Room -> String
-generateColor room =
-    let
-        generatedIndex =
-            room.id * String.length (room.name) % 7
-
-        pickedColor =
-            Array.get generatedIndex roomsViewColorList
-    in
-        case pickedColor of
-            Just color ->
-                color
-
-            Nothing ->
-                roomsDefaultColor
+        a [ href url ]
+            [ p [ class "tile-room-name" ] [ text roomName ]
+            , p [ class "tile-player-count" ] [ text playerCount ]
+            ]
