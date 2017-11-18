@@ -43,20 +43,14 @@ progressBarTick progressBar time =
         nextProgress =
             timeDiff / progressBarTimeout * 100
 
-        progress =
-            if nextProgress > 100 then
-                0
-            else
-                nextProgress
-
         finishedLoading =
             nextProgress > 100
 
-        running =
+        ( running, progress ) =
             if finishedLoading == True then
-                Stopped
+                ( Stopped, 0 )
             else
-                Running
+                ( Running, nextProgress )
     in
         progressBar
             |> withRunning running
