@@ -2,7 +2,9 @@ module Room.Utils exposing (..)
 
 import General.Models exposing (Model)
 import RemoteData
-import Room.Models exposing (Room, RoomId, RoomsData)
+import Room.Constants exposing (progressBarTimeout)
+import Room.Models exposing (ProgressBar, ProgressBarState(Running, Stopped), Room, RoomId, RoomsData, withProgress, withRunning, withStart)
+import Time exposing (Time, inMilliseconds)
 
 
 getRoomNameById : Model -> RoomId -> String
@@ -29,3 +31,37 @@ getRoomList model =
 
         _ ->
             []
+
+
+progressBarTick : ProgressBar -> Time -> ProgressBar
+progressBarTick progressBar time =
+    let
+        timeDiff =
+            inMilliseconds time
+                - progressBar.start
+                |> Debug.log "Timediff"
+
+        nextProgress =
+            timeDiff / progressBarTimeout * 100
+
+        x =
+            Debug.log "progress" nextProgress
+
+        progress =
+            if nextProgress > 100 then
+                0
+            else
+                nextProgress
+
+        finishedLoading =
+            nextProgress > 100
+
+        running =
+            if finishedLoading == True then
+                Stopped
+            else
+                Running
+    in
+        progressBar
+            |> withRunning running
+            |> withProgress progress

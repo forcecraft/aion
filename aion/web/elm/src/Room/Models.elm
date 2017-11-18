@@ -103,3 +103,43 @@ asLogIn eventLog event =
 initialLog : EventLog
 initialLog =
     []
+
+
+type alias ProgressBar =
+    { start : Float
+    , progress : Float
+    , running : ProgressBarState
+    }
+
+
+initialProgressBar : ProgressBar
+initialProgressBar =
+    { start = 0.0
+    , progress = 0.0
+    , running = Uninitialized
+    }
+
+
+type ProgressBarState
+    = Running
+    | Uninitialized
+    | Stopped
+
+
+type alias Progress =
+    Float
+
+
+withProgress : Progress -> ProgressBar -> ProgressBar
+withProgress progress bar =
+    { bar | progress = progress }
+
+
+withRunning : ProgressBarState -> ProgressBar -> ProgressBar
+withRunning running bar =
+    { bar | running = running }
+
+
+withStart : Float -> ProgressBar -> ProgressBar
+withStart start bar =
+    { bar | start = start }

@@ -3,10 +3,11 @@ module Update exposing (..)
 import Auth.Api exposing (registerUser, submitCredentials)
 import Auth.Models exposing (Token, UnauthenticatedViewToggle(LoginView, RegisterView))
 import Auth.Notifications exposing (loginErrorToast, registrationErrorToast)
+import Delay
 import Dom exposing (focus)
 import Forms
 import General.Constants exposing (loginFormMsg, registerFormMsg)
-import General.Models exposing (Model, Route(RankingRoute, RoomListRoute, RoomRoute), asEventLogIn)
+import General.Models exposing (Model, Route(RankingRoute, RoomListRoute, RoomRoute), asEventLogIn, asProgressBarIn)
 import General.Notifications exposing (toastsConfig)
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -19,13 +20,15 @@ import Ports exposing (check)
 import Ranking.Api exposing (fetchRanking)
 import RemoteData
 import Room.Api exposing (fetchRooms)
-import Room.Constants exposing (answerInputFieldId, enterKeyCode)
+import Room.Constants exposing (answerInputFieldId, enterKeyCode, progressBarDelay, progressBarTimeout)
 import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, questionSummaryDecoder, userJoinedInfoDecoder, userLeftDecoder, userListMessageDecoder)
-import Room.Models exposing (Event(MkQuestionSummaryLog, MkUserJoinedLog, MkUserLeftLog), EventLog, RoomState(QuestionBreak, QuestionDisplayed), asLogIn)
+import Room.Models exposing (Event(MkQuestionSummaryLog, MkUserJoinedLog, MkUserLeftLog), EventLog, ProgressBarState(Running, Stopped, Uninitialized), RoomState(QuestionBreak, QuestionDisplayed), asLogIn, withProgress, withRunning, withStart)
 import Room.Notifications exposing (..)
+import Room.Utils exposing (progressBarTick)
 import Routing exposing (parseLocation)
 import Phoenix.Socket
 import Task
+import Time exposing (inMilliseconds, millisecond)
 import Toasty
 import Multiselect
 import Socket exposing (initSocket, initializeRoom, leaveRoom, sendAnswer)
@@ -468,10 +471,14 @@ update msg model =
                 )
 
         ReceiveDisplayQuestion _ ->
-            { model | roomState = QuestionDisplayed } ! []
+            { model
+                | roomState = QuestionDisplayed
+                , progressBar = model.progressBar |> withProgress 0 |> withRunning Uninitialized |> withStart 0
+            }
+                ! [ Delay.after progressBarDelay millisecond Tick ]
 
         ReceiveQuestionBreak raw ->
-            { model | roomState = QuestionBreak } ! []
+            { model | roomState = QuestionBreak, progressBar = model.progressBar |> withRunning Stopped |> withProgress 0 } ! []
 
         -- HTML
         FocusResult result ->
@@ -643,6 +650,43 @@ update msg model =
                     model
                         ! []
                         |> roomFormValidationErrorToast
+
+        Tick ->
+            let
+                cmd =
+                    case model.progressBar.running of
+                        Uninitialized ->
+                            [ Task.perform OnInitialTime Time.now ]
+
+                        Running ->
+                            [ Task.perform OnTime Time.now ]
+
+                        Stopped ->
+                            []
+            in
+                model ! cmd
+
+        OnInitialTime time ->
+            update
+                (OnTime time)
+                (model.progressBar
+                    |> withStart (inMilliseconds time)
+                    |> withRunning Running
+                    |> asProgressBarIn model
+                )
+
+        OnTime time ->
+            let
+                progressBar =
+                    progressBarTick model.progressBar time
+            in
+                (progressBar |> asProgressBarIn model)
+                    ! case progressBar.running of
+                        Running ->
+                            [ Delay.after progressBarDelay millisecond Tick ]
+
+                        _ ->
+                            []
 
         MultiselectMsg subMsg ->
             let

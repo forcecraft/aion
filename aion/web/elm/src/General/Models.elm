@@ -10,7 +10,7 @@ import Multiselect
 import Panel.Models exposing (CategoriesData, PanelData, categoryForm, questionForm, roomForm)
 import Phoenix.Socket
 import RemoteData exposing (WebData)
-import Room.Models exposing (CurrentQuestion, EventLog, RoomId, RoomState(QuestionBreak), RoomsData, UserGameData, UserList, initialLog)
+import Room.Models exposing (CurrentQuestion, EventLog, ProgressBar, RoomId, RoomState(QuestionBreak), RoomsData, UserGameData, UserList, initialLog, initialProgressBar)
 import Ranking.Models exposing (RankingData)
 import Toasty
 import Toasty.Defaults
@@ -36,6 +36,7 @@ type alias Model =
     , location : Location
     , roomState : RoomState
     , eventLog : EventLog
+    , progressBar : ProgressBar
     }
 
 
@@ -101,9 +102,15 @@ initialModel flags route location =
         , location = location
         , roomState = QuestionBreak
         , eventLog = initialLog
+        , progressBar = initialProgressBar
         }
 
 
 asEventLogIn : Model -> EventLog -> Model
 asEventLogIn model eventLog =
     { model | eventLog = eventLog }
+
+
+asProgressBarIn : Model -> ProgressBar -> Model
+asProgressBarIn model bar =
+    { model | progressBar = bar }
