@@ -22,7 +22,8 @@
         "pablen/toasty": "1.0.4 <= v <= 1.0.4",
         "rundis/elm-bootstrap": "3.0.0 <= v < 4.0.0",
         "truqu/elm-base64": "2.0.0 <= v < 3.0.0",
-        "inkuzmin/elm-multiselect": "1.1.1 <= v <= 1.1.1"
+        "inkuzmin/elm-multiselect": "1.1.1 <= v <= 1.1.1",
+        "debois/elm-mdl": "8.1.0 <= v <= 9.0.0"
     },
     "elm-version": "0.18.0 <= v < 0.19.0"
 }
