@@ -37,6 +37,13 @@ defmodule Aion.Answer do
 
   @spec compare_answers(String.t(), String.t()) :: float
   def compare_answers(first, second) do
-    JaroWinkler.compare(String.capitalize(first), String.capitalize(second))
+    JaroWinkler.compare(normalize(first), normalize(second))
+  end
+
+  @spec normalize(String.t()) :: String.t()
+  defp normalize(string) do
+    string
+    |> String.capitalize()
+    |> Latinizer.latinize()
   end
 end
