@@ -24,4 +24,9 @@ defmodule Aion.AnswerTest do
     [first, second] = ["a", "b"]
     assert Answer.compare_answers(first, second) == 0.0
   end
+
+  test "compare answer should ignore diacritic signs" do
+    [first, second] = ["łódeczka", "lodeczka"]
+    assert Answer.compare_answers(first, second) == 1.0
+  end
 end
