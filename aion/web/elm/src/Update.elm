@@ -478,7 +478,11 @@ update msg model =
                 ! [ Delay.after progressBarDelay millisecond Tick ]
 
         ReceiveQuestionBreak raw ->
-            { model | roomState = QuestionBreak, progressBar = model.progressBar |> withRunning Stopped |> withProgress 0 } ! []
+            { model
+                | roomState = QuestionBreak
+                , progressBar = model.progressBar |> withRunning Stopped
+            }
+                ! []
 
         -- HTML
         FocusResult result ->

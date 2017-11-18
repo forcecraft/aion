@@ -18,7 +18,7 @@ import Msgs exposing (Msg(..))
 import Html exposing (Html, a, div, img, li, p, text, ul)
 import Navigation exposing (Location)
 import Room.Constants exposing (answerInputFieldId, defaultImagePath, imagesPath)
-import Room.Models exposing (Answer, Event(MkQuestionSummaryLog, MkUserJoinedLog, MkUserLeftLog), EventLog, ImageName, ProgressBar, RoomId, RoomState(QuestionBreak, QuestionDisplayed), RoomsData, UserGameData, UserRecord)
+import Room.Models exposing (Answer, Event(MkQuestionSummaryLog, MkUserJoinedLog, MkUserLeftLog), EventLog, ImageName, ProgressBar, ProgressBarState(Stopped), RoomId, RoomState(QuestionBreak, QuestionDisplayed), RoomsData, UserGameData, UserRecord)
 import Room.Urls exposing (getImageUrl)
 import Room.Utils exposing (getRoomList, getRoomNameById)
 import Toasty
@@ -57,7 +57,22 @@ roomView model roomId =
 
 displayProgress : ProgressBar -> Html Msg
 displayProgress progress =
-    div [ class "progress-bar" ] [ Progress.progress [ Progress.success, Progress.value progress.progress ] ]
+    let
+        optionalAttrs =
+            case progress.running of
+                Stopped ->
+                    [ Progress.striped ]
+
+                _ ->
+                    []
+    in
+        div [ class "progress-bar" ]
+            [ Progress.progress <|
+                [ Progress.success
+                , Progress.value progress.progress
+                ]
+                    ++ optionalAttrs
+            ]
 
 
 displayEventLog : EventLog -> Html Msg
