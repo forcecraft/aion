@@ -12,6 +12,7 @@ import RemoteData exposing (WebData)
 import Phoenix.Socket
 import Json.Encode as Encode
 import Room.Models exposing (RoomId, RoomsData)
+import Time exposing (Time)
 import Toasty
 import Toasty.Defaults
 import User.Models exposing (CurrentUser)
@@ -58,3 +59,6 @@ type Msg
     | ReceiveUserList Encode.Value
     | ReceiveQuestionSummary Encode.Value
     | LeaveRoom
+    | Tick
+    | OnTime Time
+    | OnInitialTime Time

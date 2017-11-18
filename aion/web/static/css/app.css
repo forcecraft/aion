@@ -88,6 +88,14 @@ footer p {
     margin-right: 10px;
 }
 
+.question-container {
+    margin-bottom: 10px;
+}
+.progress-bar {
+    width: 100%;
+    height: 15px;
+}
+
 .highlight-aion {
     color: #5CB85C;
 }
@@ -186,7 +194,7 @@ footer p {
     height: 300px;
 }
 
-.room-image-hidden{
+.room-image-hidden {
     max-width: 100%;
     height: 300px;
     display: none;
