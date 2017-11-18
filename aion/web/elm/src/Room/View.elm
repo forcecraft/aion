@@ -61,7 +61,7 @@ displayProgress progress =
         optionalAttrs =
             case progress.running of
                 Stopped ->
-                    [ Progress.striped ]
+                    [ Progress.animated ]
 
                 _ ->
                     []
