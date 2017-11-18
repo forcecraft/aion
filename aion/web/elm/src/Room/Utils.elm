@@ -39,13 +39,9 @@ progressBarTick progressBar time =
         timeDiff =
             inMilliseconds time
                 - progressBar.start
-                |> Debug.log "Timediff"
 
         nextProgress =
             timeDiff / progressBarTimeout * 100
-
-        x =
-            Debug.log "progress" nextProgress
 
         progress =
             if nextProgress > 100 then
