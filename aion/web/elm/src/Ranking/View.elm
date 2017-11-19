@@ -2,7 +2,7 @@ module Ranking.View exposing (..)
 
 import General.Models exposing (Model)
 import Html exposing (..)
-import Html.Attributes exposing(style, src, value)
+import Html.Attributes exposing(style, src, value, class)
 import Msgs exposing (Msg(..))
 import Bootstrap.Table as Table
 import Bootstrap.Grid as Grid
@@ -67,7 +67,7 @@ rankingTable model =
         { options = [ Table.striped, Table.hover ]
         , thead = Table.simpleThead
             [ Table.th [] [ text "#" ]
-            , Table.th [ Table.cellAttr(style [ ("width", "5%") ]) ] []
+            , Table.th [ Table.cellAttr(class "medalColumn") ] []
             , Table.th [] [ text "User" ]
             , Table.th [] [ text "Score" ]
             ]

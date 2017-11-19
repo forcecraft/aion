@@ -380,3 +380,7 @@ footer p {
     background-color: rgba(0, 126, 255, 0.08);
     color: #333;
 }
+
+.medalColumn {
+    width: 5%;
+}
