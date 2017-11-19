@@ -12,8 +12,21 @@ import Bootstrap.Form as Form
 import Bootstrap.Form.Select as Select
 import Ranking.Models exposing (PlayerScore, RankingData, CategoryRanking)
 import RemoteData exposing (WebData)
-import Urls exposing (host)
 import Navigation exposing (Location)
+import Ranking.Utils exposing(selectedCategoryScores, sortedScoresWithIndices)
+import Ranking.Urls exposing(getGoldMedalImageUrl, getSilverMedalImageUrl, getBronzeMedalImageUrl)
+
+
+goldMedalPath : String
+goldMedalPath = "images/medal_gold.png"
+
+
+silverMedalPath : String
+silverMedalPath = "images/medal_silver.png"
+
+
+bronzeMedalPath : String
+bronzeMedalPath = "images/medal_bronze.png"
 
 
 rankingView : Model -> Html Msg
@@ -83,35 +96,8 @@ displaySingleScore model indexAndScore =
 
 scoreImage : Navigation.Location -> Int -> List (Html msg)
 scoreImage location index =
-    let
-        commonPath = (host location) ++ "images/"
-        imagePath = case index of
-                        0 -> "medal_gold.png"
-                        1 -> "medal_silver.png"
-                        2 -> "medal_bronze.png"
-                        _ -> ""
-    in
-        case imagePath of
-            "" -> []
-            _ -> [ img [ src (commonPath ++ imagePath) ] [] ]
-
-
-selectedCategoryScores : List CategoryRanking -> Int -> List PlayerScore
-selectedCategoryScores rankingList selectedCategoryId =
-    let
-        selectedCategoryRanking =
-            rankingList
-                |> List.filter(\category -> category.categoryId == selectedCategoryId)
-                |> List.head
-    in
-        case selectedCategoryRanking of
-            Just x -> x.scores
-            _ -> []
-
-
-sortedScoresWithIndices : List PlayerScore -> List(Int, PlayerScore)
-sortedScoresWithIndices scores =
-    scores
-        |> List.sortBy .score
-        |> List.reverse
-        |> List.indexedMap (,)
+    case index of
+        0 -> [ img [ src (getGoldMedalImageUrl location) ] [] ]
+        1 -> [ img [ src (getSilverMedalImageUrl location) ] [] ]
+        2 -> [ img [ src (getBronzeMedalImageUrl location) ] [] ]
+        _ -> []
