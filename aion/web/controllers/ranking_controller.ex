@@ -6,8 +6,8 @@ defmodule Aion.RankingController do
   plug(Plug.EnsureAuthenticated, handler: __MODULE__)
 
   def ranking(conn, _params) do
-    general_scores = Ranking.general()
-    render(conn, "ranking.json", scores: general_scores)
+    result = Ranking.data()
+    render(conn, "ranking.json", category_scores: result)
   end
 
   def unauthenticated(conn, _params) do

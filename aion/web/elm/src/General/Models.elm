@@ -31,7 +31,7 @@ type alias Model =
     , roomId : RoomId
     , toasties : Toasty.Stack Toasty.Defaults.Toast
     , panelData : PanelData
-    , rankingData : WebData RankingData
+    , rankingData : RankingData
     , navbarState : Navbar.State
     , location : Location
     , roomState : RoomState
@@ -97,7 +97,10 @@ initialModel flags route location =
             , roomForm = Forms.initForm roomForm
             , categoryMultiSelect = Multiselect.initModel [] "id"
             }
-        , rankingData = RemoteData.Loading
+        , rankingData =
+            { data = RemoteData.Loading
+            , selectedCategoryId = -1
+            }
         , navbarState = navbarState
         , location = location
         , roomState = QuestionBreak

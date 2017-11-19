@@ -6,7 +6,8 @@ defmodule Aion.RoomChannel.Room do
     Answer,
     Question,
     Repo,
-    User
+    User,
+    RatingSystem
   }
 
   alias Aion.RoomChannel.{
@@ -62,7 +63,8 @@ defmodule Aion.RoomChannel.Room do
   def award_user(room, username, user_id, amount \\ 1) do
     question = Repo.preload(room.questions.current_question, :category)
     category_id = question.category.id
-    User.score(user_id, category_id, amount)
+
+    RatingSystem.update_users_scores(user_id, Map.values(room.users), category_id)
 
     update_in(
       room,

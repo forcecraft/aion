@@ -5,6 +5,7 @@ defmodule Aion.RoomChannel.Monitor do
   use GenServer
   alias Aion.RoomChannel.UserRecord
   alias Aion.RoomChannel.Room
+  alias Aion.{User, Repo}
   require Logger
 
   #####################
@@ -129,9 +130,8 @@ defmodule Aion.RoomChannel.Monitor do
     {:stop, :normal, :ok, state}
   end
 
-  def handle_call({:user_joined, username}, _from, state) do
-    new_user = %UserRecord{username: username}
-    new_state = Room.add_user(state, new_user)
+  def handle_call({:user_joined, user}, _from, state) do
+    new_state = Room.add_user(state, %UserRecord{user_id: user.id, username: user.name})
     {:reply, :ok, new_state}
   end
 

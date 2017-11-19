@@ -6,12 +6,12 @@ import Json.Decode as Decode
 import Msgs exposing (Msg)
 import Navigation exposing (Location)
 import Ranking.Decoders exposing (rankingDecoder)
-import Ranking.Models exposing (RankingData)
+import Ranking.Models exposing (Ranking, CategoryRanking)
 import RemoteData
 import Urls exposing (rankingUrl)
 
 
-fetchRankingRequest : String -> String -> Decode.Decoder RankingData -> Request RankingData
+fetchRankingRequest : String -> String -> Decode.Decoder Ranking -> Request Ranking
 fetchRankingRequest url token decoder =
     Http.request
         { method = "GET"

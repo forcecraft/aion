@@ -37,7 +37,7 @@ defmodule Aion.Channels.Room do
 
   @spec join(String.t(), %{}, UserSocket.t()) :: {:ok, UserSocket.t()}
   def join("room:" <> room_id, _params, socket) do
-    username = UserSocket.get_user_name(socket)
+    user = UserSocket.get_user(socket)
 
     # NOTE: this is a temporary solution.
     # In the future, this function should return an error if a user wants to join a room that does not exist.
@@ -49,10 +49,10 @@ defmodule Aion.Channels.Room do
       :timer.send_after(timeout, :room_state_timeout)
     end
 
-    Monitor.user_joined(room_id, username)
-    Logger.info("[channel] #{username} joined room #{room_id}")
+    Monitor.user_joined(room_id, user)
+    Logger.info("[channel] #{user.name} joined room #{room_id}")
 
-    Presence.track(socket, username, %{
+    Presence.track(socket, user.name, %{
       online_at: inspect(System.system_time(:seconds))
     })
 

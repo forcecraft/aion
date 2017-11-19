@@ -2,7 +2,7 @@ defmodule UserRecordTest do
   use Aion.ModelCase
   alias Aion.RoomChannel.UserRecord
 
-  @user_record %UserRecord{username: "Jack"}
+  @user_record %UserRecord{user_id: 12, username: "Jack"}
 
   test "update score" do
     assert @user_record.score == 0
