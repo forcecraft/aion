@@ -11,7 +11,7 @@ import Bootstrap.Progress as Progress
 import General.Models exposing (Model)
 import General.Notifications exposing (toastsConfig)
 import Html exposing (Attribute, Html, a, button, div, form, h4, input, li, text, ul)
-import Html.Attributes exposing (class, for, href, id, src, value)
+import Html.Attributes exposing (autocomplete, class, for, href, id, src, value)
 import Html.Events exposing (keyCode, on, onClick, onInput, onWithOptions)
 import Json.Decode exposing (map)
 import Msgs exposing (Msg(..))
@@ -218,7 +218,8 @@ displayAnswerInput currentAnswer =
 displayAnswerInputField : Answer -> Html Msg
 displayAnswerInputField currentAnswer =
     Input.text
-        [ Input.id answerInputFieldId
+        [ Input.attrs [ autocomplete False ]
+        , Input.id answerInputFieldId
         , Input.onInput SetAnswer
         , Input.value currentAnswer
         ]
