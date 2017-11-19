@@ -5,15 +5,18 @@ import Room.Constants exposing (defaultImagePath, imagesPath)
 
 
 goldMedalPath : String
-goldMedalPath = "medal_gold.png"
+goldMedalPath =
+    "medal_gold.png"
 
 
 silverMedalPath : String
-silverMedalPath = "medal_silver.png"
+silverMedalPath =
+    "medal_silver.png"
 
 
 bronzeMedalPath : String
-bronzeMedalPath = "medal_bronze.png"
+bronzeMedalPath =
+    "medal_bronze.png"
 
 
 getGoldMedalImageUrl : Location -> String

@@ -10,13 +10,13 @@ type alias RankingData =
 
 
 type alias Ranking =
-    { rankingList: List CategoryRanking }
+    { rankingList : List CategoryRanking }
 
 
 type alias CategoryRanking =
     { categoryId : Int
     , categoryName : String
-    , scores: List PlayerScore
+    , scores : List PlayerScore
     }
 
 
