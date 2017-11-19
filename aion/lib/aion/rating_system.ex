@@ -6,6 +6,8 @@ defmodule Aion.RatingSystem do
   alias Aion.RoomChannel.UserRecord
 
   @k_factor 32
+  @initial_value 1200
+  @magnitude 400
 
   @spec update_users_scores(integer, list(UserRecord.t()), integer) :: none
   def update_users_scores(winner_id, users, category_id) do
@@ -44,12 +46,12 @@ defmodule Aion.RatingSystem do
   end
 
   def initial_value do
-    1200
+    @initial_value
   end
 
   @spec odds_for(integer) :: float
   defp odds_for(score) do
-    :math.pow(10, score / 400)
+    :math.pow(10, score / @magnitude)
   end
 
   @spec user_category_score(integer, integer) :: integer
