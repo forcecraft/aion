@@ -51,8 +51,14 @@ selectCategoriesAttributes : Model -> List (Select.Item msg)
 selectCategoriesAttributes model =
     case model.rankingData.data of
         RemoteData.Success rankingData ->
-            List.map (\category -> Select.item [ value (toString category.categoryId) ] [ text category.categoryName] ) rankingData.rankingList
+            List.map displayCategoryOption rankingData.rankingList
+
         _ -> []
+
+
+displayCategoryOption : CategoryRanking -> Select.Item msg
+displayCategoryOption category =
+    Select.item [ value (toString category.categoryId) ] [ text category.categoryName]
 
 
 rankingTable : Model -> Html Msg
@@ -98,6 +104,9 @@ scoreImage : Navigation.Location -> Int -> List (Html msg)
 scoreImage location index =
     case index of
         0 -> [ img [ src (getGoldMedalImageUrl location) ] [] ]
+
         1 -> [ img [ src (getSilverMedalImageUrl location) ] [] ]
+
         2 -> [ img [ src (getBronzeMedalImageUrl location) ] [] ]
+
         _ -> []
