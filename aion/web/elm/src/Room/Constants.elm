@@ -1,7 +1,6 @@
 module Room.Constants exposing (..)
 
 import Navigation exposing (Location)
-import Time exposing (Time, millisecond)
 import Urls exposing (host)
 
 

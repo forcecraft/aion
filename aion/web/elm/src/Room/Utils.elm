@@ -47,7 +47,7 @@ progressBarTick progressBar time =
             nextProgress > 100
 
         ( running, progress ) =
-            if finishedLoading == True then
+            if finishedLoading then
                 ( Stopped, nextProgress )
             else
                 ( Running, nextProgress )
