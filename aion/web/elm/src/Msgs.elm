@@ -12,6 +12,7 @@ import RemoteData exposing (WebData)
 import Phoenix.Socket
 import Json.Encode as Encode
 import Room.Models exposing (RoomId, RoomsData)
+import Time exposing (Time)
 import Toasty
 import Toasty.Defaults
 import User.Models exposing (CurrentUser)
@@ -27,7 +28,6 @@ type Msg
     | OnCategoryCreated (WebData CategoryCreatedData)
     | OnRoomCreated (WebData RoomCreatedData)
     | PhoenixMsg (Phoenix.Socket.Msg Msg)
-    | ReceiveUserList Encode.Value
     | SetAnswer String
     | SubmitAnswer
     | ReceiveQuestion Encode.Value
@@ -35,7 +35,6 @@ type Msg
     | KeyDown Int
     | NoOperation
     | ReceiveAnswerFeedback Encode.Value
-    | ReceiveUserJoined Encode.Value
     | ReceiveDisplayQuestion Encode.Value
     | ReceiveQuestionBreak Encode.Value
     | ToastyMsg (Toasty.Msg Toasty.Defaults.Toast)
@@ -55,5 +54,12 @@ type Msg
     | UpdateRoomForm String String
     | MultiselectMsg Multiselect.Msg
     | NavbarMsg Navbar.State
-    | LeaveRoom RoomId
+    | ReceiveUserJoined Encode.Value
+    | ReceiveUserLeft Encode.Value
+    | ReceiveUserList Encode.Value
+    | ReceiveQuestionSummary Encode.Value
+    | LeaveRoom
+    | Tick
+    | OnTime Time
+    | OnInitialTime Time
     | OnRankingCategoryChange String

@@ -21,11 +21,11 @@ function exit_with_errors {
 
 cd aion
 
-printf "Running dialyzer, may take a while if PLT compilation is needed...\n"
-mix dialyzer --halt-exit-status >"$TMP" 2>/dev/null || {
-  print_error "[PRE-COMMIT] Dialyzer has failed with the following result:"
-  exit_with_errors
-}
+#printf "Running dialyzer, may take a while if PLT compilation is needed...\n"
+#mix dialyzer --halt-exit-status >"$TMP" 2>/dev/null || {
+#  print_error "[PRE-COMMIT] Dialyzer has failed with the following result:"
+#  exit_with_errors
+#}
 
 printf "Running credo...\n"
 mix credo --strict >"$TMP" 2>/dev/null || {

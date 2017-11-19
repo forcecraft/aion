@@ -3,10 +3,11 @@ module Update exposing (..)
 import Auth.Api exposing (registerUser, submitCredentials)
 import Auth.Models exposing (Token, UnauthenticatedViewToggle(LoginView, RegisterView))
 import Auth.Notifications exposing (loginErrorToast, registrationErrorToast)
+import Delay
 import Dom exposing (focus)
 import Forms
 import General.Constants exposing (loginFormMsg, registerFormMsg)
-import General.Models exposing (Model, Route(RoomListRoute, RoomRoute, RankingRoute))
+import General.Models exposing (Model, Route(RankingRoute, RoomListRoute, RoomRoute), asEventLogIn, asProgressBarIn)
 import General.Notifications exposing (toastsConfig)
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -19,17 +20,18 @@ import Ports exposing (check)
 import Ranking.Api exposing (fetchRanking)
 import RemoteData
 import Room.Api exposing (fetchRooms)
-import Room.Constants exposing (answerInputFieldId, enterKeyCode)
-import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, userJoinedInfoDecoder, userListMessageDecoder)
-import Room.Models exposing (RoomState(QuestionBreak, QuestionDisplayed))
+import Room.Constants exposing (answerInputFieldId, enterKeyCode, progressBarDelay, progressBarTimeout)
+import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, questionSummaryDecoder, userJoinedInfoDecoder, userLeftDecoder, userListMessageDecoder)
+import Room.Models exposing (Event(MkQuestionSummaryLog, MkUserJoinedLog, MkUserLeftLog), EventLog, ProgressBarState(Running, Stopped, Uninitialized), RoomState(QuestionBreak, QuestionDisplayed), asLogIn, withProgress, withRunning, withStart)
 import Room.Notifications exposing (..)
+import Room.Utils exposing (progressBarTick)
 import Routing exposing (parseLocation)
 import Phoenix.Socket
-import Phoenix.Push
 import Task
+import Time exposing (inMilliseconds, millisecond)
 import Toasty
 import Multiselect
-import Socket exposing (initSocket, initializeRoom, leaveRoom)
+import Socket exposing (initSocket, initializeRoom, leaveRoom, sendAnswer)
 import Urls exposing (host, websocketUrl)
 import User.Api exposing (fetchCurrentUser)
 
@@ -37,6 +39,21 @@ import User.Api exposing (fetchCurrentUser)
 updateForm : String -> String -> Forms.Form -> Forms.Form
 updateForm name value form =
     Forms.updateFormInput form name value
+
+
+decodeAndUpdate :
+    Decode.Value
+    -> Decode.Decoder a
+    -> Model
+    -> (a -> ( Model, Cmd msg ))
+    -> ( Model, Cmd msg )
+decodeAndUpdate encodedValue decoder model updateFun =
+    case Decode.decodeValue decoder encodedValue of
+        Ok value ->
+            updateFun value
+
+        Err error ->
+            model ! []
 
 
 unwrapToken : Maybe String -> String
@@ -320,51 +337,57 @@ update msg model =
             let
                 newRoute =
                     parseLocation location
+
+                ( newModel, afterLeaveCmd ) =
+                    update LeaveRoom model
             in
                 case newRoute of
                     RoomRoute roomId ->
                         let
-                            ( leaveRoomSocket, leaveRoomCmd ) =
-                                leaveRoom (toString roomId) model.socket
-
                             ( initializeRoomSocket, initializeRoomCmd ) =
-                                initializeRoom leaveRoomSocket (toString roomId)
+                                initializeRoom newModel.socket (toString roomId)
                         in
-                            { model
-                                | socket = initializeRoomSocket
+                            { newModel
+                                | eventLog = []
                                 , route = newRoute
                                 , roomId = roomId
+                                , socket = initializeRoomSocket
                                 , toasties = Toasty.initialState
                             }
-                                ! [ Cmd.map PhoenixMsg initializeRoomCmd
-                                  , Cmd.map PhoenixMsg leaveRoomCmd
+                                ! [ afterLeaveCmd
+                                  , Cmd.map PhoenixMsg initializeRoomCmd
                                   ]
 
                     RoomListRoute ->
-                        { model | route = newRoute }
-                            ! [ fetchRooms
+                        { newModel | route = newRoute }
+                            ! [ afterLeaveCmd
+                              , fetchRooms
                                     |> withLocation model
                                     |> withToken model
                               ]
 
                     RankingRoute ->
                         { model | route = newRoute }
-                            ! [ fetchRanking
+                            ! [ afterLeaveCmd
+                              , fetchRanking
                                     |> withLocation model
                                     |> withToken model
                               ]
 
                     _ ->
-                        case model.route of
-                            RoomRoute oldRoomId ->
-                                let
-                                    ( socket, cmd ) =
-                                        leaveRoom (toString oldRoomId) model.socket
-                                in
-                                    { model | route = newRoute } ! [ Cmd.map PhoenixMsg cmd ]
+                        { newModel | route = newRoute } ! [ afterLeaveCmd ]
 
-                            _ ->
-                                { model | route = newRoute } ! []
+        LeaveRoom ->
+            case model.route of
+                RoomRoute id ->
+                    let
+                        ( leaveRoomSocket, leaveRoomCmd ) =
+                            leaveRoom (toString id) model.socket
+                    in
+                        { model | socket = leaveRoomSocket } ! [ Cmd.map PhoenixMsg leaveRoomCmd ]
+
+                _ ->
+                    model ! []
 
         PhoenixMsg msg ->
             let
@@ -374,16 +397,18 @@ update msg model =
                 { model | socket = socket } ! [ Cmd.map PhoenixMsg cmd ]
 
         ReceiveUserList raw ->
-            case Decode.decodeValue userListMessageDecoder raw of
-                Ok userListMessage ->
+            decodeAndUpdate raw
+                userListMessageDecoder
+                model
+                (\userListMessage ->
                     { model | userList = userListMessage.users } ! []
-
-                Err error ->
-                    model ! []
+                )
 
         ReceiveAnswerFeedback rawFeedback ->
-            case Decode.decodeValue answerFeedbackDecoder rawFeedback of
-                Ok answerFeedback ->
+            decodeAndUpdate rawFeedback
+                answerFeedbackDecoder
+                model
+                (\answerFeedback ->
                     let
                         answerToast =
                             case answerFeedback.feedback of
@@ -402,33 +427,57 @@ update msg model =
                         model
                             ! []
                             |> answerToast
+                )
 
-                Err error ->
-                    model ! []
-
-        LeaveRoom roomId ->
-            model ! []
-
-        -- room join/leave
         ReceiveUserJoined rawUserJoinedInfo ->
-            case Decode.decodeValue userJoinedInfoDecoder rawUserJoinedInfo of
-                Ok userJoinedInfo ->
+            decodeAndUpdate rawUserJoinedInfo
+                userJoinedInfoDecoder
+                model
+                (\userJoinedInfo ->
                     let
+                        oldEventLog =
+                            model.eventLog
+
                         log =
                             case model.user of
                                 RemoteData.Success currentUser ->
-                                    if currentUser.name == userJoinedInfo.user then
-                                        Debug.log currentUser.name "you have successfully joined the room!"
-                                    else
-                                        Debug.log userJoinedInfo.user "user joined."
+                                    { currentPlayer = currentUser.name
+                                    , newPlayer = userJoinedInfo.user
+                                    }
+                                        |> MkUserJoinedLog
+                                        |> asLogIn oldEventLog
 
                                 _ ->
-                                    ""
+                                    oldEventLog
                     in
-                        model ! []
+                        { model | eventLog = log } ! []
+                )
 
-                Err error ->
-                    model ! []
+        ReceiveUserLeft rawUserLeftInfo ->
+            decodeAndUpdate rawUserLeftInfo
+                userLeftDecoder
+                model
+                (\userLeftInfo ->
+                    (userLeftInfo
+                        |> MkUserLeftLog
+                        |> asLogIn model.eventLog
+                        |> asEventLogIn model
+                    )
+                        ! []
+                )
+
+        ReceiveQuestionSummary rawQuestionSummary ->
+            decodeAndUpdate rawQuestionSummary
+                questionSummaryDecoder
+                model
+                (\questionSummary ->
+                    (questionSummary
+                        |> MkQuestionSummaryLog
+                        |> asLogIn model.eventLog
+                        |> asEventLogIn model
+                    )
+                        ! []
+                )
 
         SetAnswer newAnswer ->
             { model | userGameData = { currentAnswer = newAnswer } } ! []
@@ -442,29 +491,33 @@ update msg model =
                         ]
                     )
 
-                push_ =
-                    Phoenix.Push.init "new_answer" ("room:" ++ (toString model.roomId))
-                        |> Phoenix.Push.withPayload payload
-                        |> Phoenix.Push.onOk (\rawFeedback -> ReceiveAnswerFeedback rawFeedback)
-
                 ( socket, cmd ) =
-                    Phoenix.Socket.push push_ model.socket
+                    sendAnswer (toString model.roomId) payload model.socket
             in
                 { model | socket = socket, userGameData = { currentAnswer = "" } } ! [ Cmd.map PhoenixMsg cmd ]
 
         ReceiveQuestion raw ->
-            case Decode.decodeValue questionDecoder raw of
-                Ok question ->
-                    { model | currentQuestion = question } ! [ Task.attempt FocusResult (focus answerInputFieldId) ]
+            decodeAndUpdate raw
+                questionDecoder
+                model
+                (\question ->
+                    { model | currentQuestion = question }
+                        ! [ Task.attempt FocusResult (focus answerInputFieldId) ]
+                )
 
-                Err error ->
-                    model ! []
-
-        ReceiveDisplayQuestion raw ->
-            { model | roomState = QuestionDisplayed } ! []
+        ReceiveDisplayQuestion _ ->
+            { model
+                | roomState = QuestionDisplayed
+                , progressBar = model.progressBar |> withProgress 0 |> withRunning Uninitialized |> withStart 0
+            }
+                ! [ Delay.after progressBarDelay millisecond Tick ]
 
         ReceiveQuestionBreak raw ->
-            { model | roomState = QuestionBreak } ! []
+            { model
+                | roomState = QuestionBreak
+                , progressBar = model.progressBar |> withRunning Stopped
+            }
+                ! []
 
         -- HTML
         FocusResult result ->
@@ -636,6 +689,43 @@ update msg model =
                     model
                         ! []
                         |> roomFormValidationErrorToast
+
+        Tick ->
+            let
+                cmd =
+                    case model.progressBar.running of
+                        Uninitialized ->
+                            [ Task.perform OnInitialTime Time.now ]
+
+                        Running ->
+                            [ Task.perform OnTime Time.now ]
+
+                        Stopped ->
+                            []
+            in
+                model ! cmd
+
+        OnInitialTime time ->
+            update
+                (OnTime time)
+                (model.progressBar
+                    |> withStart (inMilliseconds time)
+                    |> withRunning Running
+                    |> asProgressBarIn model
+                )
+
+        OnTime time ->
+            let
+                progressBar =
+                    progressBarTick model.progressBar time
+            in
+                (progressBar |> asProgressBarIn model)
+                    ! case progressBar.running of
+                        Running ->
+                            [ Delay.after progressBarDelay millisecond Tick ]
+
+                        _ ->
+                            []
 
         MultiselectMsg subMsg ->
             let

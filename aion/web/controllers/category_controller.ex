@@ -3,7 +3,7 @@ defmodule Aion.CategoryController do
 
   alias Aion.Category
 
-  plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
+  plug(Guardian.Plug.EnsureAuthenticated, handler: __MODULE__)
 
   def index(conn, _params) do
     categories = Repo.all(Category)
@@ -19,6 +19,7 @@ defmodule Aion.CategoryController do
         |> put_status(:created)
         |> put_resp_header("location", category_path(conn, :show, category))
         |> render("show.json", category: category)
+
       {:error, changeset} ->
         Errors.unprocessable_entity(conn, changeset)
     end
@@ -36,6 +37,7 @@ defmodule Aion.CategoryController do
     case Repo.update(changeset) do
       {:ok, category} ->
         render(conn, "show.json", category: category)
+
       {:error, changeset} ->
         Errors.unprocessable_entity(conn, changeset)
     end

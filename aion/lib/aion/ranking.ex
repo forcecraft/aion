@@ -3,6 +3,7 @@ defmodule Aion.Ranking do
   This module provides logic for generating ranking data
   """
   import Ecto.Query, only: [from: 2]
+
   alias Aion.{
     Repo,
     User,

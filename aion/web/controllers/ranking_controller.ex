@@ -3,7 +3,7 @@ defmodule Aion.RankingController do
   alias Guardian.Plug
   alias Aion.Ranking
 
-  plug Plug.EnsureAuthenticated, handler: __MODULE__
+  plug(Plug.EnsureAuthenticated, handler: __MODULE__)
 
   def ranking(conn, _params) do
     result = Ranking.data()

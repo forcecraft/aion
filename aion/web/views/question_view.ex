@@ -10,13 +10,15 @@ defmodule Aion.QuestionView do
   end
 
   def render("question.json", %{question: question}) do
-    %{id: question.id,
+    %{
+      id: question.id,
       category_id: question.category_id,
       content: question.content,
-      image_name: question.image_name}
+      image_name: question.image_name
+    }
   end
 
   def render("error.json", %{message: msg}) do
-    %{"error": msg}
+    %{error: msg}
   end
 end

@@ -20,6 +20,7 @@ defmodule Aion.SessionController do
         |> put_resp_header("authorization", "Bearer #{jwt}")
         |> put_resp_header("x-expires", "#{exp}")
         |> render("login.json", jwt: jwt)
+
       {:error, _reason, conn} ->
         Errors.internal_error(conn)
     end

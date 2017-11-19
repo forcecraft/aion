@@ -7,6 +7,7 @@ import Bootstrap.Form as Form
 import Bootstrap.Form.Input as Input
 import Bootstrap.Grid as Grid
 import Bootstrap.ListGroup as ListGroup
+import Bootstrap.Progress as Progress
 import General.Models exposing (Model)
 import General.Notifications exposing (toastsConfig)
 import Html exposing (Attribute, Html, a, button, div, form, h4, input, li, text, ul)
@@ -17,7 +18,7 @@ import Msgs exposing (Msg(..))
 import Html exposing (Html, a, div, img, li, p, text, ul)
 import Navigation exposing (Location)
 import Room.Constants exposing (answerInputFieldId, defaultImagePath, imagesPath)
-import Room.Models exposing (Answer, ImageName, RoomId, RoomState(QuestionBreak, QuestionDisplayed), RoomsData, UserGameData, UserRecord)
+import Room.Models exposing (Answer, Event(MkQuestionSummaryLog, MkUserJoinedLog, MkUserLeftLog), EventLog, ImageName, ProgressBar, ProgressBarState(Stopped), RoomId, RoomState(QuestionBreak, QuestionDisplayed), RoomsData, UserGameData, UserRecord)
 import Room.Urls exposing (getImageUrl)
 import Room.Utils exposing (getRoomList, getRoomNameById)
 import Toasty
@@ -38,6 +39,7 @@ roomView model roomId =
                 [ Grid.col []
                     [ h4 [] [ text roomName ]
                     , fillQuestionArea model
+                    , displayProgress model.progressBar
                     , displayAnswerInput currentAnswer
                     , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
                     ]
@@ -46,7 +48,76 @@ roomView model roomId =
                     , displayScores model
                     ]
                 ]
+            , Grid.row []
+                [ Grid.col []
+                    [ displayEventLog model.eventLog ]
+                ]
             ]
+
+
+displayProgress : ProgressBar -> Html Msg
+displayProgress progress =
+    let
+        optionalAttrs =
+            case progress.running of
+                Stopped ->
+                    [ Progress.animated ]
+
+                _ ->
+                    []
+    in
+        div [ class "progress-bar" ]
+            [ Progress.progress <|
+                [ Progress.success
+                , Progress.value progress.progress
+                ]
+                    ++ optionalAttrs
+            ]
+
+
+displayEventLog : EventLog -> Html Msg
+displayEventLog eventLog =
+    let
+        logList =
+            eventLog
+                |> List.take 3
+                |> List.map displaySingleLog
+    in
+        div
+            [ class "room-events" ]
+            [ ListGroup.ul logList ]
+
+
+displaySingleLog : Event -> ListGroup.Item msg
+displaySingleLog event =
+    let
+        log =
+            case event of
+                MkUserJoinedLog userJoinedLog ->
+                    if userJoinedLog.currentPlayer == userJoinedLog.newPlayer then
+                        "You have joined the room."
+                    else
+                        userJoinedLog.newPlayer ++ " joined the room."
+
+                MkUserLeftLog userLeftLog ->
+                    userLeftLog.user ++ " left."
+
+                MkQuestionSummaryLog questionSummaryLog ->
+                    let
+                        winnerAnnouncement =
+                            case questionSummaryLog.winner of
+                                "" ->
+                                    ""
+
+                                winner ->
+                                    winner ++ " was the first one to answer correctly! "
+                    in
+                        winnerAnnouncement
+                            ++ "The correct answers were: "
+                            ++ String.join ", "
+                                questionSummaryLog.answers
+    in
+        ListGroup.li [] [ text log ]
 
 
 fillQuestionArea : Model -> Html Msg
@@ -55,7 +126,7 @@ fillQuestionArea model =
         imageName =
             model.currentQuestion.image_name
     in
-        div []
+        div [ class "question-container" ]
             [ displayQuestion model.currentQuestion.content model.roomState
             , displayQuestionImage model.location imageName model.roomState
             ]

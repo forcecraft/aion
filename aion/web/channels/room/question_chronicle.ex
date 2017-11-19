@@ -1,4 +1,4 @@
-defmodule Aion.QuestionChronicle do
+defmodule Aion.Channels.Room.QuestionChronicle do
   @moduledoc """
     This module saves the time when questions were
     changed in specific rooms. Thanks to that when a timer

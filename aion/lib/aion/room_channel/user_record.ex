@@ -4,7 +4,7 @@ defmodule Aion.RoomChannel.UserRecord do
   """
   @type t :: %__MODULE__{
     user_id: integer,
-    username: String.t,
+    username: String.t(),
     score: integer,
     questions_asked: integer,
   }
@@ -15,12 +15,12 @@ defmodule Aion.RoomChannel.UserRecord do
     score: 0,
     questions_asked: 0]
 
-  @spec update_score(__MODULE__.t, integer) :: __MODULE__.t
+  @spec update_score(__MODULE__.t(), integer) :: __MODULE__.t()
   def update_score(user_record, amount \\ 1) do
     Map.update!(user_record, :score, &(&1 + amount))
   end
 
-  @spec bump_questions_asked(__MODULE__.t) :: __MODULE__.t
+  @spec bump_questions_asked(__MODULE__.t()) :: __MODULE__.t()
   def bump_questions_asked(user_record) do
     Map.update!(user_record, :questions_asked, &(&1 + 1))
   end

@@ -1,6 +1,7 @@
 module Room.Constants exposing (..)
 
 import Navigation exposing (Location)
+import Time exposing (Time, millisecond)
 import Urls exposing (host)
 
 
@@ -22,3 +23,22 @@ defaultImagePath location =
 answerInputFieldId : String
 answerInputFieldId =
     "answerInputField"
+
+
+
+-- all timeouts are in milliseconds
+
+
+progressBarTimeout : Float
+progressBarTimeout =
+    10000
+
+
+progressBarTicks : Float
+progressBarTicks =
+    1000
+
+
+progressBarDelay : Float
+progressBarDelay =
+    progressBarTimeout / progressBarTicks

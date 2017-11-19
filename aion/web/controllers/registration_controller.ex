@@ -13,6 +13,7 @@ defmodule Aion.RegistrationController do
     case Repo.insert(changeset) do
       {:ok, user} ->
         SessionController.create(conn, %{"email" => user.email, "password" => user.password})
+
       {:error, changeset} ->
         Errors.unprocessable_entity(conn, changeset)
     end

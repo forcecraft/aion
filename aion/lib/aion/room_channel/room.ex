@@ -54,8 +54,7 @@ defmodule Aion.RoomChannel.Room do
   def evaluate_answer(room, user_answer) do
     room
     |> Map.get(:questions)
-    |> Map.get(:answers)
-    |> Enum.map(&Map.get(&1, :content))
+    |> QuestionSet.get_answers()
     |> Enum.map(fn correct_answer -> Answer.compare_answers(correct_answer, user_answer) end)
     |> Enum.max()
   end
@@ -104,6 +103,13 @@ defmodule Aion.RoomChannel.Room do
   @spec get_scores(__MODULE__.t()) :: list(UserRecord.t())
   def get_scores(room) do
     Map.values(room.users)
+  end
+
+  @spec get_answers(__MODULE__.t()) :: list(String.t())
+  def get_answers(room) do
+    room
+    |> Map.get(:questions)
+    |> QuestionSet.get_answers()
   end
 
   @spec get_room_id(__MODULE__.t()) :: binary
