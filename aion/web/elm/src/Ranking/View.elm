@@ -17,21 +17,6 @@ import Ranking.Utils exposing (selectedCategoryScores, sortedScoresWithIndices)
 import Ranking.Urls exposing (getGoldMedalImageUrl, getSilverMedalImageUrl, getBronzeMedalImageUrl)
 
 
-goldMedalPath : String
-goldMedalPath =
-    "images/medal_gold.png"
-
-
-silverMedalPath : String
-silverMedalPath =
-    "images/medal_silver.png"
-
-
-bronzeMedalPath : String
-bronzeMedalPath =
-    "images/medal_bronze.png"
-
-
 rankingView : Model -> Html Msg
 rankingView model =
     Grid.container []
