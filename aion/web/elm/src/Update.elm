@@ -717,7 +717,12 @@ update msg model =
         OnTime time ->
             let
                 progressBar =
-                    progressBarTick model.progressBar time
+                    case model.progressBar.running of
+                        Running ->
+                            progressBarTick model.progressBar time
+
+                        _ ->
+                            model.progressBar
             in
                 (progressBar |> asProgressBarIn model)
                     ! case progressBar.running of
