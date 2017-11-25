@@ -4,8 +4,8 @@ import RemoteData exposing (WebData)
 
 
 type alias UserData =
-    { details: WebData CurrentUser
-    , scores: WebData UserScores
+    { details : WebData CurrentUser
+    , scores : WebData UserScores
     }
 
 
@@ -17,10 +17,10 @@ type alias CurrentUser =
 
 
 type alias UserScores =
-    { categoryScores: List UserCategoryScore }
+    { categoryScores : List UserCategoryScore }
 
 
 type alias UserCategoryScore =
-    { categoryName: String
-    , score: Int
+    { categoryName : String
+    , score : Int
     }

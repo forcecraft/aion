@@ -34,20 +34,21 @@ userView model =
 renderUserView : Model -> CurrentUser -> Html Msg
 renderUserView model user =
     div [ class "profile-container" ]
-      [
-      Grid.container []
-         [ Grid.row []
-               [ Grid.col [] [ (userDetails model.location user) ] ]
-         , Grid.row []
-               [ Grid.col [ Col.xs12 ]
-                   [ div [ class "userScoreDetails" ]
-                     [ h2 []  [ text "Category Scores" ]
-                     , p [] [ text "List of your scores per category" ] ]
-                   ]
-               ]
-         , Grid.row [] (displayUserScores model)
-         ]
-      ]
+        [ Grid.container []
+            [ Grid.row []
+                [ Grid.col [] [ (userDetails model.location user) ] ]
+            , Grid.row []
+                [ Grid.col [ Col.xs12 ]
+                    [ div [ class "userScoreDetails" ]
+                        [ h2 [] [ text "Category Scores" ]
+                        , p [] [ text "List of your scores per category" ]
+                        ]
+                    ]
+                ]
+            , Grid.row [] (displayUserScores model)
+            ]
+        ]
+
 
 userDetails : Location -> CurrentUser -> Html Msg
 userDetails location user =
@@ -88,6 +89,6 @@ listSingleScore userCategoryScore =
     Grid.col [ Col.md3, Col.sm4, Col.xs12 ]
         [ div [ class "userScoreBadge" ]
             [ Button.button [ Button.success, Button.small ]
-                  [ small [] [(text userCategoryScore.categoryName)], (Badge.badgeInfo [ class "ml-1" ] [ text (toString userCategoryScore.score) ]) ]
+                [ small [] [ (text userCategoryScore.categoryName) ], (Badge.badgeInfo [ class "ml-1" ] [ text (toString userCategoryScore.score) ]) ]
             ]
         ]

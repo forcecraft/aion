@@ -264,17 +264,17 @@ update msg model =
 
         OnFetchCurrentUser response ->
             let
-                oldUserData = model.user
+                oldUserData =
+                    model.user
             in
                 { model | user = { oldUserData | details = response } } ! []
 
-
         OnFetchUserScores response ->
             let
-                oldUserData = model.user
+                oldUserData =
+                    model.user
             in
                 { model | user = { oldUserData | scores = response } } ! []
-
 
         OnQuestionCreated response ->
             case response of
