@@ -43,6 +43,7 @@ defmodule Aion.Router do
 
     get("/me", UserController, :get_user_info)
     get("/ranking", RankingController, :ranking)
+    get("/user_ranking", RankingController, :user_ranking)
     resources("/categories", CategoryController, only: [:index, :show])
     resources("/questions", QuestionController, only: [:index, :show])
     resources("/answers", AnswerController, only: [:index, :show])

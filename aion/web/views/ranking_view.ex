@@ -15,4 +15,12 @@ defmodule Aion.RankingView do
   def render("user_score.json", %{user_score: user_score}) do
     %{userName: user_score.user_name, score: user_score.score}
   end
+
+  def render("user_ranking.json", %{user_scores: user_scores}) do
+    %{categoryScores: render_many(user_scores, Aion.RankingView, "user_category_score.json", as: :user_category_score)}
+  end
+
+  def render("user_category_score.json", %{user_category_score: user_category_score}) do
+    %{categoryName: user_category_score.category_name, score: user_category_score.score}
+  end
 end
