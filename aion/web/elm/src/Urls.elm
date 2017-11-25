@@ -33,6 +33,11 @@ rankingUrl location =
     (host location) ++ "api/ranking"
 
 
+userScoresUrl : Location -> String
+userScoresUrl location =
+    (host location) ++ "api/user_ranking"
+
+
 loginUrl : Location -> String
 loginUrl location =
     (host location) ++ "sessions"

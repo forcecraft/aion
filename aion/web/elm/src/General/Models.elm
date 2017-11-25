@@ -15,11 +15,11 @@ import Ranking.Models exposing (RankingData)
 import Toasty
 import Toasty.Defaults
 import Urls exposing (hostname, websocketUrl)
-import User.Models exposing (CurrentUser)
+import User.Models exposing (UserData)
 
 
 type alias Model =
-    { user : WebData CurrentUser
+    { user : UserData
     , authData : AuthData
     , rooms : WebData RoomsData
     , categories : WebData CategoriesData
@@ -68,7 +68,10 @@ initialModel flags route location =
                 False ->
                     Just flags.token
     in
-        { user = RemoteData.Loading
+        { user =
+            { details = RemoteData.Loading
+            , scores = RemoteData.Loading
+            }
         , authData =
             { loginForm = Forms.initForm loginForm
             , registrationForm = Forms.initForm registrationForm
