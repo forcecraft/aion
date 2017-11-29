@@ -5,11 +5,12 @@ import Bootstrap.Form as Form
 import Bootstrap.Form.Input as Input
 import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Col as Col
+import Bootstrap.Grid.Row as Row
 import Bootstrap.ListGroup as ListGroup
 import Bootstrap.Progress as Progress
 import General.Models exposing (Model)
 import General.Notifications exposing (toastsConfig)
-import Html exposing (Attribute, Html, a, button, div, form, h4, input, li, text, ul)
+import Html exposing (Attribute, Html, a, button, div, form, h4, hr, input, li, text, ul)
 import Html.Attributes exposing (autocomplete, class, for, href, id, src, value)
 import Html.Events exposing (keyCode, on, onClick, onInput, onWithOptions)
 import Json.Decode exposing (map)
@@ -44,7 +45,8 @@ roomView model roomId =
                     [ displayQuestionImage model.location model.currentQuestion.image_name model.roomState
                     ]
                 ]
-            , Grid.row []
+            , hr [ class "room-content-separator" ] []
+            , Grid.row [ Row.attrs [ class "room-lower-content" ] ]
                 [ Grid.col [ Col.sm7 ]
                     [ displayEventLog model.eventLog
                     ]

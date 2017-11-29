@@ -224,6 +224,18 @@ footer p {
     width: 100%;
 }
 
+.room-content-separator {
+    border-color: #97D098;
+}
+
+.room-lower-content {
+    padding-top: 10px;
+}
+
+.list-group-item {
+    border-color: #97D098 !important;
+}
+
 .multiselectWrap {
     position: relative;
     width: 100%;
