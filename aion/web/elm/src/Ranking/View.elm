@@ -21,7 +21,7 @@ rankingView : Model -> Html Msg
 rankingView model =
     Grid.container []
         [ Grid.row []
-            [ Grid.col [ Col.xs4, Col.offsetXs1 ]
+            [ Grid.col [ Col.xs4 ]
                 [ Form.group []
                     [ Form.label [] [ text "Select Category" ]
                     , Select.select [ Select.onChange OnRankingCategoryChange ] (selectCategoriesAttributes model)
@@ -29,7 +29,7 @@ rankingView model =
                 ]
             ]
         , Grid.row []
-            [ Grid.col [ Col.xs10, Col.offsetXs1 ]
+            [ Grid.col [ Col.xs12 ]
                 [ rankingTable model ]
             ]
         ]
