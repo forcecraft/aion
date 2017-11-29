@@ -113,6 +113,7 @@ footer p {
     margin-bottom: 0px;
     border-radius: 3px;
     background-color: #5CB85C;
+    max-height: 90px;
 }
 
 .tile a {
@@ -128,11 +129,12 @@ footer p {
 
 .tile a p {
     text-align: center;
-    line-height: 0.5;
+    line-height: 1;
 }
 
 .tile-room-name {
-    padding-top: 30px;
+    padding-top: 25px;
+    margin-bottom: 5px;
     font-size: 14px;
     font-weight: bold;
 }
@@ -153,7 +155,15 @@ footer p {
 }
 
 .panel-container {
-    padding: 0 40px;
+    padding: 20px 40px;
+}
+
+.form-control-label {
+    display: block;
+}
+
+.room-form-label {
+    margin-top: 10px;
 }
 
 .toasty-notification {

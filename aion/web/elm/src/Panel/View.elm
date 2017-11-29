@@ -21,43 +21,28 @@ import Toasty.Defaults
 panelView : Model -> Html Msg
 panelView model =
     div [ class "panel-container" ]
-        [ h4 [] [ text "New question:" ]
-        , Form.form []
-            [ questionFormElement model.panelData.questionForm
-            , answersFormElement model.panelData.questionForm
-            , categoryFormElement model.panelData.questionForm (listCategories model.categories)
-            , Button.button
-                [ Button.success
-                , Button.onClick CreateNewQuestionWithAnswers
-                ]
-                [ text "submit" ]
-            , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
-            ]
-        , h4 [] [ text "New category:" ]
-        , Form.form []
-            [ categoryNameFormElement model.panelData.categoryForm
-            , Button.button
-                [ Button.success
-                , Button.onClick CreateNewCategory
-                ]
-                [ text "submit" ]
-            , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
-            ]
-        , h4 [] [ text "New room:" ]
-        , Form.form []
-            [ roomFormElement model.panelData.roomForm
-            , Form.group [] [ Html.map MultiselectMsg <| (Multiselect.view model.panelData.categoryMultiSelect) ]
-            , Button.button
-                [ Button.success
-                , Button.onClick CreateNewRoom
-                ]
-                [ text "submit" ]
-            ]
+        [ h5 [] [ text "Create room" ]
+        , renderRoomForm model.panelData.roomForm model.panelData.categoryMultiSelect
+        , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
         ]
 
 
 
 -- question form section
+
+
+renderQuestionForm : Forms.Form -> WebData CategoriesData -> Html Msg
+renderQuestionForm questionForm categories =
+    Form.form []
+        [ questionFormElement questionForm
+        , answersFormElement questionForm
+        , categoryFormElement questionForm (listCategories categories)
+        , Button.button
+            [ Button.success
+            , Button.onClick CreateNewQuestionWithAnswers
+            ]
+            [ text "submit" ]
+        ]
 
 
 questionFormElement : Forms.Form -> Html Msg
@@ -69,7 +54,7 @@ questionFormElement form =
             , Input.onInput (UpdateQuestionForm "question")
             , Input.value (Forms.formValue form "question")
             ]
-        , Badge.pillInfo [] [ text (Forms.errorString form "question") ]
+        , Badge.badgeSuccess [] [ text (Forms.errorString form "question") ]
         ]
 
 
@@ -82,7 +67,7 @@ answersFormElement form =
             , Input.onInput (UpdateQuestionForm "answers")
             , Input.value (Forms.formValue form "answers")
             ]
-        , Badge.pillInfo [] [ text (Forms.errorString form "answers") ]
+        , Badge.badgeSuccess [] [ text (Forms.errorString form "answers") ]
         ]
 
 
@@ -97,7 +82,7 @@ categoryFormElement form categoryList =
                     (\category -> Select.item [ value (category.id |> toString) ] [ text category.name ])
                     categoryList
             )
-        , Badge.pillInfo [] [ text (Forms.errorString form "category") ]
+        , Badge.badgeSuccess [] [ text (Forms.errorString form "category") ]
         ]
 
 
@@ -115,6 +100,18 @@ listCategories result =
 -- category form section
 
 
+renderCategoryForm : Forms.Form -> Html Msg
+renderCategoryForm categoryForm =
+    Form.form []
+        [ categoryNameFormElement categoryForm
+        , Button.button
+            [ Button.success
+            , Button.onClick CreateNewCategory
+            ]
+            [ text "submit" ]
+        ]
+
+
 categoryNameFormElement : Forms.Form -> Html Msg
 categoryNameFormElement form =
     Form.group []
@@ -124,7 +121,7 @@ categoryNameFormElement form =
             , Input.onInput (UpdateCategoryForm "name")
             , Input.value (Forms.formValue form "name")
             ]
-        , Badge.pillInfo [] [ text (Forms.errorString form "name") ]
+        , Badge.badgeSuccess [] [ text (Forms.errorString form "name") ]
         ]
 
 
@@ -132,20 +129,30 @@ categoryNameFormElement form =
 -- room form section
 
 
-roomFormElement : Forms.Form -> Html Msg
-roomFormElement form =
-    Form.group []
-        [ Form.label [ for "room" ] [ text "Enter room name below:" ]
-        , Input.text
-            [ Input.placeholder "Pancake Party"
-            , Input.onInput (UpdateRoomForm "name")
-            , Input.value (Forms.formValue form "name")
+renderRoomForm : Forms.Form -> Multiselect.Model -> Html Msg
+renderRoomForm form categoryMultiSelect =
+    Form.form []
+        [ Form.group []
+            [ Form.label [ for "room" ] [ text "Name" ]
+            , Input.text
+                [ Input.placeholder "Pancake Party"
+                , Input.onInput (UpdateRoomForm "name")
+                , Input.value (Forms.formValue form "name")
+                ]
+            , Badge.badgeSuccess [] [ text (Forms.errorString form "name") ]
+            , Form.label [ for "room", class "room-form-label" ] [ text "Description" ]
+            , Input.text
+                [ Input.placeholder "Gathering the best pancake lovers and testing their pancake knowledge"
+                , Input.onInput (UpdateRoomForm "description")
+                , Input.value (Forms.formValue form "description")
+                ]
+            , Badge.badgeSuccess [] [ text (Forms.errorString form "description") ]
+            , Form.label [ for "room", class "room-form-label" ] [ text "Categories" ]
+            , Form.group [] [ Html.map MultiselectMsg <| (Multiselect.view categoryMultiSelect) ]
+            , Button.button
+                [ Button.success
+                , Button.onClick CreateNewRoom
+                ]
+                [ text "submit" ]
             ]
-        , Badge.pillInfo [] [ text (Forms.errorString form "name") ]
-        , Input.text
-            [ Input.placeholder "Gathering the best pancake lovers and testing their pancake knowledge"
-            , Input.onInput (UpdateRoomForm "description")
-            , Input.value (Forms.formValue form "description")
-            ]
-        , Badge.pillInfo [] [ text (Forms.errorString form "description") ]
         ]

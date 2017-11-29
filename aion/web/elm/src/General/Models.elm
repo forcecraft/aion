@@ -49,8 +49,9 @@ type Route
     = AuthRoute
     | RoomListRoute
     | RoomRoute RoomId
-    | UserRoute
+    | CreateRoomRoute
     | RankingRoute
+    | UserRoute
     | NotFoundRoute
 
 

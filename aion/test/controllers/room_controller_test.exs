@@ -1,10 +1,11 @@
 defmodule Aion.RoomControllerTest do
   use Aion.AuthConnCase
 
-  alias Aion.{Room, Question, User}
+  alias Aion.{Room, Question, User, Category, RoomCategory}
   alias Aion.RoomChannel.{Monitor, QuestionSet}
 
   @room %Room{description: "Here come dat boi", name: "Dat Boi"}
+  @invalid_room %Room{name: "The provided data is invalid, it does not contain the description field"}
   @question1 %Question{content: "Who dat boi?"}
   @question2 %Question{content: "Wat do?"}
   @questions %QuestionSet{
@@ -26,6 +27,25 @@ defmodule Aion.RoomControllerTest do
              "name" => room.name,
              "description" => room.description
            }
+  end
+
+  test "creates and renders resource when data is valid", %{conn: conn} do
+    conn = post(conn, room_path(conn, :create), room: Map.from_struct(@room))
+    assert json_response(conn, 201)["data"]["id"]
+    assert Repo.get_by(Room, name: @room.name)
+  end
+
+  test "creates room with associated categories", %{conn: conn} do
+    category1 = Repo.insert!(%Category{})
+    category2 = Repo.insert!(%Category{})
+    room_params = Map.merge(Map.from_struct(@room), %{category_ids: [category1.id, category2.id]})
+    conn = post(conn, room_path(conn, :create), room: room_params)
+    assert length(Repo.all(RoomCategory)) == 2
+  end
+
+  test "does not create resource and renders errors when data is invalid", %{conn: conn} do
+    conn = post(conn, room_path(conn, :create), room: Map.from_struct(@invalid_room))
+    assert json_response(conn, 422)["errors"] != %{}
   end
 
   test "renders page not found when id is nonexistent", %{conn: conn} do

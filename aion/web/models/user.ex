@@ -65,6 +65,10 @@ defmodule Aion.User do
 
   def get_user_category_score(user_id, category_id) do
     Repo.get_by(UserCategoryScore, user_id: user_id, category_id: category_id) ||
-      %UserCategoryScore{user_id: user_id, category_id: category_id, score: RatingSystem.initial_value}
+      %UserCategoryScore{
+        user_id: user_id,
+        category_id: category_id,
+        score: RatingSystem.initial_value()
+      }
   end
 end
