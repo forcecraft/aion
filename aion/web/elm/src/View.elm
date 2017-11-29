@@ -2,13 +2,14 @@ module View exposing (..)
 
 import Auth.View exposing (authView)
 import Bootstrap.Navbar as Navbar
-import General.Constants exposing (footerContent, roomsPath, userPath, rankingsPath)
-import General.Models exposing (Model, Route(AuthRoute, NotFoundRoute, RoomListRoute, RoomRoute, UserRoute, RankingRoute))
+import General.Constants exposing (footerContent, roomsPath, createRoomPath, userPath, rankingsPath)
+import General.Models exposing (Model, Route(AuthRoute, CreateRoomRoute, NotFoundRoute, RankingRoute, RoomListRoute, RoomRoute, UserRoute))
 import General.View exposing (notFoundView, roomListView)
 import Html exposing (..)
 import Html.Attributes exposing (class, href, src)
 import Msgs exposing (Msg(..))
 import Navigation exposing (Location)
+import Panel.View exposing (panelView)
 import Room.View exposing (roomView)
 import Ranking.View exposing (rankingView)
 import Urls exposing (host)
@@ -67,6 +68,7 @@ navbar route location navbarState =
                 baseNavbar
                     |> Navbar.items
                         [ Navbar.itemLink [ href roomsPath ] [ text "Rooms" ]
+                        , Navbar.itemLink [ href createRoomPath ] [ text "Create room" ]
                         , Navbar.itemLink [ href rankingsPath ] [ text "Rankings" ]
                         , Navbar.itemLink [ href userPath ] [ text "Profile" ]
                         ]
@@ -89,6 +91,9 @@ page model =
 
                 RoomRoute id ->
                     roomView model id
+
+                CreateRoomRoute ->
+                    panelView model
 
                 UserRoute ->
                     userView model

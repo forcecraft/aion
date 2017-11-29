@@ -46,7 +46,7 @@ defmodule Aion.Router do
     resources("/categories", CategoryController, only: [:index, :show])
     resources("/questions", QuestionController, only: [:index, :show])
     resources("/answers", AnswerController, only: [:index, :show])
-    resources("/rooms", RoomController, only: [:index, :show])
+    resources("/rooms", RoomController, only: [:index, :show, :create])
     resources("/room_categories", RoomCategoryController, only: [:index, :show])
   end
 end

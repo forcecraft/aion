@@ -16,6 +16,11 @@ roomsPath =
     "#"
 
 
+createRoomPath : String
+createRoomPath =
+    "#create_room"
+
+
 panelPath : String
 panelPath =
     "#panel"
