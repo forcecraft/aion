@@ -4,7 +4,7 @@ eval "$(ssh-agent -s)" # Start ssh-agent cache
 chmod 600 .travis/id_rsa # Allow read access to the private key
 ssh-add .travis/id_rsa # Add the private key to SSH
 
-ssh apps@$IP <<EOF
+ssh $USER@$IP <<EOF
   echo "halko" > halko
   cd $DEPLOY_DIR
 #  git pull origin master 
