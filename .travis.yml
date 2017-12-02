@@ -32,6 +32,7 @@ install:
 before_script:
 - cp config/travis.exs config/test.exs
 - mix do ecto.create, ecto.migrate
+
 script:
 - cd web/elm && ../../node_modules/elm/binwrappers/elm-package install --yes && $TRAVIS_BUILD_DIR/sysconfcpus/bin/sysconfcpus
   -n 2 ../../node_modules/elm/binwrappers/elm-make --yes src/App.elm && rm -rf index.html
@@ -46,6 +47,7 @@ before_install:
 - openssl aes-256-cbc -K $encrypted_452de06ba3a9_key -iv $encrypted_452de06ba3a9_iv
   -in .travis/id_rsa.enc -out .travis/id_rsa -d
 after_success: 
+- cd $TRAVIS_BUILD_DIR/aion
 - |
   if [[ $TRAVIS_BRANCH == 'enhancement/automatic-deploy' ]];
   then 
