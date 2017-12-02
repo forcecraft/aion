@@ -46,6 +46,11 @@ notifications:
 before_install:
 - openssl aes-256-cbc -K $encrypted_452de06ba3a9_key -iv $encrypted_452de06ba3a9_iv
   -in .travis/id_rsa.enc -out .travis/id_rsa -d
+- |
+  if [[ $TRAVIS_BRANCH == 'enhancement/automatic-deploy' ]];
+  then 
+    echo "halko" > halko 
+  fi
 after_success: 
 - cd $TRAVIS_BUILD_DIR/aion
 - |
