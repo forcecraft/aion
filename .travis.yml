@@ -6,6 +6,7 @@ otp_release:
 - 20.0
 addons:
   postgresql: '9.4'
+  ssh_known_hosts: $HOST
 sudo: false
 services:
 - postgresql
@@ -58,3 +59,4 @@ after_success:
   then 
     .travis/deploy.sh 
   fi
+
