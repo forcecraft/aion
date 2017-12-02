@@ -7,7 +7,7 @@ import Delay
 import Dom exposing (focus)
 import Forms
 import General.Constants exposing (loginFormMsg, registerFormMsg)
-import General.Models exposing (Model, Route(RankingRoute, RoomListRoute, RoomRoute), asEventLogIn, asProgressBarIn)
+import General.Models exposing (Model, Route(RankingRoute, UserRoute, RoomListRoute, RoomRoute), asEventLogIn, asProgressBarIn)
 import General.Notifications exposing (toastsConfig)
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -33,7 +33,7 @@ import Toasty
 import Multiselect
 import Socket exposing (initSocket, initializeRoom, leaveRoom, sendAnswer)
 import Urls exposing (host, websocketUrl)
-import User.Api exposing (fetchCurrentUser)
+import User.Api exposing (fetchCurrentUser, fetchUserScores)
 
 
 updateForm : String -> String -> Forms.Form -> Forms.Form
@@ -263,7 +263,18 @@ update msg model =
                 { newModel | panelData = { oldPanelData | categoryMultiSelect = updatedCategoryMultiselect } } ! []
 
         OnFetchCurrentUser response ->
-            { model | user = response } ! []
+            let
+                oldUserData =
+                    model.user
+            in
+                { model | user = { oldUserData | details = response } } ! []
+
+        OnFetchUserScores response ->
+            let
+                oldUserData =
+                    model.user
+            in
+                { model | user = { oldUserData | scores = response } } ! []
 
         OnQuestionCreated response ->
             case response of
@@ -374,6 +385,14 @@ update msg model =
                                     |> withToken model
                               ]
 
+                    UserRoute ->
+                        { model | route = newRoute }
+                            ! [ afterLeaveCmd
+                              , fetchUserScores
+                                    |> withLocation model
+                                    |> withToken model
+                              ]
+
                     _ ->
                         { newModel | route = newRoute } ! [ afterLeaveCmd ]
 
@@ -439,7 +458,7 @@ update msg model =
                             model.eventLog
 
                         log =
-                            case model.user of
+                            case model.user.details of
                                 RemoteData.Success currentUser ->
                                     { currentPlayer = currentUser.name
                                     , newPlayer = userJoinedInfo.user

@@ -15,7 +15,7 @@ import Room.Models exposing (RoomId, RoomsData)
 import Time exposing (Time)
 import Toasty
 import Toasty.Defaults
-import User.Models exposing (CurrentUser)
+import User.Models exposing (CurrentUser, UserScores)
 
 
 type Msg
@@ -24,6 +24,7 @@ type Msg
     | OnFetchRanking (WebData Ranking)
     | OnFetchCategories (WebData CategoriesData)
     | OnFetchCurrentUser (WebData CurrentUser)
+    | OnFetchUserScores (WebData UserScores)
     | OnQuestionCreated (WebData QuestionCreatedData)
     | OnCategoryCreated (WebData CategoryCreatedData)
     | OnRoomCreated (WebData RoomCreatedData)
