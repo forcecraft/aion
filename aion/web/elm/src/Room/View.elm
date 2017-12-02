@@ -1,16 +1,16 @@
 module Room.View exposing (..)
 
-import Bootstrap.Badge as Badge
 import Bootstrap.Button as Button
-import Bootstrap.Card as Card
 import Bootstrap.Form as Form
 import Bootstrap.Form.Input as Input
 import Bootstrap.Grid as Grid
+import Bootstrap.Grid.Col as Col
+import Bootstrap.Grid.Row as Row
 import Bootstrap.ListGroup as ListGroup
 import Bootstrap.Progress as Progress
 import General.Models exposing (Model)
 import General.Notifications exposing (toastsConfig)
-import Html exposing (Attribute, Html, a, button, div, form, h4, input, li, text, ul)
+import Html exposing (Attribute, Html, a, button, div, form, h4, hr, input, li, text, ul)
 import Html.Attributes exposing (autocomplete, class, for, href, id, src, value)
 import Html.Events exposing (keyCode, on, onClick, onInput, onWithOptions)
 import Json.Decode exposing (map)
@@ -36,22 +36,25 @@ roomView model roomId =
     in
         Grid.container [ class "room-container" ]
             [ Grid.row []
-                [ Grid.col []
-                    [ h4 [] [ text roomName ]
-                    , fillQuestionArea model
+                [ Grid.col [ Col.sm7 ]
+                    [ displayQuestionText model
                     , displayProgress model.progressBar
                     , displayAnswerInput currentAnswer
-                    , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
                     ]
-                , Grid.col []
-                    [ h4 [] [ text "Scoreboard:" ]
-                    , displayScores model
+                , Grid.col [ Col.sm5 ]
+                    [ displayQuestionImage model.location model.currentQuestion.image_name model.roomState
                     ]
                 ]
-            , Grid.row []
-                [ Grid.col []
-                    [ displayEventLog model.eventLog ]
+            , hr [ class "room-content-separator" ] []
+            , Grid.row [ Row.attrs [ class "room-lower-content" ] ]
+                [ Grid.col [ Col.sm7 ]
+                    [ displayEventLog model.eventLog
+                    ]
+                , Grid.col [ Col.sm5 ]
+                    [ displayScores model
+                    ]
                 ]
+            , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
             ]
 
 
@@ -80,7 +83,7 @@ displayEventLog eventLog =
     let
         logList =
             eventLog
-                |> List.take 3
+                |> List.take 5
                 |> List.map displaySingleLog
     in
         div
@@ -120,16 +123,11 @@ displaySingleLog event =
         ListGroup.li [] [ text log ]
 
 
-fillQuestionArea : Model -> Html Msg
-fillQuestionArea model =
-    let
-        imageName =
-            model.currentQuestion.image_name
-    in
-        div [ class "question-container" ]
-            [ displayQuestion model.currentQuestion.content model.roomState
-            , displayQuestionImage model.location imageName model.roomState
-            ]
+displayQuestionText : Model -> Html Msg
+displayQuestionText model =
+    div [ class "question-container" ]
+        [ displayQuestion model.currentQuestion.content model.roomState
+        ]
 
 
 displayScores : Model -> Html Msg
@@ -163,17 +161,17 @@ displayQuestion question roomState =
         temporaryText =
             "Get ready, the next question is going to appear soon!"
 
-        ( cardClass, textFieldValue ) =
+        textFieldValue =
             case roomState of
                 QuestionDisplayed ->
-                    ( "room-question", question )
+                    question
 
                 QuestionBreak ->
-                    ( "room-question-hidden", temporaryText )
+                    temporaryText
     in
-        Card.config [ Card.attrs [ class cardClass ] ]
-            |> Card.block [] [ Card.text [] [ text textFieldValue ] ]
-            |> Card.view
+        div [ class "room-question-container" ]
+            [ p [ class "room-question" ] [ text textFieldValue ]
+            ]
 
 
 displayQuestionImage : Location -> ImageName -> RoomState -> Html Msg
@@ -208,9 +206,10 @@ displayAnswerInput : Answer -> Html Msg
 displayAnswerInput currentAnswer =
     Form.form [ class "room-answer-input" ]
         [ Form.group []
-            [ Form.label [ for "answer" ] [ Badge.badgeSuccess [] [ text "Insert your answer below:" ] ]
-            , displayAnswerInputField currentAnswer
-            , displayAnswerSubmitButton
+            [ Grid.row []
+                [ Grid.col [ Col.sm9 ] [ displayAnswerInputField currentAnswer ]
+                , Grid.col [ Col.sm3 ] [ displayAnswerSubmitButton ]
+                ]
             ]
         ]
 
