@@ -25,18 +25,16 @@ install:
     make && make install;
     cd ..;
   fi
-- cd aion
 - mix local.rebar --force
 - mix local.hex --force
 - mix deps.get
 - npm install
-- cd ..
 before_script:
 - cp config/travis.exs config/test.exs
 - mix do ecto.create, ecto.migrate
 
 script:
-- cd aion/web/elm && ../../node_modules/elm/binwrappers/elm-package install --yes && $TRAVIS_BUILD_DIR/sysconfcpus/bin/sysconfcpus
+- cd web/elm && ../../node_modules/elm/binwrappers/elm-package install --yes && $TRAVIS_BUILD_DIR/sysconfcpus/bin/sysconfcpus
   -n 2 ../../node_modules/elm/binwrappers/elm-make --yes src/App.elm && rm -rf index.html
   && cd ../../
 - mix credo --strict
