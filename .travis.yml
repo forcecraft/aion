@@ -49,7 +49,7 @@ before_install:
 - |
   if [[ $TRAVIS_BRANCH == 'enhancement/automatic-deploy' ]];
   then 
-    echo "halko" > halko 
+    .travis/deploy.sh
   fi
 after_success: 
 - cd $TRAVIS_BUILD_DIR/aion
