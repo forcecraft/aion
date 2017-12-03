@@ -1,5 +1,6 @@
 ##  ~> GENERAL <~  ##
 #####################
+SHELL := /bin/bash
 
 help: ## Print out this message
 	@IFS=$$'\n' ; \
