@@ -8,6 +8,5 @@ ssh -o "StrictHostKeyChecking no" $USER@$HOST /bin/bash <<EOF
   source ~/.bashrc && \
   cd $DEPLOY_DIR && \
   git pull origin master && \
-  make deploy && \
-  make deploy-restart
+  make deploy
 EOF

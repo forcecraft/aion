@@ -96,6 +96,8 @@ deploy: ## Create a release and run the production server
 	MIX_ENV=prod mix do deps.get, compile && \
 	npm install && \
 	brunch build --production && \
-	MIX_ENV=prod mix do phoenix.digest, release && \
+	MIX_ENV=prod mix phoenix.digest && \
+	sudo rel/aion/bin/aion stop && \
+	MIX_ENV=prod mix release && \
 	sudo rel/aion/bin/aion start
 
