@@ -7,7 +7,7 @@ ssh-add .travis/id_rsa # Add the private key to SSH
 ssh -o "StrictHostKeyChecking no" $USER@$HOST /bin/bash <<EOF
   source ~/.bashrc && \
   cd $DEPLOY_DIR && \
-  git pull origin master && \
+  git pull origin enhancement/automatic-deploy && \
   make deploy && \
   make deploy-restart
 EOF
