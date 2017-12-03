@@ -1,3 +1,5 @@
+#!/bin/bash
+
 cd aion && \
 MIX_ENV=prod mix do deps.get, compile && \
 npm install && \
