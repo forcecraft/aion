@@ -89,11 +89,5 @@ deploy-start:
 	cd aion && sudo rel/aion/bin/aion start
 
 deploy: ## Create a release and run the production server
-	kiex use 1.4.5 && \
-	cd aion && \
-	MIX_ENV=prod mix do deps.get, compile && \
-	npm install && \
-	brunch build --production && \
-	MIX_ENV=prod mix do phoenix.digest, release && \
-	sudo rel/aion/bin/aion start
+	scripts/deploy-server
 
