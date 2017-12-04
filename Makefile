@@ -96,8 +96,13 @@ deploy: ## Create a release and run the production server
 	MIX_ENV=prod mix do deps.get, compile && \
 	npm install && \
 	brunch build --production && \
-	MIX_ENV=prod mix phoenix.digest && \
-	sudo rel/aion/bin/aion stop && \
-	MIX_ENV=prod mix release && \
-	sudo rel/aion/bin/aion start
+	MIX_ENV=prod mix phoenix.digest
+	
+	# Try to shutdown running server, continue regardless
+	@-sudo ./aion/rel/aion/bin/aion stop && \
+	([ $$? -eq 0 ] && echo "Successfully stopped running server") || \
+	echo "Couldn't shut down the server, apparently it was not running"    
+	
+	cd aion && MIX_ENV=prod mix release
+	sudo ./aion/rel/aion/bin/aion start
 
