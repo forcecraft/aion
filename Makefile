@@ -88,12 +88,21 @@ deploy-stop:
 deploy-start:
 	cd aion && sudo rel/aion/bin/aion start
 
+deploy-restart:
+	cd aion && sudo rel/aion/bin/aion restart
+
 deploy: ## Create a release and run the production server
-	kiex use 1.4.5 && \
 	cd aion && \
 	MIX_ENV=prod mix do deps.get, compile && \
 	npm install && \
 	brunch build --production && \
-	MIX_ENV=prod mix do phoenix.digest, release && \
-	sudo rel/aion/bin/aion start
+	MIX_ENV=prod mix phoenix.digest
+	
+	# Try to shutdown running server, continue regardless
+	@-sudo ./aion/rel/aion/bin/aion stop && \
+	([ $$? -eq 0 ] && echo "Successfully stopped running server") || \
+	echo "Couldn't shut down the server, apparently it was not running"    
+	
+	cd aion && MIX_ENV=prod mix release
+	sudo ./aion/rel/aion/bin/aion start
 
