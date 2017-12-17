@@ -1,7 +1,6 @@
 use Mix.Config
 
 config :aion, Aion.Endpoint,
-  http: [port: 4000],
   https: [
     port: 4443,
     otp_app: :aion,
