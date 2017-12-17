@@ -1,8 +1,8 @@
 use Mix.Config
 
 config :aion, Aion.Endpoint,
-  http: [port: 80],
-  url: [host: "aion.mrapacz.pl", port: 80],
+  http: [port: 8888],
+  url: [host: "aion.mrapacz.pl", port: 8888],
   cache_static_manifest: "priv/static/manifest.json"
 
 config :aion, Aion.Repo,
