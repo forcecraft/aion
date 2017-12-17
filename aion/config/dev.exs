@@ -2,7 +2,7 @@ use Mix.Config
 
 config :aion, Aion.Endpoint,
   https: [
-    port: 4443,
+    port: 4000,
     otp_app: :aion,
     keyfile: "priv/keys/localhost.key",
     certfile: "priv/keys/localhost.cert"
