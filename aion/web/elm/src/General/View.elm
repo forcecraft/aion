@@ -3,8 +3,8 @@ module General.View exposing (..)
 import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Col as Col
 import General.Models exposing (Model)
-import General.Utils exposing (sliceList)
-import Html exposing (Html, a, br, button, div, h2, h4, i, img, li, p, span, text, ul)
+import General.Utils exposing (displayWebData, sliceList)
+import Html exposing (Html, a, br, button, div, h2, h3, h4, hr, i, img, li, p, span, text, ul)
 import Html.Attributes exposing (class, href, src, style)
 import Msgs exposing (Msg)
 import RemoteData exposing (WebData)
@@ -18,38 +18,53 @@ notFoundView =
         ]
 
 
+asGridContainer data =
+    Grid.container [] data
+
+
 roomListView : Model -> Html Msg
 roomListView model =
-    div [] [ listRooms model.rooms ]
+    div []
+        [ h4 [ class "room-list-label" ] [ text "Recommended" ]
+        , displayRooms model.rooms Recommended
+        , hr [ class "room-content-separator" ] []
+        , h4 [ class "room-list-label" ] [ text "All rooms" ]
+        , displayRooms model.rooms All
+        ]
 
 
-listRooms : WebData RoomsData -> Html Msg
-listRooms response =
-    case response of
-        RemoteData.NotAsked ->
-            text ""
-
-        RemoteData.Loading ->
-            text "Loading..."
-
-        RemoteData.Success roomsData ->
-            listAvailableRooms roomsData
-
-        RemoteData.Failure error ->
-            text (toString error)
+type FilterType
+    = Recommended
+    | All
 
 
-listAvailableRooms : RoomsData -> Html Msg
-listAvailableRooms roomsData =
+displayRooms : WebData RoomsData -> FilterType -> Html Msg
+displayRooms rooms filterType =
     let
-        sortedRooms =
-            List.sortBy .name roomsData.data
+        fun =
+            case filterType of
+                Recommended ->
+                    listRecommendedRooms
 
-        slicedRooms =
-            sliceList 6 sortedRooms
+                All ->
+                    listRooms
     in
-        Grid.container []
-            (List.map listRoomsSlice slicedRooms)
+        div [] [ displayWebData rooms fun ]
+
+
+listRooms : RoomsData -> Html Msg
+listRooms rooms =
+    rooms
+        |> .data
+        |> List.sortBy .name
+        |> sliceList 6
+        |> List.map listRoomsSlice
+        |> asGridContainer
+
+
+listRecommendedRooms : RoomsData -> Html Msg
+listRecommendedRooms rooms =
+    listRooms { rooms | data = List.take 6 rooms.data }
 
 
 listRoomsSlice : List Room -> Html Msg

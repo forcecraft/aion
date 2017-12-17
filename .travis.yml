@@ -55,7 +55,7 @@ notifications:
 
 after_success: 
 - |
-  if [[ $TRAVIS_BRANCH == 'master' ]];
+  if [[ $TRAVIS_BRANCH == 'master' && $TRAVIS_PULL_REQUEST == 'false' ]];
   then 
     .travis/deploy.sh 
   fi

@@ -42,7 +42,7 @@ defmodule Aion.Router do
     pipe_through([:api, :api_auth])
 
     get("/me", UserController, :get_user_info)
-    get("/ranking", RankingController, :ranking)
+    get("/ranking", RankingController, :general_ranking)
     get("/user_ranking", RankingController, :user_ranking)
     resources("/categories", CategoryController, only: [:index, :show])
     resources("/questions", QuestionController, only: [:index, :show])
