@@ -50,4 +50,4 @@ registerUrl location =
 
 websocketUrl : Location -> String -> String
 websocketUrl location token =
-    "ws://" ++ (hostname location) ++ "/socket/websocket?token=" ++ token
+    "wss://" ++ (hostname location) ++ "/socket/websocket?token=" ++ token
