@@ -529,7 +529,7 @@ update msg model =
                 | roomState = QuestionDisplayed
                 , progressBar = model.progressBar |> withProgress 0 |> withRunning Uninitialized |> withStart 0
             }
-                ! [ Delay.after progressBarDelay millisecond Tick ]
+                ! []
 
         ReceiveQuestionBreak raw ->
             { model
@@ -709,20 +709,16 @@ update msg model =
                         ! []
                         |> roomFormValidationErrorToast
 
-        Tick ->
-            let
-                cmd =
-                    case model.progressBar.running of
-                        Uninitialized ->
-                            [ Task.perform OnInitialTime Time.now ]
+        Tick time ->
+            case model.progressBar.running of
+                Uninitialized ->
+                    update (OnInitialTime time) model
 
-                        Running ->
-                            [ Task.perform OnTime Time.now ]
+                Running ->
+                    update (OnTime time) model
 
-                        Stopped ->
-                            []
-            in
-                model ! cmd
+                Stopped ->
+                    model ! []
 
         OnInitialTime time ->
             update
@@ -743,13 +739,7 @@ update msg model =
                         _ ->
                             model.progressBar
             in
-                (progressBar |> asProgressBarIn model)
-                    ! case progressBar.running of
-                        Running ->
-                            [ Delay.after progressBarDelay millisecond Tick ]
-
-                        _ ->
-                            []
+                (progressBar |> asProgressBarIn model) ! []
 
         MultiselectMsg subMsg ->
             let
