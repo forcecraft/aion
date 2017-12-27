@@ -3,7 +3,6 @@ module Update exposing (..)
 import Auth.Api exposing (registerUser, submitCredentials)
 import Auth.Models exposing (Token, UnauthenticatedViewToggle(LoginView, RegisterView))
 import Auth.Notifications exposing (loginErrorToast, registrationErrorToast)
-import Delay
 import Dom exposing (focus)
 import Forms
 import General.Constants exposing (loginFormMsg, registerFormMsg)
@@ -20,7 +19,7 @@ import Ports exposing (check)
 import Ranking.Api exposing (fetchRanking)
 import RemoteData
 import Room.Api exposing (fetchRooms)
-import Room.Constants exposing (answerInputFieldId, enterKeyCode, progressBarDelay, progressBarTimeout)
+import Room.Constants exposing (answerInputFieldId, enterKeyCode, progressBarTimeout)
 import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, questionSummaryDecoder, userJoinedInfoDecoder, userLeftDecoder, userListMessageDecoder)
 import Room.Models exposing (Event(MkQuestionSummaryLog, MkUserJoinedLog, MkUserLeftLog), EventLog, ProgressBarState(Running, Stopped, Uninitialized), RoomState(QuestionBreak, QuestionDisplayed), asLogIn, withProgress, withRunning, withStart)
 import Room.Notifications exposing (..)

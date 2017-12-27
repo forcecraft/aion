@@ -10,7 +10,7 @@ subscriptions : Model -> Sub Msgs.Msg
 subscriptions model =
     case model.roomState of
         QuestionDisplayed ->
-            Time.every Time.millisecond Msgs.Tick
+            Time.every (20 * Time.millisecond) Msgs.Tick
 
         QuestionBreak ->
             Sub.none
