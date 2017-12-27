@@ -34,6 +34,14 @@ config :guardian, Guardian,
   ttl: {30, :days},
   serializer: Aion.GuardianSerializer
 
+# Configures DB access
+config :aion, Aion.Repo,
+  username: "postgres",
+  password: "postgres",
+  database: "aion",
+  hostname: System.get_env("AION_DB_HOSTNAME") || "localhost",
+  pool_size: 10
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

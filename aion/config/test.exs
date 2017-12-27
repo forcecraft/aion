@@ -13,7 +13,7 @@ config :logger, level: :warn
 config :aion, Aion.Repo,
   adapter: Ecto.Adapters.Postgres,
   username: "postgres",
-  password: "postgres",
+  password: System.get_env("AION_TEST_DB_PASSWORD") || "postgres",
   database: "aion_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox

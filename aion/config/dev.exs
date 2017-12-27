@@ -24,14 +24,4 @@ config :aion, Aion.Endpoint,
     ]
   ]
 
-config :logger, :console, format: "[$level] $message\n"
-
 config :phoenix, :stacktrace_depth, 20
-
-config :aion, Aion.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
-  database: "aion",
-  hostname: "localhost",
-  pool_size: 10
