@@ -36,6 +36,7 @@ config :guardian, Guardian,
 
 # Configures DB access
 config :aion, Aion.Repo,
+  adapter: Ecto.Adapters.Postgres,
   username: "postgres",
   password: "postgres",
   database: "aion",
