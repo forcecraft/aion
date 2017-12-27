@@ -1,6 +1,8 @@
 ##  ~> GENERAL <~  ##
 #####################
 
+elm-package=$(shell pwd)/aion/node_modules/elm/binwrappers/elm-package
+
 help: ## Print out this message
 	@IFS=$$'\n' ; \
 	help_lines=(`fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//'`); \
@@ -28,7 +30,7 @@ lint: ## Run elixir linter
 	cd aion && mix credo --strict
 
 reinstall-elm: ## Remove and reinstall elm dependencies
-	cd aion/web/elm && rm -rf elm-stuff && elm-package install -y
+	cd aion/web/elm && rm -rf elm-stuff && $(elm-package) install -y
 
 #######################
 ## ~> DOCKER PART <~ ##
@@ -60,7 +62,7 @@ local-db: ## Create and migrate db locally
 	cd aion && mix ecto.create && mix ecto.migrate
 
 local-deps: ## Download all needed dependencies
-	cd aion && mix deps.get && npm install && cd web/elm && elm-package install -y
+	cd aion && mix deps.get && npm install && cd web/elm && $(elm-package) install -y
 
 local-config: ## Switch config file to the one containing settings for local use
 	cp aion/config/local_dev.exs aion/config/dev.exs
@@ -97,12 +99,11 @@ deploy: ## Create a release and run the production server
 	npm install && \
 	brunch build --production && \
 	MIX_ENV=prod mix phoenix.digest
-	
+
 	# Try to shutdown running server, continue regardless
 	@-sudo ./aion/rel/aion/bin/aion stop && \
 	([ $$? -eq 0 ] && echo "Successfully stopped running server") || \
-	echo "Couldn't shut down the server, apparently it was not running"    
-	
+	echo "Couldn't shut down the server, apparently it was not running"
+
 	cd aion && MIX_ENV=prod mix release
 	sudo ./aion/rel/aion/bin/aion start
-
