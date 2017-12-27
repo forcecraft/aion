@@ -58,7 +58,8 @@ defmodule Aion.Mixfile do
       {:postgrex, ">= 0.0.0"},
       {:simetric, "~> 0.1.0"},
       {:exrm, "~> 1.0.8"},
-      {:latinizer, "~> 0.2.0"}
+      {:latinizer, "~> 0.4.0"},
+      {:cipher, "~> 1.3.4"}
     ]
   end
 

@@ -34,6 +34,11 @@ config :guardian, Guardian,
   ttl: {30, :days},
   serializer: Aion.GuardianSerializer
 
+config :cipher,
+  keyphrase: System.get_env("CIPHER_KEYPHRASE") || "testiekeyphraseforcipher",
+  ivphrase: System.get_env("CIPHER_IVPHRASE") || "testieivphraseforcipher",
+  magic_token: System.get_env("CIPHER_MAGIC_TOKEN") || "magictoken"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
