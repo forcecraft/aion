@@ -60,7 +60,7 @@ type Msg
     | ReceiveUserList Encode.Value
     | ReceiveQuestionSummary Encode.Value
     | LeaveRoom
-    | Tick
+    | Tick Time
     | OnTime Time
     | OnInitialTime Time
     | OnRankingCategoryChange String

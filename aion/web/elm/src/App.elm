@@ -8,6 +8,7 @@ import Navigation exposing (Location, modifyUrl)
 import Panel.Api exposing (fetchCategories)
 import Phoenix.Socket
 import Room.Api exposing (fetchRooms)
+import Room.Subscriptions
 import Routing
 import Update exposing (setHomeUrl, update)
 import User.Api exposing (fetchCurrentUser)
@@ -43,6 +44,7 @@ subscriptions model =
         [ Phoenix.Socket.listen model.socket Msgs.PhoenixMsg
         , Navbar.subscriptions model.navbarState NavbarMsg
         , Sub.map Msgs.MultiselectMsg <| Multiselect.subscriptions model.panelData.categoryMultiSelect
+        , Room.Subscriptions.subscriptions model
         ]
 
 

@@ -31,13 +31,3 @@ answerInputFieldId =
 progressBarTimeout : Float
 progressBarTimeout =
     10000
-
-
-progressBarTicks : Float
-progressBarTicks =
-    1000
-
-
-progressBarDelay : Float
-progressBarDelay =
-    progressBarTimeout / progressBarTicks
