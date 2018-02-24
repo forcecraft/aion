@@ -1,5 +1,6 @@
+import os
+
 dbname = 'aion'
 user = 'postgres'
 password = 'postgres'
-host = 'localhost'
-
+host = os.environ.get('AION_DB_HOSTNAME', 'localhost')
