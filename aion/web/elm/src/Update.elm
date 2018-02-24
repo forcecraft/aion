@@ -8,6 +8,7 @@ import Forms
 import General.Constants exposing (loginFormMsg, registerFormMsg)
 import General.Models exposing (Model, Route(RankingRoute, UserRoute, RoomListRoute, RoomRoute), asEventLogIn, asProgressBarIn)
 import General.Notifications exposing (toastsConfig)
+import Http exposing (Error(BadStatus))
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Msgs exposing (Msg(..))
@@ -17,7 +18,7 @@ import Panel.Models exposing (categoryNamePossibleFields, questionFormPossibleFi
 import Panel.Notifications exposing (..)
 import Ports exposing (check)
 import Ranking.Api exposing (fetchRanking)
-import RemoteData
+import RemoteData exposing (WebData)
 import Room.Api exposing (fetchRooms)
 import Room.Constants exposing (answerInputFieldId, enterKeyCode, progressBarTimeout)
 import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, questionSummaryDecoder, userJoinedInfoDecoder, userLeftDecoder, userListMessageDecoder)
@@ -44,8 +45,8 @@ decodeAndUpdate :
     Decode.Value
     -> Decode.Decoder a
     -> Model
-    -> (a -> ( Model, Cmd msg ))
-    -> ( Model, Cmd msg )
+    -> (a -> ( Model, Cmd Msg ))
+    -> ( Model, Cmd Msg )
 decodeAndUpdate encodedValue decoder model updateFun =
     case Decode.decodeValue decoder encodedValue of
         Ok value ->
@@ -53,6 +54,28 @@ decodeAndUpdate encodedValue decoder model updateFun =
 
         Err error ->
             model ! []
+
+
+authorizeRemoteData :
+    WebData a
+    -> Model
+    -> (WebData a -> ( Model, Cmd Msg ))
+    -> ( Model, Cmd Msg )
+authorizeRemoteData remoteData model updateModelWithData =
+    case remoteData of
+        RemoteData.Failure failureDetails ->
+            case failureDetails of
+                BadStatus response ->
+                    if response.status.code == 401 then
+                        update Logout model
+                    else
+                        model ! []
+
+                _ ->
+                    model ! []
+
+        _ ->
+            updateModelWithData remoteData
 
 
 unwrapToken : Maybe String -> String
@@ -200,30 +223,39 @@ update msg model =
                             ! []
 
         OnFetchRooms response ->
-            { model | rooms = response } ! []
+            authorizeRemoteData
+                response
+                model
+                (\correctData ->
+                    { model | rooms = response } ! []
+                )
 
         OnFetchRanking response ->
-            let
-                oldRankingData =
-                    model.rankingData
+            authorizeRemoteData response
+                model
+                (\response ->
+                    let
+                        oldRankingData =
+                            model.rankingData
 
-                rankingList =
-                    case response of
-                        RemoteData.Success data ->
-                            data.rankingList
+                        rankingList =
+                            case response of
+                                RemoteData.Success data ->
+                                    data.rankingList
 
-                        _ ->
-                            []
+                                _ ->
+                                    []
 
-                selectedCategoryId =
-                    case (List.head rankingList) of
-                        Just category ->
-                            category.categoryId
+                        selectedCategoryId =
+                            case (List.head rankingList) of
+                                Just category ->
+                                    category.categoryId
 
-                        _ ->
-                            -1
-            in
-                { model | rankingData = { oldRankingData | data = response, selectedCategoryId = selectedCategoryId } } ! []
+                                _ ->
+                                    -1
+                    in
+                        { model | rankingData = { oldRankingData | data = response, selectedCategoryId = selectedCategoryId } } ! []
+                )
 
         OnRankingCategoryChange response ->
             let
