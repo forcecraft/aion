@@ -121,7 +121,7 @@ footer p {
     margin-bottom: 0px;
     border-radius: 3px;
     background-color: #5cb85c;
-    max-height: 90px;
+    max-height: 150px;
 }
 
 .tile a {
@@ -148,8 +148,13 @@ footer p {
 }
 
 .tile-player-count {
-    padding-bottom: 30px;
+    /*padding-bottom: 30px;*/
     font-size: 12px;
+}
+.tile-room-description {
+    padding-bottom: 10px;
+    font-style: italic;
+    text-align: justify;
 }
 
 .tile-player-count::before {

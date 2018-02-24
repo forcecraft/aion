@@ -18,17 +18,16 @@ notFoundView =
         ]
 
 
+asGridContainer : List (Html msg) -> Html msg
 asGridContainer data =
-    Grid.container [] data
+    Grid.containerFluid [] data
 
 
 roomListView : Model -> Html Msg
 roomListView model =
     div []
-        [ h4 [ class "room-list-label" ] [ text "Recommended" ]
-        , displayRooms model.rooms Recommended
+        [ displaySpecialRooms model.rooms
         , hr [ class "room-content-separator" ] []
-        , h4 [ class "room-list-label" ] [ text "All rooms" ]
         , displayRooms model.rooms All
         ]
 
@@ -36,6 +35,27 @@ roomListView model =
 type FilterType
     = Recommended
     | All
+
+
+displaySpecialRooms : WebData RoomsData -> Html Msg
+displaySpecialRooms rooms =
+    let
+        fun =
+            \rooms ->
+                let
+                    data =
+                        rooms
+                            |> .data
+                            |> List.take 3
+                in
+                    Grid.container []
+                        [ Grid.row [] (List.map displaySpecialRoom data) ]
+    in
+        div [] [ displayWebData rooms fun ]
+
+
+displaySpecialRoom room =
+    Grid.col [] [ div [ class "tile" ] [ displayRoomLabel room Recommended ] ]
 
 
 displayRooms : WebData RoomsData -> FilterType -> Html Msg
@@ -75,11 +95,11 @@ listRoomsSlice rooms =
 listSingleRoom : Room -> Grid.Column Msg
 listSingleRoom room =
     Grid.col [ Col.lg2, Col.md4 ]
-        [ div [ class "tile" ] [ displayRoomLabel room ] ]
+        [ div [ class "tile" ] [ displayRoomLabel room All ] ]
 
 
-displayRoomLabel : Room -> Html Msg
-displayRoomLabel room =
+displayRoomLabel : Room -> FilterType -> Html Msg
+displayRoomLabel room roomType =
     let
         url =
             "#rooms/" ++ (toString room.id)
@@ -97,8 +117,22 @@ displayRoomLabel room =
 
                 _ ->
                     toString (room.player_count) ++ " players"
+
+        extras =
+            let
+                label =
+                    case roomType of
+                        All ->
+                            []
+
+                        Recommended ->
+                            [ text "The most crowded right now" ]
+            in
+                p [ class "tile-room-description" ] label
     in
         a [ href url ]
-            [ p [ class "tile-room-name" ] [ text roomName ]
-            , p [ class "tile-player-count" ] [ text playerCount ]
-            ]
+            ([ p [ class "tile-room-name" ] [ text roomName ]
+             , p [ class "tile-player-count" ] [ text playerCount ]
+             ]
+                ++ [ extras ]
+            )
