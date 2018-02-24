@@ -6,8 +6,9 @@ import Auth.Notifications exposing (loginErrorToast, registrationErrorToast)
 import Dom exposing (focus)
 import Forms
 import General.Constants exposing (loginFormMsg, registerFormMsg)
-import General.Models exposing (Model, Route(RankingRoute, UserRoute, RoomListRoute, RoomRoute), asEventLogIn, asProgressBarIn)
+import General.Models exposing (Model, Route(RankingRoute, RoomListRoute, RoomRoute, UserRoute), asEventLogIn, asProgressBarIn)
 import General.Notifications exposing (toastsConfig)
+import Http exposing (Error(BadStatus))
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Msgs exposing (Msg(..))
@@ -17,7 +18,7 @@ import Panel.Models exposing (categoryNamePossibleFields, questionFormPossibleFi
 import Panel.Notifications exposing (..)
 import Ports exposing (check)
 import Ranking.Api exposing (fetchRanking)
-import RemoteData
+import RemoteData exposing (WebData)
 import Room.Api exposing (fetchRooms)
 import Room.Constants exposing (answerInputFieldId, enterKeyCode, progressBarTimeout)
 import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, questionSummaryDecoder, userJoinedInfoDecoder, userLeftDecoder, userListMessageDecoder)
@@ -44,8 +45,8 @@ decodeAndUpdate :
     Decode.Value
     -> Decode.Decoder a
     -> Model
-    -> (a -> ( Model, Cmd msg ))
-    -> ( Model, Cmd msg )
+    -> (a -> ( Model, Cmd Msg ))
+    -> ( Model, Cmd Msg )
 decodeAndUpdate encodedValue decoder model updateFun =
     case Decode.decodeValue decoder encodedValue of
         Ok value ->
@@ -53,6 +54,28 @@ decodeAndUpdate encodedValue decoder model updateFun =
 
         Err error ->
             model ! []
+
+
+authorizeRemoteData :
+    WebData a
+    -> Model
+    -> (WebData a -> ( Model, Cmd Msg ))
+    -> ( Model, Cmd Msg )
+authorizeRemoteData remoteData model updateModelWithData =
+    case remoteData of
+        RemoteData.Failure failureDetails ->
+            case failureDetails of
+                BadStatus response ->
+                    if response.status.code == 401 then
+                        update Logout model
+                    else
+                        model ! []
+
+                _ ->
+                    model ! []
+
+        _ ->
+            updateModelWithData remoteData
 
 
 unwrapToken : Maybe String -> String
@@ -200,30 +223,39 @@ update msg model =
                             ! []
 
         OnFetchRooms response ->
-            { model | rooms = response } ! []
+            authorizeRemoteData
+                response
+                model
+                (\correctData ->
+                    { model | rooms = response } ! []
+                )
 
         OnFetchRanking response ->
-            let
-                oldRankingData =
-                    model.rankingData
+            authorizeRemoteData response
+                model
+                (\response ->
+                    let
+                        oldRankingData =
+                            model.rankingData
 
-                rankingList =
-                    case response of
-                        RemoteData.Success data ->
-                            data.rankingList
+                        rankingList =
+                            case response of
+                                RemoteData.Success data ->
+                                    data.rankingList
 
-                        _ ->
-                            []
+                                _ ->
+                                    []
 
-                selectedCategoryId =
-                    case (List.head rankingList) of
-                        Just category ->
-                            category.categoryId
+                        selectedCategoryId =
+                            case (List.head rankingList) of
+                                Just category ->
+                                    category.categoryId
 
-                        _ ->
-                            -1
-            in
-                { model | rankingData = { oldRankingData | data = response, selectedCategoryId = selectedCategoryId } } ! []
+                                _ ->
+                                    -1
+                    in
+                        { model | rankingData = { oldRankingData | data = response, selectedCategoryId = selectedCategoryId } } ! []
+                )
 
         OnRankingCategoryChange response ->
             let
@@ -241,107 +273,131 @@ update msg model =
                 { model | rankingData = { oldRankingData | selectedCategoryId = newCategoryId } } ! []
 
         OnFetchCategories response ->
-            let
-                newModel =
-                    { model | categories = response }
+            authorizeRemoteData response
+                model
+                (\response ->
+                    let
+                        newModel =
+                            { model | categories = response }
 
-                categoryList =
-                    case newModel.categories of
-                        RemoteData.Success categoriesData ->
-                            List.map (\category -> ( toString (category.id), category.name )) categoriesData.data
+                        categoryList =
+                            case newModel.categories of
+                                RemoteData.Success categoriesData ->
+                                    List.map (\category -> ( toString (category.id), category.name )) categoriesData.data
 
-                        _ ->
-                            []
+                                _ ->
+                                    []
 
-                oldPanelData =
-                    model.panelData
+                        oldPanelData =
+                            model.panelData
 
-                updatedCategoryMultiselect =
-                    Multiselect.initModel categoryList "id"
-            in
-                { newModel | panelData = { oldPanelData | categoryMultiSelect = updatedCategoryMultiselect } } ! []
+                        updatedCategoryMultiselect =
+                            Multiselect.initModel categoryList "id"
+                    in
+                        { newModel | panelData = { oldPanelData | categoryMultiSelect = updatedCategoryMultiselect } } ! []
+                )
 
         OnFetchCurrentUser response ->
-            let
-                oldUserData =
-                    model.user
-            in
-                { model | user = { oldUserData | details = response } } ! []
+            authorizeRemoteData response
+                model
+                (\response ->
+                    let
+                        oldUserData =
+                            model.user
+                    in
+                        { model | user = { oldUserData | details = response } } ! []
+                )
 
         OnFetchUserScores response ->
-            let
-                oldUserData =
-                    model.user
-            in
-                { model | user = { oldUserData | scores = response } } ! []
+            authorizeRemoteData response
+                model
+                (\response ->
+                    let
+                        oldUserData =
+                            model.user
+                    in
+                        { model | user = { oldUserData | scores = response } } ! []
+                )
 
         OnQuestionCreated response ->
-            case response of
-                RemoteData.Success responseData ->
-                    let
-                        oldPanelData =
-                            model.panelData
+            authorizeRemoteData response
+                model
+                (\response ->
+                    case response of
+                        RemoteData.Success responseData ->
+                            let
+                                oldPanelData =
+                                    model.panelData
 
-                        oldQuestionForm =
-                            model.panelData.questionForm
+                                oldQuestionForm =
+                                    model.panelData.questionForm
 
-                        newQuestionForm =
-                            updateForm "question" "" oldQuestionForm
-                                |> updateForm "answers" ""
-                    in
-                        { model | panelData = { oldPanelData | questionForm = newQuestionForm } }
-                            ! []
-                            |> questionCreationSuccessfulToast
+                                newQuestionForm =
+                                    updateForm "question" "" oldQuestionForm
+                                        |> updateForm "answers" ""
+                            in
+                                { model | panelData = { oldPanelData | questionForm = newQuestionForm } }
+                                    ! []
+                                    |> questionCreationSuccessfulToast
 
-                _ ->
-                    model
-                        ! []
-                        |> questionCreationErrorToast
+                        _ ->
+                            model
+                                ! []
+                                |> questionCreationErrorToast
+                )
 
         OnCategoryCreated response ->
-            case response of
-                RemoteData.Success responseData ->
-                    let
-                        oldPanelData =
-                            model.panelData
+            authorizeRemoteData response
+                model
+                (\response ->
+                    case response of
+                        RemoteData.Success responseData ->
+                            let
+                                oldPanelData =
+                                    model.panelData
 
-                        oldCategoryForm =
-                            model.panelData.categoryForm
+                                oldCategoryForm =
+                                    model.panelData.categoryForm
 
-                        newCategoryForm =
-                            Forms.updateFormInput oldCategoryForm "name" ""
-                    in
-                        { model | panelData = { oldPanelData | categoryForm = newCategoryForm } }
-                            ! []
-                            |> categoryCreationSuccessfulToast
+                                newCategoryForm =
+                                    Forms.updateFormInput oldCategoryForm "name" ""
+                            in
+                                { model | panelData = { oldPanelData | categoryForm = newCategoryForm } }
+                                    ! []
+                                    |> categoryCreationSuccessfulToast
 
-                _ ->
-                    model
-                        ! []
-                        |> categoryCreationErrorToast
+                        _ ->
+                            model
+                                ! []
+                                |> categoryCreationErrorToast
+                )
 
         OnRoomCreated response ->
-            case response of
-                RemoteData.Success responseData ->
-                    let
-                        oldPanelData =
-                            model.panelData
+            authorizeRemoteData response
+                model
+                (\response ->
+                    case response of
+                        RemoteData.Success responseData ->
+                            let
+                                oldPanelData =
+                                    model.panelData
 
-                        oldRoomForm =
-                            model.panelData.roomForm
+                                oldRoomForm =
+                                    model.panelData.roomForm
 
-                        newRoomForm =
-                            updateForm "name" "" oldRoomForm
-                                |> updateForm "description" ""
-                    in
-                        { model | panelData = { oldPanelData | roomForm = newRoomForm } }
-                            ! []
-                            |> roomCreationSuccessfulToast
+                                newRoomForm =
+                                    updateForm "name" "" oldRoomForm
+                                        |> updateForm "description" ""
+                            in
+                                { model | panelData = { oldPanelData | roomForm = newRoomForm } }
+                                    ! []
+                                    |> roomCreationSuccessfulToast
 
-                _ ->
-                    model
-                        ! []
-                        |> roomCreationErrorToast
+                        _ ->
+                            model
+                                ! []
+                                |> roomCreationErrorToast
+                )
 
         OnLocationChange location ->
             let
