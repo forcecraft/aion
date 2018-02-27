@@ -1,13 +1,14 @@
 module Room.Api exposing (..)
 
 import Auth.Models exposing (Token)
+import General.Msgs exposing (GeneralMsg(OnFetchRooms))
 import Http exposing (Request)
 import Json.Decode as Decode
-import Msgs exposing (Msg)
 import Navigation exposing (Location)
 import RemoteData
 import Room.Decoders exposing (roomsDecoder)
 import Room.Models exposing (RoomsData)
+import Room.Msgs exposing (RoomMsg)
 import Urls exposing (host, roomsUrl)
 
 
@@ -24,7 +25,7 @@ fetchCurrentUserRequest url token decoder =
         }
 
 
-fetchRooms : Location -> Token -> Cmd Msg
+fetchRooms : Location -> Token -> Cmd GeneralMsg
 fetchRooms location token =
     let
         url =
@@ -32,4 +33,4 @@ fetchRooms location token =
     in
         fetchCurrentUserRequest url token roomsDecoder
             |> RemoteData.sendRequest
-            |> Cmd.map Msgs.OnFetchRooms
+            |> Cmd.map OnFetchRooms

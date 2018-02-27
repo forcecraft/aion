@@ -2,6 +2,8 @@ module Panel.Msgs exposing (..)
 
 import Panel.Models exposing (CategoriesData, CategoryCreatedData, QuestionCreatedData, RoomCreatedData)
 import RemoteData exposing (WebData)
+import Toasty
+import Toasty.Defaults
 
 
 type PanelMsg
@@ -15,3 +17,4 @@ type PanelMsg
     | CreateNewCategory
     | CreateNewRoom
     | OnFetchCategories (WebData CategoriesData)
+    | ToastyMsg (Toasty.Msg Toasty.Defaults.Toast)

@@ -26,8 +26,6 @@ import User.Msgs exposing (UserMsg)
 
 type Msg
     = OnLocationChange Location
-    | PhoenixMsg (Phoenix.Socket.Msg Msg)
-    | ToastyMsg (Toasty.Msg Toasty.Defaults.Toast)
     | MultiselectMsg Multiselect.Msg
     | NavbarMsg Navbar.State
     | LeaveRoom

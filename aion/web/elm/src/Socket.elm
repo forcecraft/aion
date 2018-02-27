@@ -1,7 +1,6 @@
 module Socket exposing (..)
 
 import Json.Encode
-import Msgs exposing (Msg)
 import Navigation exposing (Location)
 import Phoenix.Channel
 import Phoenix.Push
@@ -16,7 +15,7 @@ initSocket token location =
         |> Phoenix.Socket.withDebug
 
 
-initializeRoom : Phoenix.Socket.Socket Msg -> String -> ( Phoenix.Socket.Socket Msg, Cmd (Phoenix.Socket.Msg Msg) )
+initializeRoom : Phoenix.Socket.Socket RoomMsg -> String -> ( Phoenix.Socket.Socket RoomMsg, Cmd (Phoenix.Socket.Msg RoomMsg) )
 initializeRoom socket roomIdToString =
     let
         channel =
@@ -40,8 +39,8 @@ initializeRoom socket roomIdToString =
 
 leaveRoom :
     String
-    -> Phoenix.Socket.Socket Msg
-    -> ( Phoenix.Socket.Socket Msg, Cmd (Phoenix.Socket.Msg Msg) )
+    -> Phoenix.Socket.Socket RoomMsg
+    -> ( Phoenix.Socket.Socket RoomMsg, Cmd (Phoenix.Socket.Msg RoomMsg) )
 leaveRoom roomId socket =
     Phoenix.Socket.leave ("room:" ++ roomId) socket
 
@@ -49,8 +48,8 @@ leaveRoom roomId socket =
 sendAnswer :
     String
     -> Json.Encode.Value
-    -> Phoenix.Socket.Socket Msg
-    -> ( Phoenix.Socket.Socket Msg, Cmd (Phoenix.Socket.Msg Msg) )
+    -> Phoenix.Socket.Socket RoomMsg
+    -> ( Phoenix.Socket.Socket RoomMsg, Cmd (Phoenix.Socket.Msg RoomMsg) )
 sendAnswer roomId payload socket =
     Phoenix.Push.init "question:new_answer" ("room:" ++ roomId)
         |> Phoenix.Push.withPayload payload

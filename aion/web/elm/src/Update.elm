@@ -8,7 +8,6 @@ import Dom exposing (focus)
 import Forms
 import General.Constants exposing (loginFormMsg, registerFormMsg)
 import General.Models exposing (Model, Route(RankingRoute, UserRoute, RoomListRoute, RoomRoute), asEventLogIn, asProgressBarIn)
-import General.Notifications exposing (toastsConfig)
 import General.Update
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -155,17 +154,6 @@ update msg model =
 
                 _ ->
                     model ! []
-
-        PhoenixMsg msg ->
-            let
-                ( socket, cmd ) =
-                    Phoenix.Socket.update msg model.socket
-            in
-                { model | socket = socket } ! [ Cmd.map PhoenixMsg cmd ]
-
-        -- Toasty
-        ToastyMsg subMsg ->
-            Toasty.update toastsConfig ToastyMsg subMsg model
 
         -- Navbar
         NavbarMsg state ->

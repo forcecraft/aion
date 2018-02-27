@@ -3,6 +3,8 @@ module Auth.Msgs exposing (..)
 import Auth.Models exposing (RegistrationResultData)
 import Http
 import RemoteData exposing (WebData)
+import Toasty
+import Toasty.Defaults
 
 
 type AuthMsg
@@ -10,7 +12,7 @@ type AuthMsg
     | LoginResult (Result Http.Error String)
     | Register
     | RegistrationResult (WebData RegistrationResultData)
-    | Logout
     | ChangeAuthForm
     | UpdateLoginForm String String
     | UpdateRegistrationForm String String
+    | ToastyMsg (Toasty.Msg Toasty.Defaults.Toast)

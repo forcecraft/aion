@@ -3,14 +3,13 @@ module User.Api exposing (..)
 import Http
 import Http exposing (Request)
 import Json.Decode as Decode
-import Msgs exposing (Msg)
 import Navigation exposing (Location)
 import RemoteData
 import Urls exposing (host, userScoresUrl)
 import User.Decoders exposing (userDecoder, userScoresDecoder)
 import User.Models exposing (CurrentUser, UserScores)
 import Auth.Models exposing (Token)
-import User.Msgs exposing (UserMsg(OnFetchCurrentUser))
+import User.Msgs exposing (UserMsg(OnFetchCurrentUser, OnFetchUserScores))
 
 
 fetchCurrentUserUrl : Location -> String
@@ -31,7 +30,7 @@ fetchCurrentUserRequest url token decoder =
         }
 
 
-fetchCurrentUser : Location -> String -> Cmd Msg
+fetchCurrentUser : Location -> String -> Cmd UserMsg
 fetchCurrentUser location token =
     let
         url =
@@ -55,7 +54,7 @@ fetchUserScoresRequest url token decoder =
         }
 
 
-fetchUserScores : Location -> Token -> Cmd Msg
+fetchUserScores : Location -> Token -> Cmd UserMsg
 fetchUserScores location token =
     let
         url =
@@ -63,4 +62,4 @@ fetchUserScores location token =
     in
         fetchUserScoresRequest url token userScoresDecoder
             |> RemoteData.sendRequest
-            |> Cmd.map Msgs.OnFetchUserScores
+            |> Cmd.map OnFetchUserScores

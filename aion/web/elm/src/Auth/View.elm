@@ -1,6 +1,8 @@
 module Auth.View exposing (..)
 
 import Auth.Models exposing (AuthData, LoginForm, RegistrationForm, UnauthenticatedViewToggle(LoginView, RegisterView))
+import Auth.Msgs exposing (AuthMsg(ChangeAuthForm, Login, Register, ToastyMsg, UpdateLoginForm, UpdateRegistrationForm))
+import Auth.Notifications exposing (toastsConfig)
 import Bootstrap.Badge as Badge
 import Bootstrap.Button as Button
 import Bootstrap.Form as Form
@@ -9,15 +11,13 @@ import Bootstrap.Grid as Grid
 import Forms
 import General.Constants exposing (authPageRightColumnContent)
 import General.Models exposing (Model)
-import General.Notifications exposing (toastsConfig)
 import Html exposing (Html, br, div, h2, p, span, text)
 import Html.Attributes exposing (class, for)
-import Msgs exposing (Msg(..))
 import Toasty
 import Toasty.Defaults
 
 
-authView : Model -> Html Msg
+authView : Model -> Html AuthMsg
 authView model =
     let
         unauthenticatedView =
@@ -43,7 +43,7 @@ authView model =
             ]
 
 
-authForm : UnauthenticatedViewToggle -> LoginForm -> RegistrationForm -> String -> Html Msg
+authForm : UnauthenticatedViewToggle -> LoginForm -> RegistrationForm -> String -> Html AuthMsg
 authForm unauthenticatedView loginForm registrationForm formMsg =
     case unauthenticatedView of
         LoginView ->
@@ -53,7 +53,7 @@ authForm unauthenticatedView loginForm registrationForm formMsg =
             registrationFormView registrationForm formMsg
 
 
-authPageRightColumn : Html Msg
+authPageRightColumn : Html AuthMsg
 authPageRightColumn =
     div []
         [ h2 []
@@ -74,7 +74,7 @@ authPageRightColumn =
 -- auth form switch section
 
 
-authFormToggle : String -> Html Msg
+authFormToggle : String -> Html AuthMsg
 authFormToggle formMsg =
     Button.button
         [ Button.attrs [ class "auth-toggle-button" ]
@@ -88,7 +88,7 @@ authFormToggle formMsg =
 -- login form section
 
 
-loginFormView : LoginForm -> String -> Html Msg
+loginFormView : LoginForm -> String -> Html AuthMsg
 loginFormView loginForm formMsg =
     div [ class "login-container" ]
         [ h2 [] [ text "Log in" ]
@@ -106,7 +106,7 @@ loginFormView loginForm formMsg =
         ]
 
 
-emailLoginFormElement : Forms.Form -> Html Msg
+emailLoginFormElement : Forms.Form -> Html AuthMsg
 emailLoginFormElement form =
     Form.group []
         [ Form.label [ for "email" ] [ text "Email" ]
@@ -119,7 +119,7 @@ emailLoginFormElement form =
         ]
 
 
-passwordLoginFormElement : Forms.Form -> Html Msg
+passwordLoginFormElement : Forms.Form -> Html AuthMsg
 passwordLoginFormElement form =
     Form.group []
         [ Form.label [ for "password" ] [ text "Password" ]
@@ -136,7 +136,7 @@ passwordLoginFormElement form =
 -- registration form section
 
 
-registrationFormView : RegistrationForm -> String -> Html Msg
+registrationFormView : RegistrationForm -> String -> Html AuthMsg
 registrationFormView registrationForm formMsg =
     div [ class "registration-container" ]
         [ h2 [] [ text "Register" ]
@@ -155,7 +155,7 @@ registrationFormView registrationForm formMsg =
         ]
 
 
-nameRegisterFormElement : Forms.Form -> Html Msg
+nameRegisterFormElement : Forms.Form -> Html AuthMsg
 nameRegisterFormElement form =
     Form.group []
         [ Form.label [ for "name" ] [ text "Username" ]
@@ -168,7 +168,7 @@ nameRegisterFormElement form =
         ]
 
 
-emailRegisterFormElement : Forms.Form -> Html Msg
+emailRegisterFormElement : Forms.Form -> Html AuthMsg
 emailRegisterFormElement form =
     Form.group []
         [ Form.label [ for "email" ] [ text "Email" ]
@@ -181,7 +181,7 @@ emailRegisterFormElement form =
         ]
 
 
-passwordRegisterFormElement : Forms.Form -> Html Msg
+passwordRegisterFormElement : Forms.Form -> Html AuthMsg
 passwordRegisterFormElement form =
     Form.group []
         [ Form.label [ for "password" ] [ text "Password" ]

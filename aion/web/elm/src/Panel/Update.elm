@@ -48,7 +48,7 @@ update msg model =
                             model.panelData.categoryForm
 
                         newCategoryForm =
-                            updateForm oldCategoryForm "name" ""
+                            updateForm "name" "" oldCategoryForm
                     in
                         { model | panelData = { oldPanelData | categoryForm = newCategoryForm } }
                             ! []

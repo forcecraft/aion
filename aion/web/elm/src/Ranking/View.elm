@@ -11,13 +11,14 @@ import Bootstrap.Grid.Col as Col
 import Bootstrap.Form as Form
 import Bootstrap.Form.Select as Select
 import Ranking.Models exposing (PlayerScore, RankingData, CategoryRanking)
+import Ranking.Msgs exposing (RankingMsg(OnRankingCategoryChange))
 import RemoteData exposing (WebData)
 import Navigation exposing (Location)
 import Ranking.Utils exposing (selectedCategoryScores, sortedScoresWithIndices)
 import Ranking.Urls exposing (getGoldMedalImageUrl, getSilverMedalImageUrl, getBronzeMedalImageUrl)
 
 
-rankingView : Model -> Html Msg
+rankingView : Model -> Html RankingMsg
 rankingView model =
     Grid.container []
         [ Grid.row []
@@ -50,7 +51,7 @@ displayCategoryOption category =
     Select.item [ value (toString category.categoryId) ] [ text category.categoryName ]
 
 
-rankingTable : Model -> Html Msg
+rankingTable : Model -> Html RankingMsg
 rankingTable model =
     Table.table
         { options = [ Table.striped, Table.hover ]
@@ -65,7 +66,7 @@ rankingTable model =
         }
 
 
-displayScores : Model -> Table.TBody Msg
+displayScores : Model -> Table.TBody RankingMsg
 displayScores model =
     case model.rankingData.data of
         RemoteData.Success rankingData ->
@@ -79,7 +80,7 @@ displayScores model =
             Table.tbody [] []
 
 
-displaySingleScore : Model -> ( Int, PlayerScore ) -> Table.Row msg
+displaySingleScore : Model -> ( Int, PlayerScore ) -> Table.Row RankingMsg
 displaySingleScore model indexAndScore =
     case indexAndScore of
         ( index, playerScore ) ->
@@ -91,7 +92,7 @@ displaySingleScore model indexAndScore =
                 ]
 
 
-scoreImage : Navigation.Location -> Int -> List (Html msg)
+scoreImage : Navigation.Location -> Int -> List (Html RankingMsg)
 scoreImage location index =
     case index of
         0 ->

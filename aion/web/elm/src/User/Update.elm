@@ -1,7 +1,8 @@
 module User.Update exposing (..)
 
 import General.Models exposing (Model)
-import User.Msgs exposing (UserMsg(OnFetchCurrentUser, OnFetchUserScores))
+import Ports exposing (check)
+import User.Msgs exposing (UserMsg(Logout, OnFetchCurrentUser, OnFetchUserScores))
 
 
 update : UserMsg -> Model -> ( Model, Cmd UserMsg )
@@ -20,3 +21,10 @@ update msg model =
                     model.user
             in
                 { model | user = { oldUserData | scores = response } } ! []
+
+        Logout ->
+            let
+                oldAuthData =
+                    model.authData
+            in
+                { model | authData = { oldAuthData | token = Nothing } } ! [ check "" ]

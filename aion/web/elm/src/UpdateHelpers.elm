@@ -5,7 +5,7 @@ import Forms
 import General.Models exposing (Model)
 import Json.Decode as Decode
 import Json.Encode as Encode
-import Msgs exposing (Msg)
+import Msgs exposing (Msg(MkGeneralMsg, MkPanelMsg, MkUserMsg))
 import Navigation exposing (Location, modifyUrl)
 import Panel.Api exposing (fetchCategories)
 import Ports exposing (check)
@@ -52,9 +52,9 @@ setHomeUrl location =
 postTokenActions : Token -> Location -> List (Cmd Msg)
 postTokenActions token location =
     [ check token
-    , fetchRooms location token
-    , fetchCategories location token
-    , fetchCurrentUser location token
+    , fetchRooms location token |> Cmd.map MkGeneralMsg
+    , fetchCategories location token |> Cmd.map MkPanelMsg
+    , fetchCurrentUser location token |> Cmd.map MkUserMsg
     , setHomeUrl location
     ]
 

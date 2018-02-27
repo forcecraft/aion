@@ -3,10 +3,10 @@ module Ranking.Api exposing (..)
 import Auth.Models exposing (Token)
 import Http exposing (Request)
 import Json.Decode as Decode
-import Msgs exposing (Msg)
 import Navigation exposing (Location)
 import Ranking.Decoders exposing (rankingDecoder)
 import Ranking.Models exposing (Ranking, CategoryRanking)
+import Ranking.Msgs exposing (RankingMsg(OnFetchRanking))
 import RemoteData
 import Urls exposing (rankingUrl)
 
@@ -24,7 +24,7 @@ fetchRankingRequest url token decoder =
         }
 
 
-fetchRanking : Location -> Token -> Cmd Msg
+fetchRanking : Location -> Token -> Cmd RankingMsg
 fetchRanking location token =
     let
         url =
@@ -32,4 +32,4 @@ fetchRanking location token =
     in
         fetchRankingRequest url token rankingDecoder
             |> RemoteData.sendRequest
-            |> Cmd.map Msgs.OnFetchRanking
+            |> Cmd.map OnFetchRanking

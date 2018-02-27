@@ -2,18 +2,21 @@ module Room.Update exposing (..)
 
 import Dom exposing (focus)
 import General.Models exposing (Model, Route(RoomRoute), asEventLogIn, asProgressBarIn)
+import Msgs exposing (Msg(LeaveRoom))
+import Phoenix.Socket
 import RemoteData
 import Room.Constants exposing (answerInputFieldId, enterKeyCode)
 import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, questionSummaryDecoder, userJoinedInfoDecoder, userLeftDecoder, userListMessageDecoder)
 import Room.Models exposing (Event(MkQuestionSummaryLog, MkUserJoinedLog, MkUserLeftLog), ProgressBarState(Running, Stopped, Uninitialized), RoomState(QuestionBreak, QuestionDisplayed), asLogIn, withProgress, withRunning, withStart)
-import Room.Msgs exposing (RoomMsg(FocusResult, KeyDown, LeaveRoom, NoOperation, OnInitialTime, OnTime, ReceiveAnswerFeedback, ReceiveDisplayQuestion, ReceiveQuestion, ReceiveQuestionBreak, ReceiveQuestionSummary, ReceiveUserJoined, ReceiveUserLeft, ReceiveUserList, SetAnswer, SubmitAnswer, Tick))
-import Room.Notifications exposing (closeAnswerToast, correctAnswerToast, incorrectAnswerToast)
+import Room.Msgs exposing (RoomMsg(FocusResult, KeyDown, NoOperation, OnInitialTime, OnTime, PhoenixMsg, ReceiveAnswerFeedback, ReceiveDisplayQuestion, ReceiveQuestion, ReceiveQuestionBreak, ReceiveQuestionSummary, ReceiveUserJoined, ReceiveUserLeft, ReceiveUserList, SetAnswer, SubmitAnswer, Tick, ToastyMsg))
+import Room.Notifications exposing (closeAnswerToast, correctAnswerToast, incorrectAnswerToast, toastsConfig)
 import Room.Utils exposing (progressBarTick)
 import UpdateHelpers exposing (decodeAndUpdate)
 import Json.Encode as Encode
 import Socket exposing (leaveRoom, sendAnswer)
 import Task
 import Time exposing (inMilliseconds)
+import Toasty
 
 
 update : RoomMsg -> Model -> ( Model, Cmd RoomMsg )
@@ -187,3 +190,14 @@ update msg model =
         -- NoOp
         NoOperation ->
             model ! []
+
+        PhoenixMsg msg ->
+            let
+                ( socket, cmd ) =
+                    Phoenix.Socket.update msg model.socket
+            in
+                { model | socket = socket } ! [ Cmd.map PhoenixMsg cmd ]
+
+        -- Toasty
+        ToastyMsg subMsg ->
+            Toasty.update toastsConfig ToastyMsg subMsg model

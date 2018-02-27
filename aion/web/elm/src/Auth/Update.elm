@@ -2,14 +2,15 @@ module Auth.Update exposing (..)
 
 import Auth.Api exposing (registerUser, submitCredentials)
 import Auth.Models exposing (UnauthenticatedViewToggle(LoginView, RegisterView))
-import Auth.Msgs exposing (AuthMsg(ChangeAuthForm, Login, LoginResult, Logout, Register, RegistrationResult, UpdateLoginForm, UpdateRegistrationForm))
-import Auth.Notifications exposing (loginErrorToast, registrationErrorToast)
+import Auth.Msgs exposing (AuthMsg(ChangeAuthForm, Login, LoginResult, Register, RegistrationResult, ToastyMsg, UpdateLoginForm, UpdateRegistrationForm))
+import Auth.Notifications exposing (loginErrorToast, registrationErrorToast, toastsConfig)
 import Forms
 import General.Constants exposing (loginFormMsg, registerFormMsg)
 import General.Models exposing (Model)
 import Ports exposing (check)
 import RemoteData
 import Socket exposing (initSocket)
+import Toasty
 import UpdateHelpers exposing (postTokenActions, updateForm)
 
 
@@ -69,13 +70,6 @@ update msg model =
                     model
                         ! []
                         |> registrationErrorToast
-
-        Logout ->
-            let
-                oldAuthData =
-                    model.authData
-            in
-                { model | authData = { oldAuthData | token = Nothing } } ! [ check "" ]
 
         ChangeAuthForm ->
             let
@@ -139,3 +133,7 @@ update msg model =
                         { oldAuthData | registrationForm = updatedRegistrationForm }
                 }
                     ! []
+
+        -- Toasty
+        ToastyMsg subMsg ->
+            Toasty.update toastsConfig ToastyMsg subMsg model

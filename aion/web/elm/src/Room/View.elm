@@ -9,7 +9,6 @@ import Bootstrap.Grid.Row as Row
 import Bootstrap.ListGroup as ListGroup
 import Bootstrap.Progress as Progress
 import General.Models exposing (Model)
-import General.Notifications exposing (toastsConfig)
 import Html exposing (Attribute, Html, a, button, div, form, h4, hr, input, li, text, ul)
 import Html.Attributes exposing (autocomplete, class, for, href, id, src, value)
 import Html.Events exposing (keyCode, on, onClick, onInput, onWithOptions)
@@ -19,14 +18,15 @@ import Html exposing (Html, a, div, img, li, p, text, ul)
 import Navigation exposing (Location)
 import Room.Constants exposing (answerInputFieldId, defaultImagePath, imagesPath)
 import Room.Models exposing (Answer, Event(MkQuestionSummaryLog, MkUserJoinedLog, MkUserLeftLog), EventLog, ImageName, ProgressBar, ProgressBarState(Stopped), RoomId, RoomState(QuestionBreak, QuestionDisplayed), RoomsData, UserGameData, UserRecord)
-import Room.Msgs exposing (RoomMsg(SetAnswer, SubmitAnswer))
+import Room.Msgs exposing (RoomMsg(SetAnswer, SubmitAnswer, ToastyMsg))
+import Room.Notifications exposing (toastsConfig)
 import Room.Urls exposing (getImageUrl)
 import Room.Utils exposing (getRoomList, getRoomNameById)
 import Toasty
 import Toasty.Defaults
 
 
-roomView : Model -> RoomId -> Html Msg
+roomView : Model -> RoomId -> Html RoomMsg
 roomView model roomId =
     let
         roomName =
@@ -59,7 +59,7 @@ roomView model roomId =
             ]
 
 
-displayProgress : ProgressBar -> Html Msg
+displayProgress : ProgressBar -> Html RoomMsg
 displayProgress progress =
     let
         optionalAttrs =
@@ -79,7 +79,7 @@ displayProgress progress =
             ]
 
 
-displayEventLog : EventLog -> Html Msg
+displayEventLog : EventLog -> Html RoomMsg
 displayEventLog eventLog =
     let
         logList =
@@ -124,14 +124,14 @@ displaySingleLog event =
         ListGroup.li [] [ text log ]
 
 
-displayQuestionText : Model -> Html Msg
+displayQuestionText : Model -> Html RoomMsg
 displayQuestionText model =
     div [ class "question-container" ]
         [ displayQuestion model.currentQuestion.content model.roomState
         ]
 
 
-displayScores : Model -> Html Msg
+displayScores : Model -> Html RoomMsg
 displayScores model =
     div
         [ class "room-scoreboard" ]
@@ -156,7 +156,7 @@ displaySingleScore userRecord =
         ListGroup.li [] [ text fieldValue ]
 
 
-displayQuestion : String -> RoomState -> Html Msg
+displayQuestion : String -> RoomState -> Html RoomMsg
 displayQuestion question roomState =
     let
         temporaryText =
@@ -175,7 +175,7 @@ displayQuestion question roomState =
             ]
 
 
-displayQuestionImage : Location -> ImageName -> RoomState -> Html Msg
+displayQuestionImage : Location -> ImageName -> RoomState -> Html RoomMsg
 displayQuestionImage location imageName roomState =
     let
         questionImageSource =
@@ -203,7 +203,7 @@ displayQuestionImage location imageName roomState =
             ]
 
 
-displayAnswerInput : Answer -> Html Msg
+displayAnswerInput : Answer -> Html RoomMsg
 displayAnswerInput currentAnswer =
     Form.form [ class "room-answer-input" ]
         [ Form.group []
@@ -215,7 +215,7 @@ displayAnswerInput currentAnswer =
         ]
 
 
-displayAnswerInputField : Answer -> Html Msg
+displayAnswerInputField : Answer -> Html RoomMsg
 displayAnswerInputField currentAnswer =
     Input.text
         [ Input.attrs [ autocomplete False ]
@@ -225,7 +225,7 @@ displayAnswerInputField currentAnswer =
         ]
 
 
-displayAnswerSubmitButton : Html Msg
+displayAnswerSubmitButton : Html RoomMsg
 displayAnswerSubmitButton =
     Button.button
         [ Button.success
