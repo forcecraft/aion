@@ -29,15 +29,6 @@ type Msg
     | OnCategoryCreated (WebData CategoryCreatedData)
     | OnRoomCreated (WebData RoomCreatedData)
     | PhoenixMsg (Phoenix.Socket.Msg Msg)
-    | SetAnswer String
-    | SubmitAnswer
-    | ReceiveQuestion Encode.Value
-    | FocusResult (Result Error ())
-    | KeyDown Int
-    | NoOperation
-    | ReceiveAnswerFeedback Encode.Value
-    | ReceiveDisplayQuestion Encode.Value
-    | ReceiveQuestionBreak Encode.Value
     | ToastyMsg (Toasty.Msg Toasty.Defaults.Toast)
     | CreateNewQuestionWithAnswers
     | CreateNewCategory
@@ -55,12 +46,25 @@ type Msg
     | UpdateRoomForm String String
     | MultiselectMsg Multiselect.Msg
     | NavbarMsg Navbar.State
+    | OnRankingCategoryChange String
+    | MkRoomMsg RoomMsg
+
+
+type RoomMsg
+    = LeaveRoom
+    | Tick Time
+    | OnTime Time
+    | OnInitialTime Time
+    | FocusResult (Result Error ())
+    | KeyDown Int
+    | NoOperation
+    | SetAnswer String
+    | SubmitAnswer
+    | ReceiveQuestion Encode.Value
+    | ReceiveAnswerFeedback Encode.Value
+    | ReceiveDisplayQuestion Encode.Value
+    | ReceiveQuestionBreak Encode.Value
     | ReceiveUserJoined Encode.Value
     | ReceiveUserLeft Encode.Value
     | ReceiveUserList Encode.Value
     | ReceiveQuestionSummary Encode.Value
-    | LeaveRoom
-    | Tick Time
-    | OnTime Time
-    | OnInitialTime Time
-    | OnRankingCategoryChange String
