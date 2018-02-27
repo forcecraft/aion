@@ -46,24 +46,3 @@ update msg model =
                             -1
             in
                 { model | rankingData = { oldRankingData | selectedCategoryId = newCategoryId } } ! []
-
-        OnFetchCategories response ->
-            let
-                newModel =
-                    { model | categories = response }
-
-                categoryList =
-                    case newModel.categories of
-                        RemoteData.Success categoriesData ->
-                            List.map (\category -> ( toString (category.id), category.name )) categoriesData.data
-
-                        _ ->
-                            []
-
-                oldPanelData =
-                    model.panelData
-
-                updatedCategoryMultiselect =
-                    Multiselect.initModel categoryList "id"
-            in
-                { newModel | panelData = { oldPanelData | categoryMultiSelect = updatedCategoryMultiselect } } ! []

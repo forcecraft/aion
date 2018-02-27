@@ -2,16 +2,16 @@ module Panel.Update exposing (..)
 
 import Forms
 import General.Models exposing (Model)
-import Msgs exposing (Msg(CreateNewCategory, CreateNewQuestionWithAnswers, CreateNewRoom, MultiselectMsg, OnCategoryCreated, OnQuestionCreated, OnRoomCreated, UpdateCategoryForm, UpdateLoginForm, UpdateQuestionForm, UpdateRegistrationForm, UpdateRoomForm))
 import Multiselect
 import Panel.Api exposing (createCategory, createQuestionWithAnswers, createRoom)
 import Panel.Models exposing (categoryNamePossibleFields, questionFormPossibleFields)
+import Panel.Msgs exposing (PanelMsg(CreateNewCategory, CreateNewQuestionWithAnswers, CreateNewRoom, OnCategoryCreated, OnFetchCategories, OnQuestionCreated, OnRoomCreated, UpdateCategoryForm, UpdateQuestionForm, UpdateRoomForm))
 import Panel.Notifications exposing (categoryCreationErrorToast, categoryCreationSuccessfulToast, categoryFormValidationErrorToast, questionCreationErrorToast, questionCreationSuccessfulToast, questionFormValidationErrorToast, roomCreationErrorToast, roomCreationSuccessfulToast, roomFormValidationErrorToast)
 import RemoteData
 import UpdateHelpers exposing (unwrapToken, updateForm)
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : PanelMsg -> Model -> ( Model, Cmd PanelMsg )
 update msg model =
     case msg of
         OnQuestionCreated response ->
@@ -207,3 +207,24 @@ update msg model =
                     model
                         ! []
                         |> questionFormValidationErrorToast
+
+        OnFetchCategories response ->
+            let
+                newModel =
+                    { model | categories = response }
+
+                categoryList =
+                    case newModel.categories of
+                        RemoteData.Success categoriesData ->
+                            List.map (\category -> ( toString (category.id), category.name )) categoriesData.data
+
+                        _ ->
+                            []
+
+                oldPanelData =
+                    model.panelData
+
+                updatedCategoryMultiselect =
+                    Multiselect.initModel categoryList "id"
+            in
+                { newModel | panelData = { oldPanelData | categoryMultiSelect = updatedCategoryMultiselect } } ! []

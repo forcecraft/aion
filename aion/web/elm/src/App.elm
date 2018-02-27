@@ -11,6 +11,7 @@ import Room.Api exposing (fetchRooms)
 import Room.Subscriptions
 import Routing
 import Update exposing (setHomeUrl, update)
+import UpdateHelpers exposing (setHomeUrl)
 import User.Api exposing (fetchCurrentUser)
 import View exposing (view)
 
