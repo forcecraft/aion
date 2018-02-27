@@ -32,6 +32,7 @@ update msg model =
                             | authData = { oldAuthData | token = Just token, msg = "" }
                             , socket = initSocket token model.location
                         }
+                            ! []
 
                     Err err ->
                         { model | authData = { oldAuthData | msg = toString err } }
