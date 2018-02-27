@@ -1,12 +1,12 @@
 module General.Update exposing (..)
 
 import General.Models exposing (Model)
-import Msgs exposing (Msg(OnFetchCategories, OnFetchRanking, OnRankingCategoryChange))
 import Multiselect
+import Ranking.Msgs exposing (RankingMsg(OnFetchRanking, OnRankingCategoryChange))
 import RemoteData
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : RankingMsg -> Model -> ( Model, Cmd RankingMsg )
 update msg model =
     case msg of
         OnFetchRanking response ->

@@ -2,17 +2,18 @@ module Auth.Update exposing (..)
 
 import Auth.Api exposing (registerUser, submitCredentials)
 import Auth.Models exposing (UnauthenticatedViewToggle(LoginView, RegisterView))
+import Auth.Msgs exposing (AuthMsg(ChangeAuthForm, Login, LoginResult, Logout, Register, RegistrationResult, UpdateLoginForm, UpdateRegistrationForm))
 import Auth.Notifications exposing (loginErrorToast, registrationErrorToast)
 import Forms
 import General.Constants exposing (loginFormMsg, registerFormMsg)
 import General.Models exposing (Model)
-import Msgs exposing (Msg(ChangeAuthForm, Login, LoginResult, Register, RegistrationResult))
+import Ports exposing (check)
 import RemoteData
 import Socket exposing (initSocket)
 import UpdateHelpers exposing (postTokenActions, updateForm)
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : AuthMsg -> Model -> ( Model, Cmd AuthMsg )
 update msg model =
     case msg of
         Login ->
@@ -105,7 +106,6 @@ update msg model =
                         }
                             ! []
 
-        -- Forms
         UpdateLoginForm name value ->
             let
                 oldAuthData =

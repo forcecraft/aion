@@ -2,11 +2,11 @@ module Room.Update exposing (..)
 
 import Dom exposing (focus)
 import General.Models exposing (Model, Route(RoomRoute), asEventLogIn, asProgressBarIn)
-import Msgs exposing (Msg(FocusResult, KeyDown, LeaveRoom, OnInitialTime, OnTime, PhoenixMsg, ReceiveAnswerFeedback, ReceiveDisplayQuestion, ReceiveQuestion, ReceiveQuestionBreak, ReceiveQuestionSummary, ReceiveUserJoined, ReceiveUserLeft, ReceiveUserList, SetAnswer, SubmitAnswer, Tick))
 import RemoteData
 import Room.Constants exposing (answerInputFieldId, enterKeyCode)
 import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, questionSummaryDecoder, userJoinedInfoDecoder, userLeftDecoder, userListMessageDecoder)
 import Room.Models exposing (Event(MkQuestionSummaryLog, MkUserJoinedLog, MkUserLeftLog), ProgressBarState(Running, Stopped, Uninitialized), RoomState(QuestionBreak, QuestionDisplayed), asLogIn, withProgress, withRunning, withStart)
+import Room.Msgs exposing (RoomMsg(FocusResult, KeyDown, LeaveRoom, NoOperation, OnInitialTime, OnTime, ReceiveAnswerFeedback, ReceiveDisplayQuestion, ReceiveQuestion, ReceiveQuestionBreak, ReceiveQuestionSummary, ReceiveUserJoined, ReceiveUserLeft, ReceiveUserList, SetAnswer, SubmitAnswer, Tick))
 import Room.Notifications exposing (closeAnswerToast, correctAnswerToast, incorrectAnswerToast)
 import Room.Utils exposing (progressBarTick)
 import UpdateHelpers exposing (decodeAndUpdate)
@@ -16,7 +16,7 @@ import Task
 import Time exposing (inMilliseconds)
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : RoomMsg -> Model -> ( Model, Cmd RoomMsg )
 update msg model =
     case msg of
         ReceiveUserList raw ->

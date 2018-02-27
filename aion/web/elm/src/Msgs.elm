@@ -4,6 +4,7 @@ import Auth.Models exposing (RegistrationResultData)
 import Auth.Msgs exposing (AuthMsg)
 import Bootstrap.Navbar as Navbar
 import Dom exposing (Error)
+import General.Msgs exposing (GeneralMsg)
 import Http
 import Navigation exposing (Location)
 import Multiselect
@@ -20,6 +21,7 @@ import Time exposing (Time)
 import Toasty
 import Toasty.Defaults
 import User.Models exposing (CurrentUser, UserScores)
+import User.Msgs exposing (UserMsg)
 
 
 type Msg
@@ -35,8 +37,3 @@ type Msg
     | MkPanelMsg PanelMsg
     | MkAuthMsg AuthMsg
     | MkGeneralMsg GeneralMsg
-
-
-type UserMsg
-    = OnFetchCurrentUser (WebData CurrentUser)
-    | OnFetchUserScores (WebData UserScores)

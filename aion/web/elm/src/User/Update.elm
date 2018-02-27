@@ -1,10 +1,10 @@
 module General.Update exposing (..)
 
 import General.Models exposing (Model)
-import Msgs exposing (Msg(OnFetchCurrentUser, OnFetchUserScores))
+import User.Msgs exposing (UserMsg(OnFetchCurrentUser, OnFetchUserScores))
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : UserMsg -> Model -> ( Model, Cmd UserMsg )
 update msg model =
     case msg of
         OnFetchCurrentUser response ->
