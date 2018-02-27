@@ -1,4 +1,4 @@
-module General.Update exposing (..)
+module Ranking.Update exposing (..)
 
 import General.Models exposing (Model)
 import Multiselect

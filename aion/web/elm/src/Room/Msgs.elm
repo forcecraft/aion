@@ -6,8 +6,7 @@ import Json.Encode as Encode
 
 
 type RoomMsg
-    = LeaveRoom
-    | Tick Time
+    = Tick Time
     | OnTime Time
     | OnInitialTime Time
     | FocusResult (Result Error ())

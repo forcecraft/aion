@@ -184,18 +184,6 @@ update msg model =
             in
                 (progressBar |> asProgressBarIn model) ! []
 
-        LeaveRoom ->
-            case model.route of
-                RoomRoute id ->
-                    let
-                        ( leaveRoomSocket, leaveRoomCmd ) =
-                            leaveRoom (toString id) model.socket
-                    in
-                        { model | socket = leaveRoomSocket } ! [ Cmd.map PhoenixMsg leaveRoomCmd ]
-
-                _ ->
-                    model ! []
-
         -- NoOp
         NoOperation ->
             model ! []

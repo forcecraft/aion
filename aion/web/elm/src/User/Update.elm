@@ -1,4 +1,4 @@
-module General.Update exposing (..)
+module User.Update exposing (..)
 
 import General.Models exposing (Model)
 import User.Msgs exposing (UserMsg(OnFetchCurrentUser, OnFetchUserScores))
