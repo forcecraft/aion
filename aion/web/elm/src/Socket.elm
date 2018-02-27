@@ -1,11 +1,12 @@
 module Socket exposing (..)
 
 import Json.Encode
-import Msgs exposing (Msg(ReceiveAnswerFeedback, ReceiveDisplayQuestion, ReceiveQuestion, ReceiveQuestionBreak, ReceiveQuestionSummary, ReceiveUserJoined, ReceiveUserLeft, ReceiveUserList))
+import Msgs exposing (Msg)
 import Navigation exposing (Location)
 import Phoenix.Channel
 import Phoenix.Push
 import Phoenix.Socket
+import Room.Msgs exposing (RoomMsg(ReceiveAnswerFeedback, ReceiveDisplayQuestion, ReceiveQuestion, ReceiveQuestionBreak, ReceiveQuestionSummary, ReceiveUserJoined, ReceiveUserLeft, ReceiveUserList))
 import Urls exposing (websocketUrl)
 
 

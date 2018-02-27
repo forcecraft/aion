@@ -10,6 +10,7 @@ import Urls exposing (host, userScoresUrl)
 import User.Decoders exposing (userDecoder, userScoresDecoder)
 import User.Models exposing (CurrentUser, UserScores)
 import Auth.Models exposing (Token)
+import User.Msgs exposing (UserMsg(OnFetchCurrentUser))
 
 
 fetchCurrentUserUrl : Location -> String
@@ -38,7 +39,7 @@ fetchCurrentUser location token =
     in
         fetchCurrentUserRequest url token userDecoder
             |> RemoteData.sendRequest
-            |> Cmd.map Msgs.OnFetchCurrentUser
+            |> Cmd.map OnFetchCurrentUser
 
 
 fetchUserScoresRequest : String -> String -> Decode.Decoder UserScores -> Request UserScores
