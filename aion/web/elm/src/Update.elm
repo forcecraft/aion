@@ -2,6 +2,7 @@ module Update exposing (..)
 
 import Auth.Api exposing (registerUser, submitCredentials)
 import Auth.Models exposing (Token, UnauthenticatedViewToggle(LoginView, RegisterView))
+import Auth.Msgs exposing (AuthMsg(LoginResult))
 import Auth.Notifications exposing (loginErrorToast, registrationErrorToast)
 import Auth.Update
 import Dom exposing (focus)
@@ -87,8 +88,16 @@ update msg model =
             let
                 ( updatedModel, cmd ) =
                     Auth.Update.update subMsg model
+
+                extraCmds =
+                    case subMsg of
+                        LoginResult Ok token ->
+                            postTokenActions token model.location
+
+                        _ ->
+                            []
             in
-                updatedModel ! [ Cmd.map MkAuthMsg cmd ]
+                updatedModel ! [ Cmd.map MkAuthMsg cmd ] ++ extraCmds
 
         --the rest
         OnLocationChange location ->
