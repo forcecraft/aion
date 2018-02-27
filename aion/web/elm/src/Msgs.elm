@@ -20,34 +20,17 @@ import User.Models exposing (CurrentUser, UserScores)
 
 type Msg
     = OnLocationChange Location
-    | OnFetchRooms (WebData RoomsData)
-    | OnFetchRanking (WebData Ranking)
-    | OnFetchCategories (WebData CategoriesData)
-    | OnFetchCurrentUser (WebData CurrentUser)
-    | OnFetchUserScores (WebData UserScores)
-    | OnQuestionCreated (WebData QuestionCreatedData)
-    | OnCategoryCreated (WebData CategoryCreatedData)
-    | OnRoomCreated (WebData RoomCreatedData)
     | PhoenixMsg (Phoenix.Socket.Msg Msg)
     | ToastyMsg (Toasty.Msg Toasty.Defaults.Toast)
-    | CreateNewQuestionWithAnswers
-    | CreateNewCategory
-    | CreateNewRoom
-    | Login
-    | LoginResult (Result Http.Error String)
-    | Register
-    | RegistrationResult (WebData RegistrationResultData)
-    | Logout
-    | ChangeAuthForm
-    | UpdateLoginForm String String
-    | UpdateRegistrationForm String String
-    | UpdateQuestionForm String String
-    | UpdateCategoryForm String String
-    | UpdateRoomForm String String
     | MultiselectMsg Multiselect.Msg
     | NavbarMsg Navbar.State
-    | OnRankingCategoryChange String
+      -- sub page types
     | MkRoomMsg RoomMsg
+    | MkRankingMsg RankingMsg
+    | MkUserMsg UserMsg
+    | MkPanelMsg PanelMsg
+    | MkAuthMsg AuthMsg
+    | MkGeneralMsg GeneralMsg
 
 
 type RoomMsg
@@ -68,3 +51,41 @@ type RoomMsg
     | ReceiveUserLeft Encode.Value
     | ReceiveUserList Encode.Value
     | ReceiveQuestionSummary Encode.Value
+
+
+type RankingMsg
+    = OnRankingCategoryChange String
+    | OnFetchRanking (WebData Ranking)
+    | OnFetchCategories (WebData CategoriesData)
+
+
+type UserMsg
+    = OnFetchCurrentUser (WebData CurrentUser)
+    | OnFetchUserScores (WebData UserScores)
+
+
+type PanelMsg
+    = UpdateQuestionForm String String
+    | UpdateCategoryForm String String
+    | UpdateRoomForm String String
+    | OnQuestionCreated (WebData QuestionCreatedData)
+    | OnCategoryCreated (WebData CategoryCreatedData)
+    | OnRoomCreated (WebData RoomCreatedData)
+    | CreateNewQuestionWithAnswers
+    | CreateNewCategory
+    | CreateNewRoom
+
+
+type AuthMsg
+    = Login
+    | LoginResult (Result Http.Error String)
+    | Register
+    | RegistrationResult (WebData RegistrationResultData)
+    | Logout
+    | ChangeAuthForm
+    | UpdateLoginForm String String
+    | UpdateRegistrationForm String String
+
+
+type GeneralMsg
+    = OnFetchRooms (WebData RoomsData)

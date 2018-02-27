@@ -195,3 +195,7 @@ update msg model =
 
                 _ ->
                     model ! []
+
+        -- NoOp
+        NoOperation ->
+            model ! []

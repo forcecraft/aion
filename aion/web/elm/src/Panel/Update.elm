@@ -130,51 +130,6 @@ update msg model =
                         ! []
                         |> roomFormValidationErrorToast
 
-        MultiselectMsg subMsg ->
-            let
-                ( subModel, subCmd ) =
-                    Multiselect.update subMsg model.panelData.categoryMultiSelect
-
-                oldPanelData =
-                    model.panelData
-            in
-                { model | panelData = { oldPanelData | categoryMultiSelect = subModel } } ! [ Cmd.map MultiselectMsg subCmd ]
-
-        -- Forms
-        UpdateLoginForm name value ->
-            let
-                oldAuthData =
-                    model.authData
-
-                loginForm =
-                    oldAuthData.loginForm
-
-                updatedLoginForm =
-                    Forms.updateFormInput loginForm name value
-            in
-                { model
-                    | authData =
-                        { oldAuthData | loginForm = updatedLoginForm }
-                }
-                    ! []
-
-        UpdateRegistrationForm name value ->
-            let
-                oldAuthData =
-                    model.authData
-
-                registrationForm =
-                    oldAuthData.registrationForm
-
-                updatedRegistrationForm =
-                    Forms.updateFormInput registrationForm name value
-            in
-                { model
-                    | authData =
-                        { oldAuthData | registrationForm = updatedRegistrationForm }
-                }
-                    ! []
-
         UpdateQuestionForm name value ->
             let
                 oldPanelData =

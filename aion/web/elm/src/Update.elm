@@ -106,6 +106,12 @@ update msg model =
         NavbarMsg state ->
             { model | navbarState = state } ! []
 
-        -- NoOp
-        NoOperation ->
-            model ! []
+        MultiselectMsg subMsg ->
+            let
+                ( subModel, subCmd ) =
+                    Multiselect.update subMsg model.panelData.categoryMultiSelect
+
+                oldPanelData =
+                    model.panelData
+            in
+                { model | panelData = { oldPanelData | categoryMultiSelect = subModel } } ! [ Cmd.map MultiselectMsg subCmd ]
