@@ -9,9 +9,11 @@ import Msgs exposing (Msg(MkGeneralMsg, MkPanelMsg, MkUserMsg))
 import Navigation exposing (Location, modifyUrl)
 import Panel.Api exposing (fetchCategories)
 import Ports exposing (check)
+import RemoteData exposing (WebData)
 import Room.Api exposing (fetchRooms)
 import Urls exposing (host)
 import User.Api exposing (fetchCurrentUser)
+import User.Msgs exposing (UserMsg(Logout))
 
 
 updateForm : String -> String -> Forms.Form -> Forms.Form

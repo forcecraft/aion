@@ -1,6 +1,6 @@
 module User.Api exposing (..)
 
-import Http
+import Http exposing (Error(BadStatus))
 import Http exposing (Request)
 import Json.Decode as Decode
 import Navigation exposing (Location)
@@ -63,3 +63,21 @@ fetchUserScores location token =
         fetchUserScoresRequest url token userScoresDecoder
             |> RemoteData.sendRequest
             |> Cmd.map OnFetchUserScores
+
+
+unauthorized : UserMsg -> Bool
+unauthorized msg =
+    case msg of
+        OnFetchCurrentUser (RemoteData.Failure (BadStatus response)) ->
+            response.status.code == unauthorizedCode
+
+        OnFetchUserScores (RemoteData.Failure (BadStatus response)) ->
+            response.status.code == unauthorizedCode
+
+        _ ->
+            False
+
+
+unauthorizedCode : Int
+unauthorizedCode =
+    401
