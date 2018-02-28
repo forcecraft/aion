@@ -1,9 +1,8 @@
 module Panel.Api exposing (..)
 
 import Forms
-import Http exposing (Body, Request)
+import Http exposing (Body, Error(BadStatus), Request)
 import Json.Decode as Decode
-import Msgs exposing (Msg)
 import Navigation exposing (Location)
 import Panel.Msgs exposing (PanelMsg(OnCategoryCreated, OnFetchCategories, OnQuestionCreated, OnRoomCreated))
 import RemoteData exposing (WebData)
@@ -202,3 +201,13 @@ roomCreationEncoder form categoryIds =
         payload
             |> Encode.object
             |> Http.jsonBody
+
+
+unauthorized : PanelMsg -> Bool
+unauthorized msg =
+    case msg of
+        OnFetchCategories (RemoteData.Failure (BadStatus response)) ->
+            response.status.code == 401
+
+        _ ->
+            False

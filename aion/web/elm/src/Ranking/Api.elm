@@ -1,7 +1,7 @@
 module Ranking.Api exposing (..)
 
 import Auth.Models exposing (Token)
-import Http exposing (Request)
+import Http exposing (Error(BadStatus), Request)
 import Json.Decode as Decode
 import Navigation exposing (Location)
 import Ranking.Decoders exposing (rankingDecoder)
@@ -33,3 +33,13 @@ fetchRanking location token =
         fetchRankingRequest url token rankingDecoder
             |> RemoteData.sendRequest
             |> Cmd.map OnFetchRanking
+
+
+unauthorized : RankingMsg -> Bool
+unauthorized msg =
+    case msg of
+        OnFetchRanking (RemoteData.Failure (BadStatus response)) ->
+            response.status.code == 401
+
+        _ ->
+            False

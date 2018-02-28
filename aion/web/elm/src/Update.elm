@@ -2,9 +2,11 @@ module Update exposing (..)
 
 import Auth.Msgs exposing (AuthMsg(LoginResult, RegistrationResult))
 import Auth.Update
+import General.Api
 import General.Models exposing (Model, Route(RankingRoute, UserRoute, RoomListRoute, RoomRoute), asEventLogIn, asProgressBarIn)
 import General.Update
 import Msgs exposing (Msg(..))
+import Panel.Api
 import Panel.Update
 import Ranking.Api exposing (fetchRanking)
 import Ranking.Update
@@ -43,25 +45,34 @@ update msg model =
                     updatedModel ! [ Cmd.map MkUserMsg cmd ]
 
         MkRankingMsg subMsg ->
-            let
-                ( updatedModel, cmd ) =
-                    Ranking.Update.update subMsg model
-            in
-                updatedModel ! [ Cmd.map MkRankingMsg cmd ]
+            if Ranking.Api.unauthorized subMsg then
+                update (MkUserMsg Logout) model
+            else
+                let
+                    ( updatedModel, cmd ) =
+                        Ranking.Update.update subMsg model
+                in
+                    updatedModel ! [ Cmd.map MkRankingMsg cmd ]
 
         MkPanelMsg subMsg ->
-            let
-                ( updatedModel, cmd ) =
-                    Panel.Update.update subMsg model
-            in
-                updatedModel ! [ Cmd.map MkPanelMsg cmd ]
+            if Panel.Api.unauthorized subMsg then
+                update (MkUserMsg Logout) model
+            else
+                let
+                    ( updatedModel, cmd ) =
+                        Panel.Update.update subMsg model
+                in
+                    updatedModel ! [ Cmd.map MkPanelMsg cmd ]
 
         MkGeneralMsg subMsg ->
-            let
-                ( updatedModel, cmd ) =
-                    General.Update.update subMsg model
-            in
-                updatedModel ! [ Cmd.map MkGeneralMsg cmd ]
+            if General.Api.unauthorized subMsg then
+                update (MkUserMsg Logout) model
+            else
+                let
+                    ( updatedModel, cmd ) =
+                        General.Update.update subMsg model
+                in
+                    updatedModel ! [ Cmd.map MkGeneralMsg cmd ]
 
         MkAuthMsg subMsg ->
             let

@@ -3,7 +3,6 @@ module UpdateHelpers exposing (..)
 import Auth.Models exposing (Token)
 import Forms
 import General.Models exposing (Model)
-import Json.Encode as Encode
 import Json.Decode as Decode
 import Msgs exposing (Msg(MkGeneralMsg, MkPanelMsg, MkUserMsg))
 import Navigation exposing (Location, modifyUrl)

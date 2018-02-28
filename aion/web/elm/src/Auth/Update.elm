@@ -7,7 +7,6 @@ import Auth.Notifications exposing (loginErrorToast, registrationErrorToast, toa
 import Forms
 import General.Constants exposing (loginFormMsg, registerFormMsg)
 import General.Models exposing (Model)
-import Ports exposing (check)
 import RemoteData
 import Socket exposing (initSocket)
 import Toasty

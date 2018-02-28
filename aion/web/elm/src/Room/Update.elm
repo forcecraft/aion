@@ -2,7 +2,6 @@ module Room.Update exposing (..)
 
 import Dom exposing (focus)
 import General.Models exposing (Model, Route(RoomRoute), asEventLogIn, asProgressBarIn)
-import Msgs exposing (Msg(LeaveRoom))
 import Phoenix.Socket
 import RemoteData
 import Room.Constants exposing (answerInputFieldId, enterKeyCode)
