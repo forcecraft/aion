@@ -9,10 +9,9 @@ import Forms
 import General.Models exposing (Model)
 import Html exposing (..)
 import Html.Attributes exposing (class, for, placeholder, type_, value)
-import Msgs exposing (Msg(MultiselectMsg))
 import Multiselect
 import Panel.Models exposing (CategoriesData, Category)
-import Panel.Msgs exposing (PanelMsg(CreateNewCategory, CreateNewQuestionWithAnswers, CreateNewRoom, ToastyMsg, UpdateCategoryForm, UpdateQuestionForm, UpdateRoomForm))
+import Panel.Msgs exposing (PanelMsg(CreateNewCategory, CreateNewQuestionWithAnswers, CreateNewRoom, MultiselectMsg, ToastyMsg, UpdateCategoryForm, UpdateQuestionForm, UpdateRoomForm))
 import Panel.Notifications exposing (toastsConfig)
 import RemoteData exposing (WebData)
 import Toasty

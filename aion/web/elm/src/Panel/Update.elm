@@ -5,9 +5,10 @@ import General.Models exposing (Model)
 import Multiselect
 import Panel.Api exposing (createCategory, createQuestionWithAnswers, createRoom)
 import Panel.Models exposing (categoryNamePossibleFields, questionFormPossibleFields)
-import Panel.Msgs exposing (PanelMsg(CreateNewCategory, CreateNewQuestionWithAnswers, CreateNewRoom, OnCategoryCreated, OnFetchCategories, OnQuestionCreated, OnRoomCreated, UpdateCategoryForm, UpdateQuestionForm, UpdateRoomForm))
-import Panel.Notifications exposing (categoryCreationErrorToast, categoryCreationSuccessfulToast, categoryFormValidationErrorToast, questionCreationErrorToast, questionCreationSuccessfulToast, questionFormValidationErrorToast, roomCreationErrorToast, roomCreationSuccessfulToast, roomFormValidationErrorToast)
+import Panel.Msgs exposing (PanelMsg(CreateNewCategory, CreateNewQuestionWithAnswers, CreateNewRoom, MultiselectMsg, OnCategoryCreated, OnFetchCategories, OnQuestionCreated, OnRoomCreated, ToastyMsg, UpdateCategoryForm, UpdateQuestionForm, UpdateRoomForm))
+import Panel.Notifications exposing (categoryCreationErrorToast, categoryCreationSuccessfulToast, categoryFormValidationErrorToast, questionCreationErrorToast, questionCreationSuccessfulToast, questionFormValidationErrorToast, roomCreationErrorToast, roomCreationSuccessfulToast, roomFormValidationErrorToast, toastsConfig)
 import RemoteData
+import Toasty
 import UpdateHelpers exposing (unwrapToken, updateForm)
 
 
@@ -228,3 +229,16 @@ update msg model =
                     Multiselect.initModel categoryList "id"
             in
                 { newModel | panelData = { oldPanelData | categoryMultiSelect = updatedCategoryMultiselect } } ! []
+
+        ToastyMsg subMsg ->
+            Toasty.update toastsConfig ToastyMsg subMsg model
+
+        MultiselectMsg subMsg ->
+            let
+                ( subModel, subCmd ) =
+                    Multiselect.update subMsg model.panelData.categoryMultiSelect
+
+                oldPanelData =
+                    model.panelData
+            in
+                { model | panelData = { oldPanelData | categoryMultiSelect = subModel } } ! [ Cmd.map MultiselectMsg subCmd ]

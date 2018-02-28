@@ -1,5 +1,6 @@
 module Panel.Msgs exposing (..)
 
+import Multiselect
 import Panel.Models exposing (CategoriesData, CategoryCreatedData, QuestionCreatedData, RoomCreatedData)
 import RemoteData exposing (WebData)
 import Toasty
@@ -18,3 +19,4 @@ type PanelMsg
     | CreateNewRoom
     | OnFetchCategories (WebData CategoriesData)
     | ToastyMsg (Toasty.Msg Toasty.Defaults.Toast)
+    | MultiselectMsg Multiselect.Msg

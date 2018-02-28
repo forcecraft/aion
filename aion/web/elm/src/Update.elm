@@ -2,7 +2,7 @@ module Update exposing (..)
 
 import Auth.Api exposing (registerUser, submitCredentials)
 import Auth.Models exposing (Token, UnauthenticatedViewToggle(LoginView, RegisterView))
-import Auth.Msgs exposing (AuthMsg(LoginResult))
+import Auth.Msgs exposing (AuthMsg(LoginResult, RegistrationResult))
 import Auth.Notifications exposing (loginErrorToast, registrationErrorToast)
 import Auth.Update
 import Dom exposing (focus)
@@ -27,7 +27,7 @@ import Room.Api exposing (fetchRooms)
 import Room.Constants exposing (answerInputFieldId, enterKeyCode, progressBarTimeout)
 import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, questionSummaryDecoder, userJoinedInfoDecoder, userLeftDecoder, userListMessageDecoder)
 import Room.Models exposing (Event(MkQuestionSummaryLog, MkUserJoinedLog, MkUserLeftLog), EventLog, ProgressBarState(Running, Stopped, Uninitialized), RoomState(QuestionBreak, QuestionDisplayed), asLogIn, withProgress, withRunning, withStart)
-import Room.Msgs exposing (RoomMsg)
+import Room.Msgs exposing (RoomMsg(PhoenixMsg))
 import Room.Notifications exposing (..)
 import Room.Update
 import Room.Utils exposing (progressBarTick)
@@ -91,13 +91,17 @@ update msg model =
 
                 extraCmds =
                     case subMsg of
-                        LoginResult Ok token ->
+                        LoginResult (Ok token) ->
                             postTokenActions token model.location
+
+                        RegistrationResult (RemoteData.Success response) ->
+                            postTokenActions response.token model.location
 
                         _ ->
                             []
             in
-                updatedModel ! [ Cmd.map MkAuthMsg cmd ] ++ extraCmds
+                updatedModel
+                    ! ([ Cmd.map MkAuthMsg cmd ] ++ extraCmds)
 
         --the rest
         OnLocationChange location ->
@@ -122,7 +126,9 @@ update msg model =
                                 , toasties = Toasty.initialState
                             }
                                 ! [ afterLeaveCmd
-                                  , Cmd.map PhoenixMsg initializeRoomCmd
+                                  , initializeRoomCmd
+                                        |> Cmd.map PhoenixMsg
+                                        |> Cmd.map MkRoomMsg
                                   ]
 
                     RoomListRoute ->
@@ -131,6 +137,7 @@ update msg model =
                               , fetchRooms
                                     |> withLocation model
                                     |> withToken model
+                                    |> Cmd.map MkGeneralMsg
                               ]
 
                     RankingRoute ->
@@ -139,6 +146,7 @@ update msg model =
                               , fetchRanking
                                     |> withLocation model
                                     |> withToken model
+                                    |> Cmd.map MkRankingMsg
                               ]
 
                     UserRoute ->
@@ -147,6 +155,7 @@ update msg model =
                               , fetchUserScores
                                     |> withLocation model
                                     |> withToken model
+                                    |> Cmd.map MkUserMsg
                               ]
 
                     _ ->
@@ -159,7 +168,11 @@ update msg model =
                         ( leaveRoomSocket, leaveRoomCmd ) =
                             leaveRoom (toString id) model.socket
                     in
-                        { model | socket = leaveRoomSocket } ! [ Cmd.map PhoenixMsg leaveRoomCmd ]
+                        { model | socket = leaveRoomSocket }
+                            ! [ leaveRoomCmd
+                                    |> Cmd.map PhoenixMsg
+                                    |> Cmd.map MkRoomMsg
+                              ]
 
                 _ ->
                     model ! []
@@ -167,13 +180,3 @@ update msg model =
         -- Navbar
         NavbarMsg state ->
             { model | navbarState = state } ! []
-
-        MultiselectMsg subMsg ->
-            let
-                ( subModel, subCmd ) =
-                    Multiselect.update subMsg model.panelData.categoryMultiSelect
-
-                oldPanelData =
-                    model.panelData
-            in
-                { model | panelData = { oldPanelData | categoryMultiSelect = subModel } } ! [ Cmd.map MultiselectMsg subCmd ]

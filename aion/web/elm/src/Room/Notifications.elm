@@ -9,17 +9,17 @@ import Toasty.Defaults
 
 incorrectAnswerToast : ( Model, Cmd RoomMsg ) -> ( Model, Cmd RoomMsg )
 incorrectAnswerToast =
-    addToast (Toasty.Defaults.Error "Error!" "Wrong answer!") ToastyMsg
+    addToast (Toasty.Defaults.Error "Error!" "Wrong answer!")
 
 
 closeAnswerToast : ( Model, Cmd RoomMsg ) -> ( Model, Cmd RoomMsg )
 closeAnswerToast =
-    addToast (Toasty.Defaults.Warning "Close one!" "Your answer is almost correct!") ToastyMsg
+    addToast (Toasty.Defaults.Warning "Close one!" "Your answer is almost correct!")
 
 
 correctAnswerToast : ( Model, Cmd RoomMsg ) -> ( Model, Cmd RoomMsg )
 correctAnswerToast =
-    addToast (Toasty.Defaults.Success "Good Answer!" "Your answer is correct!") ToastyMsg
+    addToast (Toasty.Defaults.Success "Good Answer!" "Your answer is correct!")
 
 
 toastsConfig : Toasty.Config RoomMsg

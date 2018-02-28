@@ -64,7 +64,7 @@ update msg model =
                             | authData = { oldAuthData | registrationForm = newRegistrationForm, token = Just token }
                             , socket = initSocket token model.location
                         }
-                            ! postTokenActions token model.location
+                            ! []
 
                 _ ->
                     model

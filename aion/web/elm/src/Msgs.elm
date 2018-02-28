@@ -26,7 +26,6 @@ import User.Msgs exposing (UserMsg)
 
 type Msg
     = OnLocationChange Location
-    | MultiselectMsg Multiselect.Msg
     | NavbarMsg Navbar.State
     | LeaveRoom
       -- sub page types
