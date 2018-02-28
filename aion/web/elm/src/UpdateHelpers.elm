@@ -3,17 +3,15 @@ module UpdateHelpers exposing (..)
 import Auth.Models exposing (Token)
 import Forms
 import General.Models exposing (Model)
-import Json.Decode as Decode
 import Json.Encode as Encode
+import Json.Decode as Decode
 import Msgs exposing (Msg(MkGeneralMsg, MkPanelMsg, MkUserMsg))
 import Navigation exposing (Location, modifyUrl)
 import Panel.Api exposing (fetchCategories)
 import Ports exposing (check)
-import RemoteData exposing (WebData)
 import Room.Api exposing (fetchRooms)
 import Urls exposing (host)
 import User.Api exposing (fetchCurrentUser)
-import User.Msgs exposing (UserMsg(Logout))
 
 
 updateForm : String -> String -> Forms.Form -> Forms.Form
