@@ -1,15 +1,15 @@
 module User.Api exposing (..)
 
-import Http
+import Http exposing (Error(BadStatus))
 import Http exposing (Request)
 import Json.Decode as Decode
-import Msgs exposing (Msg)
 import Navigation exposing (Location)
 import RemoteData
 import Urls exposing (host, userScoresUrl)
 import User.Decoders exposing (userDecoder, userScoresDecoder)
 import User.Models exposing (CurrentUser, UserScores)
 import Auth.Models exposing (Token)
+import User.Msgs exposing (UserMsg(OnFetchCurrentUser, OnFetchUserScores))
 
 
 fetchCurrentUserUrl : Location -> String
@@ -30,7 +30,7 @@ fetchCurrentUserRequest url token decoder =
         }
 
 
-fetchCurrentUser : Location -> String -> Cmd Msg
+fetchCurrentUser : Location -> String -> Cmd UserMsg
 fetchCurrentUser location token =
     let
         url =
@@ -38,7 +38,7 @@ fetchCurrentUser location token =
     in
         fetchCurrentUserRequest url token userDecoder
             |> RemoteData.sendRequest
-            |> Cmd.map Msgs.OnFetchCurrentUser
+            |> Cmd.map OnFetchCurrentUser
 
 
 fetchUserScoresRequest : String -> String -> Decode.Decoder UserScores -> Request UserScores
@@ -54,7 +54,7 @@ fetchUserScoresRequest url token decoder =
         }
 
 
-fetchUserScores : Location -> Token -> Cmd Msg
+fetchUserScores : Location -> Token -> Cmd UserMsg
 fetchUserScores location token =
     let
         url =
@@ -62,4 +62,22 @@ fetchUserScores location token =
     in
         fetchUserScoresRequest url token userScoresDecoder
             |> RemoteData.sendRequest
-            |> Cmd.map Msgs.OnFetchUserScores
+            |> Cmd.map OnFetchUserScores
+
+
+unauthorized : UserMsg -> Bool
+unauthorized msg =
+    case msg of
+        OnFetchCurrentUser (RemoteData.Failure (BadStatus response)) ->
+            response.status.code == unauthorizedCode
+
+        OnFetchUserScores (RemoteData.Failure (BadStatus response)) ->
+            response.status.code == unauthorizedCode
+
+        _ ->
+            False
+
+
+unauthorizedCode : Int
+unauthorizedCode =
+    401

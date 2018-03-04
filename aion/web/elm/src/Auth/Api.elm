@@ -1,12 +1,12 @@
 module Auth.Api exposing (..)
 
 import Auth.Models exposing (RegistrationForm, RegistrationResultData)
+import Auth.Msgs exposing (AuthMsg(LoginResult, RegistrationResult))
 import Forms
 import Http
 import Json.Decode as Decode exposing (Value)
 import Json.Decode.Pipeline exposing (decode, required)
 import Json.Encode as Encode
-import Msgs exposing (Msg(..))
 import Navigation exposing (Location)
 import RemoteData
 import Urls exposing (loginUrl, registerUrl)
@@ -20,7 +20,7 @@ authenticate url decoder credentials =
     Http.post url (Http.jsonBody credentials) decoder
 
 
-submitCredentials : Location -> Forms.Form -> Cmd Msg
+submitCredentials : Location -> Forms.Form -> Cmd AuthMsg
 submitCredentials location form =
     let
         payload =
@@ -46,7 +46,7 @@ tokenStringDecoder =
 -- register section
 
 
-registerUser : Location -> Forms.Form -> Cmd Msg
+registerUser : Location -> Forms.Form -> Cmd AuthMsg
 registerUser location form =
     Http.post (registerUrl location) (registrationDataEncoder form) registrationResultDecoder
         |> RemoteData.sendRequest

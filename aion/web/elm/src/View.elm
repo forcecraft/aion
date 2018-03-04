@@ -4,7 +4,7 @@ import Auth.View exposing (authView)
 import Bootstrap.Navbar as Navbar
 import General.Constants exposing (footerContent, roomsPath, createRoomPath, userPath, rankingsPath)
 import General.Models exposing (Model, Route(AuthRoute, CreateRoomRoute, NotFoundRoute, RankingRoute, RoomListRoute, RoomRoute, UserRoute))
-import General.View exposing (notFoundView, roomListView)
+import General.View exposing (roomListView)
 import Html exposing (..)
 import Html.Attributes exposing (class, href, src)
 import Msgs exposing (Msg(..))
@@ -75,6 +75,13 @@ navbar route location navbarState =
                     |> Navbar.view navbarState
 
 
+notFoundView : Html Msg
+notFoundView =
+    div []
+        [ text "Not found"
+        ]
+
+
 page : Model -> Html Msg
 page model =
     let
@@ -84,22 +91,22 @@ page model =
         content =
             case route of
                 AuthRoute ->
-                    authView model
+                    authView model |> Html.map MkAuthMsg
 
                 RoomListRoute ->
-                    roomListView model
+                    roomListView model |> Html.map MkGeneralMsg
 
                 RoomRoute id ->
-                    roomView model id
+                    roomView model id |> Html.map MkRoomMsg
 
                 CreateRoomRoute ->
-                    panelView model
+                    panelView model |> Html.map MkPanelMsg
 
                 UserRoute ->
-                    userView model
+                    userView model |> Html.map MkUserMsg
 
                 RankingRoute ->
-                    rankingView model
+                    rankingView model |> Html.map MkRankingMsg
 
                 NotFoundRoute ->
                     notFoundView

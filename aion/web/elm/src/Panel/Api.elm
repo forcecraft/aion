@@ -1,10 +1,10 @@
 module Panel.Api exposing (..)
 
 import Forms
-import Http exposing (Body, Request)
+import Http exposing (Body, Error(BadStatus), Request)
 import Json.Decode as Decode
-import Msgs exposing (Msg)
 import Navigation exposing (Location)
+import Panel.Msgs exposing (PanelMsg(OnCategoryCreated, OnFetchCategories, OnQuestionCreated, OnRoomCreated))
 import RemoteData exposing (WebData)
 import Panel.Decoders exposing (categoriesDecoder, categoryCreatedDecoder, questionCreatedDecoder, roomCreatedDecoder)
 import Json.Encode as Encode
@@ -29,7 +29,7 @@ fetchCategoriesRequest url token decoder =
         }
 
 
-fetchCategories : Location -> String -> Cmd Msg
+fetchCategories : Location -> String -> Cmd PanelMsg
 fetchCategories location token =
     let
         url =
@@ -37,7 +37,7 @@ fetchCategories location token =
     in
         fetchCategoriesRequest url token categoriesDecoder
             |> RemoteData.sendRequest
-            |> Cmd.map Msgs.OnFetchCategories
+            |> Cmd.map OnFetchCategories
 
 
 
@@ -57,7 +57,7 @@ createQuestionWithAnswersRequest url token decoder body =
         }
 
 
-createQuestionWithAnswers : Location -> String -> QuestionForm -> WebData RoomsData -> Cmd Msg
+createQuestionWithAnswers : Location -> String -> QuestionForm -> WebData RoomsData -> Cmd PanelMsg
 createQuestionWithAnswers location token form rooms =
     let
         body =
@@ -68,7 +68,7 @@ createQuestionWithAnswers location token form rooms =
     in
         createQuestionWithAnswersRequest url token questionCreatedDecoder body
             |> RemoteData.sendRequest
-            |> Cmd.map Msgs.OnQuestionCreated
+            |> Cmd.map OnQuestionCreated
 
 
 questionCreationEncoder : QuestionForm -> WebData RoomsData -> Http.Body
@@ -115,7 +115,7 @@ createCategoryRequest url token decoder body =
         }
 
 
-createCategory : Location -> String -> CategoryForm -> Cmd Msg
+createCategory : Location -> String -> CategoryForm -> Cmd PanelMsg
 createCategory location token form =
     let
         body =
@@ -126,7 +126,7 @@ createCategory location token form =
     in
         createCategoryRequest url token categoryCreatedDecoder body
             |> RemoteData.sendRequest
-            |> Cmd.map Msgs.OnCategoryCreated
+            |> Cmd.map OnCategoryCreated
 
 
 categoryCreationEncoder : QuestionForm -> Http.Body
@@ -163,7 +163,7 @@ createRoomRequest url token decoder body =
         }
 
 
-createRoom : Location -> String -> RoomForm -> List String -> Cmd Msg
+createRoom : Location -> String -> RoomForm -> List String -> Cmd PanelMsg
 createRoom location token form categoryIds =
     let
         body =
@@ -174,7 +174,7 @@ createRoom location token form categoryIds =
     in
         createRoomRequest url token roomCreatedDecoder body
             |> RemoteData.sendRequest
-            |> Cmd.map Msgs.OnRoomCreated
+            |> Cmd.map OnRoomCreated
 
 
 roomCreationEncoder : RoomForm -> List String -> Http.Body
@@ -201,3 +201,13 @@ roomCreationEncoder form categoryIds =
         payload
             |> Encode.object
             |> Http.jsonBody
+
+
+unauthorized : PanelMsg -> Bool
+unauthorized msg =
+    case msg of
+        OnFetchCategories (RemoteData.Failure (BadStatus response)) ->
+            response.status.code == 401
+
+        _ ->
+            False

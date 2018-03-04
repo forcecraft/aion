@@ -7,18 +7,18 @@ import Bootstrap.Form.Input as Input
 import Bootstrap.Form.Select as Select
 import Forms
 import General.Models exposing (Model)
-import General.Notifications exposing (toastsConfig)
 import Html exposing (..)
 import Html.Attributes exposing (class, for, placeholder, type_, value)
-import Msgs exposing (Msg(..))
 import Multiselect
 import Panel.Models exposing (CategoriesData, Category)
+import Panel.Msgs exposing (PanelMsg(CreateNewCategory, CreateNewQuestionWithAnswers, CreateNewRoom, MultiselectMsg, ToastyMsg, UpdateCategoryForm, UpdateQuestionForm, UpdateRoomForm))
+import Panel.Notifications exposing (toastsConfig)
 import RemoteData exposing (WebData)
 import Toasty
 import Toasty.Defaults
 
 
-panelView : Model -> Html Msg
+panelView : Model -> Html PanelMsg
 panelView model =
     div [ class "panel-container" ]
         [ h5 [] [ text "Create room" ]
@@ -31,7 +31,7 @@ panelView model =
 -- question form section
 
 
-renderQuestionForm : Forms.Form -> WebData CategoriesData -> Html Msg
+renderQuestionForm : Forms.Form -> WebData CategoriesData -> Html PanelMsg
 renderQuestionForm questionForm categories =
     Form.form []
         [ questionFormElement questionForm
@@ -45,7 +45,7 @@ renderQuestionForm questionForm categories =
         ]
 
 
-questionFormElement : Forms.Form -> Html Msg
+questionFormElement : Forms.Form -> Html PanelMsg
 questionFormElement form =
     Form.group []
         [ Form.label [ for "question" ] [ text "Enter question content below:" ]
@@ -58,7 +58,7 @@ questionFormElement form =
         ]
 
 
-answersFormElement : Forms.Form -> Html Msg
+answersFormElement : Forms.Form -> Html PanelMsg
 answersFormElement form =
     Form.group []
         [ Form.label [ for "answer" ] [ text "Enter correct answers below, separate all posibilities with commas:" ]
@@ -71,7 +71,7 @@ answersFormElement form =
         ]
 
 
-categoryFormElement : Forms.Form -> List Category -> Html Msg
+categoryFormElement : Forms.Form -> List Category -> Html PanelMsg
 categoryFormElement form categoryList =
     Form.group []
         [ Form.label [ for "category" ] [ text "Select a category:" ]
@@ -100,7 +100,7 @@ listCategories result =
 -- category form section
 
 
-renderCategoryForm : Forms.Form -> Html Msg
+renderCategoryForm : Forms.Form -> Html PanelMsg
 renderCategoryForm categoryForm =
     Form.form []
         [ categoryNameFormElement categoryForm
@@ -112,7 +112,7 @@ renderCategoryForm categoryForm =
         ]
 
 
-categoryNameFormElement : Forms.Form -> Html Msg
+categoryNameFormElement : Forms.Form -> Html PanelMsg
 categoryNameFormElement form =
     Form.group []
         [ Form.label [ for "category" ] [ text "Enter category name below:" ]
@@ -129,7 +129,7 @@ categoryNameFormElement form =
 -- room form section
 
 
-renderRoomForm : Forms.Form -> Multiselect.Model -> Html Msg
+renderRoomForm : Forms.Form -> Multiselect.Model -> Html PanelMsg
 renderRoomForm form categoryMultiSelect =
     Form.form []
         [ Form.group []

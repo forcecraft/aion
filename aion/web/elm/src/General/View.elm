@@ -3,6 +3,7 @@ module General.View exposing (..)
 import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Col as Col
 import General.Models exposing (Model)
+import General.Msgs exposing (GeneralMsg)
 import General.Utils exposing (displayWebData, sliceList)
 import Html exposing (Html, a, br, button, div, h2, h3, h4, hr, i, img, li, p, span, text, ul)
 import Html.Attributes exposing (class, href, src, style)
@@ -11,18 +12,11 @@ import RemoteData exposing (WebData)
 import Room.Models exposing (RoomsData, Room)
 
 
-notFoundView : Html Msg
-notFoundView =
-    div []
-        [ text "Not found"
-        ]
-
-
 asGridContainer data =
     Grid.container [] data
 
 
-roomListView : Model -> Html Msg
+roomListView : Model -> Html GeneralMsg
 roomListView model =
     div []
         [ h4 [ class "room-list-label" ] [ text "Recommended" ]
@@ -38,7 +32,7 @@ type FilterType
     | All
 
 
-displayRooms : WebData RoomsData -> FilterType -> Html Msg
+displayRooms : WebData RoomsData -> FilterType -> Html GeneralMsg
 displayRooms rooms filterType =
     let
         fun =
@@ -52,7 +46,7 @@ displayRooms rooms filterType =
         div [] [ displayWebData rooms fun ]
 
 
-listRooms : RoomsData -> Html Msg
+listRooms : RoomsData -> Html GeneralMsg
 listRooms rooms =
     rooms
         |> .data
@@ -62,23 +56,23 @@ listRooms rooms =
         |> asGridContainer
 
 
-listRecommendedRooms : RoomsData -> Html Msg
+listRecommendedRooms : RoomsData -> Html GeneralMsg
 listRecommendedRooms rooms =
     listRooms { rooms | data = List.take 6 rooms.data }
 
 
-listRoomsSlice : List Room -> Html Msg
+listRoomsSlice : List Room -> Html GeneralMsg
 listRoomsSlice rooms =
     Grid.row [] (List.map listSingleRoom rooms)
 
 
-listSingleRoom : Room -> Grid.Column Msg
+listSingleRoom : Room -> Grid.Column GeneralMsg
 listSingleRoom room =
     Grid.col [ Col.lg2, Col.md4 ]
         [ div [ class "tile" ] [ displayRoomLabel room ] ]
 
 
-displayRoomLabel : Room -> Html Msg
+displayRoomLabel : Room -> Html GeneralMsg
 displayRoomLabel room =
     let
         url =

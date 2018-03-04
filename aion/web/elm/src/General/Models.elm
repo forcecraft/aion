@@ -12,6 +12,7 @@ import Phoenix.Socket
 import RemoteData exposing (WebData)
 import Room.Models exposing (CurrentQuestion, EventLog, ProgressBar, RoomId, RoomState(QuestionBreak), RoomsData, UserGameData, UserList, initialLog, initialProgressBar)
 import Ranking.Models exposing (RankingData)
+import Room.Msgs exposing (RoomMsg)
 import Toasty
 import Toasty.Defaults
 import Urls exposing (hostname, websocketUrl)
@@ -24,7 +25,7 @@ type alias Model =
     , rooms : WebData RoomsData
     , categories : WebData CategoriesData
     , route : Route
-    , socket : Phoenix.Socket.Socket Msg
+    , socket : Phoenix.Socket.Socket RoomMsg
     , userList : UserList
     , userGameData : UserGameData
     , currentQuestion : CurrentQuestion

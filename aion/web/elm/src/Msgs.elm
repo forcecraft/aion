@@ -1,66 +1,37 @@
 module Msgs exposing (..)
 
 import Auth.Models exposing (RegistrationResultData)
+import Auth.Msgs exposing (AuthMsg)
 import Bootstrap.Navbar as Navbar
 import Dom exposing (Error)
+import General.Msgs exposing (GeneralMsg)
 import Http
 import Navigation exposing (Location)
 import Multiselect
 import Panel.Models exposing (CategoriesData, CategoryCreatedData, QuestionCreatedData, RoomCreatedData)
+import Panel.Msgs exposing (PanelMsg)
 import Ranking.Models exposing (Ranking)
+import Ranking.Msgs exposing (RankingMsg)
 import RemoteData exposing (WebData)
 import Phoenix.Socket
 import Json.Encode as Encode
 import Room.Models exposing (RoomId, RoomsData)
+import Room.Msgs exposing (RoomMsg)
 import Time exposing (Time)
 import Toasty
 import Toasty.Defaults
 import User.Models exposing (CurrentUser, UserScores)
+import User.Msgs exposing (UserMsg)
 
 
 type Msg
     = OnLocationChange Location
-    | OnFetchRooms (WebData RoomsData)
-    | OnFetchRanking (WebData Ranking)
-    | OnFetchCategories (WebData CategoriesData)
-    | OnFetchCurrentUser (WebData CurrentUser)
-    | OnFetchUserScores (WebData UserScores)
-    | OnQuestionCreated (WebData QuestionCreatedData)
-    | OnCategoryCreated (WebData CategoryCreatedData)
-    | OnRoomCreated (WebData RoomCreatedData)
-    | PhoenixMsg (Phoenix.Socket.Msg Msg)
-    | SetAnswer String
-    | SubmitAnswer
-    | ReceiveQuestion Encode.Value
-    | FocusResult (Result Error ())
-    | KeyDown Int
-    | NoOperation
-    | ReceiveAnswerFeedback Encode.Value
-    | ReceiveDisplayQuestion Encode.Value
-    | ReceiveQuestionBreak Encode.Value
-    | ToastyMsg (Toasty.Msg Toasty.Defaults.Toast)
-    | CreateNewQuestionWithAnswers
-    | CreateNewCategory
-    | CreateNewRoom
-    | Login
-    | LoginResult (Result Http.Error String)
-    | Register
-    | RegistrationResult (WebData RegistrationResultData)
-    | Logout
-    | ChangeAuthForm
-    | UpdateLoginForm String String
-    | UpdateRegistrationForm String String
-    | UpdateQuestionForm String String
-    | UpdateCategoryForm String String
-    | UpdateRoomForm String String
-    | MultiselectMsg Multiselect.Msg
     | NavbarMsg Navbar.State
-    | ReceiveUserJoined Encode.Value
-    | ReceiveUserLeft Encode.Value
-    | ReceiveUserList Encode.Value
-    | ReceiveQuestionSummary Encode.Value
     | LeaveRoom
-    | Tick Time
-    | OnTime Time
-    | OnInitialTime Time
-    | OnRankingCategoryChange String
+      -- sub page types
+    | MkRoomMsg RoomMsg
+    | MkRankingMsg RankingMsg
+    | MkUserMsg UserMsg
+    | MkPanelMsg PanelMsg
+    | MkAuthMsg AuthMsg
+    | MkGeneralMsg GeneralMsg

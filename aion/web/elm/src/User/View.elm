@@ -4,7 +4,6 @@ import Bootstrap.Button as Button
 import General.Models exposing (Model)
 import Html exposing (..)
 import Html.Attributes exposing (class, src)
-import Msgs exposing (Msg(..))
 import Navigation exposing (Location)
 import RemoteData
 import Urls exposing (host)
@@ -13,9 +12,10 @@ import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Col as Col
 import Bootstrap.Badge as Badge
 import Bootstrap.Button as Button
+import User.Msgs exposing (UserMsg(Logout))
 
 
-userView : Model -> Html Msg
+userView : Model -> Html UserMsg
 userView model =
     case model.user.details of
         RemoteData.Success user ->
@@ -31,7 +31,7 @@ userView model =
             text (toString error)
 
 
-renderUserView : Model -> CurrentUser -> Html Msg
+renderUserView : Model -> CurrentUser -> Html UserMsg
 renderUserView model user =
     div [ class "profile-container" ]
         [ Grid.container []
@@ -50,7 +50,7 @@ renderUserView model user =
         ]
 
 
-userDetails : Location -> CurrentUser -> Html Msg
+userDetails : Location -> CurrentUser -> Html UserMsg
 userDetails location user =
     let
         avatarPlaceholder =
@@ -71,7 +71,7 @@ userDetails location user =
             ]
 
 
-displayUserScores : Model -> List (Grid.Column Msg)
+displayUserScores : Model -> List (Grid.Column UserMsg)
 displayUserScores model =
     case model.user.scores of
         RemoteData.Success userScores ->
@@ -84,7 +84,7 @@ displayUserScores model =
             [ Grid.col [] [ text "Loading..." ] ]
 
 
-listSingleScore : UserCategoryScore -> Grid.Column Msg
+listSingleScore : UserCategoryScore -> Grid.Column UserMsg
 listSingleScore userCategoryScore =
     Grid.col [ Col.md3, Col.sm4, Col.xs12 ]
         [ div [ class "userScoreBadge" ]

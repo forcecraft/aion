@@ -1,16 +1,16 @@
 module Room.Subscriptions exposing (..)
 
 import General.Models exposing (Model)
-import Msgs
 import Room.Models exposing (RoomState(QuestionBreak, QuestionDisplayed))
+import Room.Msgs exposing (RoomMsg(Tick))
 import Time
 
 
-subscriptions : Model -> Sub Msgs.Msg
+subscriptions : Model -> Sub RoomMsg
 subscriptions model =
     case model.roomState of
         QuestionDisplayed ->
-            Time.every (20 * Time.millisecond) Msgs.Tick
+            Time.every (20 * Time.millisecond) Tick
 
         QuestionBreak ->
             Sub.none
