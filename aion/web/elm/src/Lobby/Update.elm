@@ -1,10 +1,10 @@
-module General.Update exposing (..)
+module Lobby.Update exposing (..)
 
 import General.Models exposing (Model)
-import General.Msgs exposing (GeneralMsg(OnFetchRooms))
+import Lobby.Msgs exposing (LobbyMsg(OnFetchRooms))
 
 
-update : GeneralMsg -> Model -> ( Model, Cmd GeneralMsg )
+update : LobbyMsg -> Model -> ( Model, Cmd LobbyMsg )
 update msg model =
     case msg of
         OnFetchRooms response ->

@@ -3,7 +3,6 @@ module General.Models exposing (..)
 import Auth.Models exposing (AuthData, Token, UnauthenticatedViewToggle(LoginView), initAuthData, loginForm, registrationForm)
 import Bootstrap.Navbar as Navbar
 import Forms
-import General.Constants exposing (loginFormMsg)
 import Lobby.Models exposing (LobbyData, initLobbyData)
 import Msgs exposing (Msg(NavbarMsg))
 import Navigation exposing (Location)
@@ -11,7 +10,7 @@ import Multiselect
 import Panel.Models exposing (CategoriesData, PanelData, categoryForm, initPanelData, questionForm, roomForm)
 import Phoenix.Socket
 import RemoteData exposing (WebData)
-import Room.Models exposing (CurrentQuestion, EventLog, ProgressBar, RoomData, RoomId, RoomModel, RoomState(QuestionBreak), RoomsData, UserGameData, UserList, initRoomData, initialLog, initialProgressBar)
+import Room.Models exposing (CurrentQuestion, EventLog, ProgressBar, RoomData, RoomState(QuestionBreak), UserGameData, UserList, initRoomData, initialLog, initialProgressBar)
 import Ranking.Models exposing (RankingData, initRankingData)
 import Room.Msgs exposing (RoomMsg)
 import Socket exposing (initSocket)

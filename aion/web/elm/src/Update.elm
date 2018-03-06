@@ -5,6 +5,8 @@ import Auth.Update
 import General.Api
 import General.Models exposing (Model, Route(RankingRoute, UserRoute, RoomListRoute, RoomRoute), asEventLogIn, asProgressBarIn)
 import General.Update
+import Lobby.Api
+import Lobby.Update
 import Msgs exposing (Msg(..))
 import Panel.Api
 import Panel.Update
@@ -64,15 +66,15 @@ update msg model =
                 in
                     updatedModel ! [ Cmd.map MkPanelMsg cmd ]
 
-        MkGeneralMsg subMsg ->
-            if General.Api.unauthorized subMsg then
+        MkLobbyMsg subMsg ->
+            if Lobby.Api.unauthorized subMsg then
                 update (MkUserMsg Logout) model
             else
                 let
                     ( updatedModel, cmd ) =
-                        General.Update.update subMsg model
+                        Lobby.Update.update subMsg model
                 in
-                    updatedModel ! [ Cmd.map MkGeneralMsg cmd ]
+                    updatedModel ! [ Cmd.map MkLobbyMsg cmd ]
 
         MkAuthMsg subMsg ->
             let
