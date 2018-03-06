@@ -12,7 +12,7 @@ import Navigation exposing (Location)
 import Panel.View exposing (panelView)
 import Room.View exposing (roomView)
 import Ranking.View exposing (rankingView)
-import Urls exposing (host)
+import Urls exposing (createRoomUrl, host, lobbyUrl, rankingUrl, userUrl)
 import User.View exposing (userView)
 
 
@@ -67,10 +67,10 @@ navbar route location navbarState =
             _ ->
                 baseNavbar
                     |> Navbar.items
-                        [ Navbar.itemLink [ href roomsPath ] [ text "Rooms" ]
-                        , Navbar.itemLink [ href createRoomPath ] [ text "Create room" ]
-                        , Navbar.itemLink [ href rankingsPath ] [ text "Rankings" ]
-                        , Navbar.itemLink [ href userPath ] [ text "Profile" ]
+                        [ Navbar.itemLink [ href lobbyUrl ] [ text "Rooms" ]
+                        , Navbar.itemLink [ href createRoomUrl ] [ text "Create room" ]
+                        , Navbar.itemLink [ href rankingUrl ] [ text "Rankings" ]
+                        , Navbar.itemLink [ href userUrl ] [ text "Profile" ]
                         ]
                     |> Navbar.view navbarState
 

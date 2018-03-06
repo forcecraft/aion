@@ -1,4 +1,4 @@
-module General.Api exposing (..)
+module Lobby.Api exposing (..)
 
 import General.Msgs exposing (GeneralMsg(OnFetchRooms))
 import Http exposing (Error(BadStatus))
