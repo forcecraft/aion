@@ -1,14 +1,14 @@
 module Auth.Update exposing (..)
 
 import Auth.Api exposing (registerUser, submitCredentials)
+import Auth.Constants exposing (loginFormMsg, registerFormMsg)
 import Auth.Models exposing (UnauthenticatedViewToggle(LoginView, RegisterView))
 import Auth.Msgs exposing (AuthMsg(ChangeAuthForm, Login, LoginResult, Register, RegistrationResult, ToastyMsg, UpdateLoginForm, UpdateRegistrationForm))
 import Auth.Notifications exposing (loginErrorToast, registrationErrorToast, toastsConfig)
 import Forms
-import General.Constants exposing (loginFormMsg, registerFormMsg)
 import General.Models exposing (Model)
 import RemoteData
-import Socket exposing (initSocket)
+import Room.Socket exposing (initSocket)
 import Toasty
 import UpdateHelpers exposing (postTokenActions, updateForm)
 

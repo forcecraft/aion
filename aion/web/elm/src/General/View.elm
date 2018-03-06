@@ -3,20 +3,20 @@ module General.View exposing (..)
 import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Col as Col
 import General.Models exposing (Model)
-import General.Msgs exposing (GeneralMsg)
-import General.Utils exposing (displayWebData, sliceList)
+import General.Utils exposing (displayWebData)
 import Html exposing (Html, a, br, button, div, h2, h3, h4, hr, i, img, li, p, span, text, ul)
 import Html.Attributes exposing (class, href, src, style)
+import Lobby.Models exposing (LobbyData, Room)
+import Lobby.Msgs exposing (LobbyMsg)
 import Msgs exposing (Msg)
 import RemoteData exposing (WebData)
-import Room.Models exposing (RoomsData, Room)
 
 
 asGridContainer data =
     Grid.container [] data
 
 
-roomListView : Model -> Html GeneralMsg
+roomListView : Model -> Html LobbyMsg
 roomListView model =
     div []
         [ h4 [ class "room-list-label" ] [ text "Recommended" ]
@@ -32,7 +32,7 @@ type FilterType
     | All
 
 
-displayRooms : WebData RoomsData -> FilterType -> Html GeneralMsg
+displayRooms : WebData LobbyData -> FilterType -> Html LobbyMsg
 displayRooms rooms filterType =
     let
         fun =
@@ -46,7 +46,7 @@ displayRooms rooms filterType =
         div [] [ displayWebData rooms fun ]
 
 
-listRooms : RoomsData -> Html GeneralMsg
+listRooms : LobbyData -> Html LobbyMsg
 listRooms rooms =
     rooms
         |> .data
@@ -56,23 +56,23 @@ listRooms rooms =
         |> asGridContainer
 
 
-listRecommendedRooms : RoomsData -> Html GeneralMsg
+listRecommendedRooms : LobbyData -> Html LobbyMsg
 listRecommendedRooms rooms =
     listRooms { rooms | data = List.take 6 rooms.data }
 
 
-listRoomsSlice : List Room -> Html GeneralMsg
+listRoomsSlice : List Room -> Html LobbyMsg
 listRoomsSlice rooms =
     Grid.row [] (List.map listSingleRoom rooms)
 
 
-listSingleRoom : Room -> Grid.Column GeneralMsg
+listSingleRoom : Room -> Grid.Column LobbyMsg
 listSingleRoom room =
     Grid.col [ Col.lg2, Col.md4 ]
         [ div [ class "tile" ] [ displayRoomLabel room ] ]
 
 
-displayRoomLabel : Room -> Html GeneralMsg
+displayRoomLabel : Room -> Html LobbyMsg
 displayRoomLabel room =
     let
         url =

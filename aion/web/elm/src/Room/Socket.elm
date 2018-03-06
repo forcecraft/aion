@@ -1,4 +1,4 @@
-module Socket exposing (..)
+module Room.Socket exposing (..)
 
 import Json.Encode
 import Navigation exposing (Location)

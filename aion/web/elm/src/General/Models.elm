@@ -13,7 +13,7 @@ import RemoteData exposing (WebData)
 import Room.Models exposing (CurrentQuestion, EventLog, ProgressBar, RoomData, RoomState(QuestionBreak), UserGameData, UserList, initRoomData, initialLog, initialProgressBar)
 import Ranking.Models exposing (RankingData, initRankingData)
 import Room.Msgs exposing (RoomMsg)
-import Socket exposing (initSocket)
+import Room.Socket exposing (initSocket)
 import Toasty
 import Toasty.Defaults
 import Urls exposing (hostname, websocketUrl)

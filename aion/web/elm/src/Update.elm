@@ -2,9 +2,7 @@ module Update exposing (..)
 
 import Auth.Msgs exposing (AuthMsg(LoginResult, RegistrationResult))
 import Auth.Update
-import General.Api
-import General.Models exposing (Model, Route(RankingRoute, UserRoute, RoomListRoute, RoomRoute), asEventLogIn, asProgressBarIn)
-import General.Update
+import General.Models exposing (Model, Route(RankingRoute, UserRoute, RoomListRoute, RoomRoute))
 import Lobby.Api
 import Lobby.Update
 import Msgs exposing (Msg(..))

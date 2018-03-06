@@ -1,8 +1,8 @@
 module General.Utils exposing (..)
 
-import General.Msgs exposing (GeneralMsg)
 import Array exposing (Array, fromList)
 import Html exposing (Html, text)
+import Lobby.Msgs exposing (LobbyMsg)
 import RemoteData exposing (WebData)
 
 
@@ -19,7 +19,7 @@ sliceList n list =
             (List.take n list) :: (sliceList n (List.drop n list))
 
 
-displayWebData : WebData a -> (a -> Html GeneralMsg) -> Html GeneralMsg
+displayWebData : WebData a -> (a -> Html LobbyMsg) -> Html LobbyMsg
 displayWebData webData fun =
     case webData of
         RemoteData.NotAsked ->
