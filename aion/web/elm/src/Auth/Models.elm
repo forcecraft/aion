@@ -1,6 +1,7 @@
 module Auth.Models exposing (..)
 
 import Forms
+import General.Constants exposing (loginFormMsg)
 
 
 type alias AuthData =
@@ -10,6 +11,17 @@ type alias AuthData =
     , formMsg : String
     , token : Maybe Token
     , msg : String
+    }
+
+
+initAuthData : Token -> AuthData
+initAuthData token =
+    { loginForm = Forms.initForm loginForm
+    , registrationForm = Forms.initForm registrationForm
+    , unauthenticatedView = LoginView
+    , formMsg = loginFormMsg
+    , token = token
+    , msg = ""
     }
 
 

@@ -3,6 +3,7 @@ module Panel.Models exposing (..)
 import Forms
 import Panel.Validators exposing (answersValidations, categoryNameValidations, questionValidations, categoryValidations)
 import Multiselect
+import RemoteData exposing (WebData)
 
 
 type alias PanelData =
@@ -10,6 +11,17 @@ type alias PanelData =
     , categoryForm : CategoryForm
     , roomForm : RoomForm
     , categoryMultiSelect : Multiselect.Model
+    , categories : WebData CategoriesData
+    }
+
+
+initPanelData : PanelData
+initPanelData =
+    { questionForm = Forms.initForm questionForm
+    , categoryForm = Forms.initForm categoryForm
+    , roomForm = Forms.initForm roomForm
+    , categoryMultiSelect = Multiselect.initModel [] "id"
+    , categories = RemoteData.Loading
     }
 
 

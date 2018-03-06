@@ -9,6 +9,13 @@ type alias UserData =
     }
 
 
+initUserData : UserData
+initUserData =
+    { details = RemoteData.Loading
+    , scores = RemoteData.Loading
+    }
+
+
 type alias CurrentUser =
     { name : String
     , id : Int

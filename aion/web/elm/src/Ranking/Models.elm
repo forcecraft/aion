@@ -9,6 +9,13 @@ type alias RankingData =
     }
 
 
+initRankingData : RankingData
+initRankingData =
+    { data = RemoteData.Loading
+    , selectedCategoryId = -1
+    }
+
+
 type alias Ranking =
     { rankingList : List CategoryRanking }
 

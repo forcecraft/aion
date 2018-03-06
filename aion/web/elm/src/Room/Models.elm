@@ -1,25 +1,38 @@
 module Room.Models exposing (..)
 
-
-type alias RoomId =
-    Int
+import Navigation exposing (Location)
 
 
-type alias Room =
-    { id : RoomId
-    , name : String
-    , description : String
-    , player_count : Int
+type alias RoomData =
+    { location : Location
+    , roomState : RoomState
+    , eventLog : EventLog
+    , progressBar : ProgressBar
+    , userList : UserList
+    , userGameData : UserGameData
+    , currentQuestion : CurrentQuestion
+    , roomId : Int
+    }
+
+
+initRoomData : RoomData
+initRoomData =
+    { roomState = QuestionBreak
+    , eventLog = initialLog
+    , progressBar = initialProgressBar
+    , userList = []
+    , userGameData = { currentAnswer = "" }
+    , currentQuestion =
+        { content = ""
+        , image_name = ""
+        }
+    , roomId = 0
     }
 
 
 type RoomState
     = QuestionDisplayed
     | QuestionBreak
-
-
-type alias RoomsData =
-    { data : List Room }
 
 
 type alias UserRecord =
@@ -143,3 +156,13 @@ withRunning running bar =
 withStart : Float -> ProgressBar -> ProgressBar
 withStart start bar =
     { bar | start = start }
+
+
+asEventLogIn : Model -> EventLog -> Model
+asEventLogIn model eventLog =
+    { model | eventLog = eventLog }
+
+
+asProgressBarIn : Model -> ProgressBar -> Model
+asProgressBarIn model bar =
+    { model | progressBar = bar }

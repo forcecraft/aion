@@ -1,43 +1,38 @@
 module General.Models exposing (..)
 
-import Auth.Models exposing (AuthData, Token, UnauthenticatedViewToggle(LoginView), loginForm, registrationForm)
+import Auth.Models exposing (AuthData, Token, UnauthenticatedViewToggle(LoginView), initAuthData, loginForm, registrationForm)
 import Bootstrap.Navbar as Navbar
 import Forms
 import General.Constants exposing (loginFormMsg)
+import Lobby.Models exposing (LobbyData, initLobbyData)
 import Msgs exposing (Msg(NavbarMsg))
 import Navigation exposing (Location)
 import Multiselect
-import Panel.Models exposing (CategoriesData, PanelData, categoryForm, questionForm, roomForm)
+import Panel.Models exposing (CategoriesData, PanelData, categoryForm, initPanelData, questionForm, roomForm)
 import Phoenix.Socket
 import RemoteData exposing (WebData)
-import Room.Models exposing (CurrentQuestion, EventLog, ProgressBar, RoomId, RoomState(QuestionBreak), RoomsData, UserGameData, UserList, initialLog, initialProgressBar)
-import Ranking.Models exposing (RankingData)
+import Room.Models exposing (CurrentQuestion, EventLog, ProgressBar, RoomData, RoomId, RoomModel, RoomState(QuestionBreak), RoomsData, UserGameData, UserList, initRoomData, initialLog, initialProgressBar)
+import Ranking.Models exposing (RankingData, initRankingData)
 import Room.Msgs exposing (RoomMsg)
+import Socket exposing (initSocket)
 import Toasty
 import Toasty.Defaults
 import Urls exposing (hostname, websocketUrl)
-import User.Models exposing (UserData)
+import User.Models exposing (UserData, initUserData)
 
 
 type alias Model =
-    { user : UserData
-    , authData : AuthData
-    , rooms : WebData RoomsData
-    , categories : WebData CategoriesData
-    , route : Route
-    , socket : Phoenix.Socket.Socket RoomMsg
-    , userList : UserList
-    , userGameData : UserGameData
-    , currentQuestion : CurrentQuestion
-    , roomId : RoomId
-    , toasties : Toasty.Stack Toasty.Defaults.Toast
+    { authData : AuthData
+    , lobbyData : LobbyData
     , panelData : PanelData
     , rankingData : RankingData
+    , roomData : RoomData
+    , userData : UserData
+    , route : Route
+    , socket : Phoenix.Socket.Socket RoomMsg
+    , toasties : Toasty.Stack Toasty.Defaults.Toast
     , navbarState : Navbar.State
     , location : Location
-    , roomState : RoomState
-    , eventLog : EventLog
-    , progressBar : ProgressBar
     }
 
 
@@ -49,7 +44,7 @@ type alias Flags =
 type Route
     = AuthRoute
     | RoomListRoute
-    | RoomRoute RoomId
+    | RoomRoute Int
     | CreateRoomRoute
     | RankingRoute
     | UserRoute
@@ -63,62 +58,27 @@ initialModel flags route location =
             Navbar.initialState NavbarMsg
 
         token =
-            case String.isEmpty flags.token of
-                True ->
-                    Nothing
-
-                False ->
-                    Just flags.token
+            initToken flags
     in
-        { user =
-            { details = RemoteData.Loading
-            , scores = RemoteData.Loading
-            }
-        , authData =
-            { loginForm = Forms.initForm loginForm
-            , registrationForm = Forms.initForm registrationForm
-            , unauthenticatedView = LoginView
-            , formMsg = loginFormMsg
-            , token = token
-            , msg = ""
-            }
-        , rooms = RemoteData.Loading
-        , categories = RemoteData.Loading
+        { authData = initAuthData token
+        , lobbyData = initLobbyData
+        , panelData = initPanelData
+        , rankingData = initRankingData
+        , userData = initUserData
+        , roomData = initRoomData
         , route = route
-        , socket =
-            Phoenix.Socket.init (websocketUrl location flags.token)
-                |> Phoenix.Socket.withDebug
-        , userList = []
-        , userGameData = { currentAnswer = "" }
-        , currentQuestion =
-            { content = ""
-            , image_name = ""
-            }
-        , roomId = 0
+        , socket = initSocket
         , toasties = Toasty.initialState
-        , panelData =
-            { questionForm = Forms.initForm questionForm
-            , categoryForm = Forms.initForm categoryForm
-            , roomForm = Forms.initForm roomForm
-            , categoryMultiSelect = Multiselect.initModel [] "id"
-            }
-        , rankingData =
-            { data = RemoteData.Loading
-            , selectedCategoryId = -1
-            }
         , navbarState = navbarState
         , location = location
-        , roomState = QuestionBreak
-        , eventLog = initialLog
-        , progressBar = initialProgressBar
         }
 
 
-asEventLogIn : Model -> EventLog -> Model
-asEventLogIn model eventLog =
-    { model | eventLog = eventLog }
+initToken : Flags -> Maybe Token
+initToken flags =
+    case String.isEmpty flags.token of
+        True ->
+            Nothing
 
-
-asProgressBarIn : Model -> ProgressBar -> Model
-asProgressBarIn model bar =
-    { model | progressBar = bar }
+        False ->
+            Just flags.token
