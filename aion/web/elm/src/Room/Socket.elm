@@ -9,13 +9,21 @@ import Room.Msgs exposing (RoomMsg(ReceiveAnswerFeedback, ReceiveDisplayQuestion
 import Urls exposing (websocketUrl)
 
 
+type alias SocketModel =
+    Phoenix.Socket.Socket RoomMsg
+
+
+type alias SocketMsg =
+    Phoenix.Socket.Msg RoomMsg
+
+
 initSocket : String -> Location -> Phoenix.Socket.Socket msg
 initSocket token location =
     Phoenix.Socket.init (websocketUrl location token)
         |> Phoenix.Socket.withDebug
 
 
-initializeRoom : Phoenix.Socket.Socket RoomMsg -> String -> ( Phoenix.Socket.Socket RoomMsg, Cmd (Phoenix.Socket.Msg RoomMsg) )
+initializeRoom : SocketModel -> String -> ( SocketModel, Cmd SocketMsg )
 initializeRoom socket roomIdToString =
     let
         channel =
@@ -37,19 +45,12 @@ initializeRoom socket roomIdToString =
             )
 
 
-leaveRoom :
-    String
-    -> Phoenix.Socket.Socket RoomMsg
-    -> ( Phoenix.Socket.Socket RoomMsg, Cmd (Phoenix.Socket.Msg RoomMsg) )
+leaveRoom : String -> SocketModel -> ( SocketModel, Cmd SocketMsg )
 leaveRoom roomId socket =
     Phoenix.Socket.leave ("room:" ++ roomId) socket
 
 
-sendAnswer :
-    String
-    -> Json.Encode.Value
-    -> Phoenix.Socket.Socket RoomMsg
-    -> ( Phoenix.Socket.Socket RoomMsg, Cmd (Phoenix.Socket.Msg RoomMsg) )
+sendAnswer : String -> Json.Encode.Value -> SocketModel -> ( SocketModel, Cmd SocketMsg )
 sendAnswer roomId payload socket =
     Phoenix.Push.init "question:new_answer" ("room:" ++ roomId)
         |> Phoenix.Push.withPayload payload
