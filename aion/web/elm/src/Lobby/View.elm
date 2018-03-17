@@ -1,29 +1,26 @@
-module General.View exposing (..)
+module Lobby.View exposing (..)
 
 import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Col as Col
-import General.Models exposing (Model)
-import General.Utils exposing (displayWebData)
+import Lobby.Utils exposing (displayWebData, sliceList)
 import Html exposing (Html, a, br, button, div, h2, h3, h4, hr, i, img, li, p, span, text, ul)
 import Html.Attributes exposing (class, href, src, style)
 import Lobby.Models exposing (LobbyData, Room)
 import Lobby.Msgs exposing (LobbyMsg)
-import Msgs exposing (Msg)
-import RemoteData exposing (WebData)
 
 
 asGridContainer data =
     Grid.container [] data
 
 
-roomListView : Model -> Html LobbyMsg
-roomListView model =
+lobbyView : LobbyData -> Html LobbyMsg
+lobbyView model =
     div []
         [ h4 [ class "room-list-label" ] [ text "Recommended" ]
-        , displayRooms model.rooms Recommended
+        , displayRooms model.data Recommended
         , hr [ class "room-content-separator" ] []
         , h4 [ class "room-list-label" ] [ text "All rooms" ]
-        , displayRooms model.rooms All
+        , displayRooms model.data All
         ]
 
 
@@ -32,7 +29,7 @@ type FilterType
     | All
 
 
-displayRooms : WebData LobbyData -> FilterType -> Html LobbyMsg
+displayRooms : LobbyData -> FilterType -> Html LobbyMsg
 displayRooms rooms filterType =
     let
         fun =
@@ -43,7 +40,7 @@ displayRooms rooms filterType =
                 All ->
                     listRooms
     in
-        div [] [ displayWebData rooms fun ]
+        div [] [ fun rooms ]
 
 
 listRooms : LobbyData -> Html LobbyMsg

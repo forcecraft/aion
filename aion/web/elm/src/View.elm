@@ -2,17 +2,17 @@ module View exposing (..)
 
 import Auth.View exposing (authView)
 import Bootstrap.Navbar as Navbar
-import General.Constants exposing (footerContent, roomsPath, createRoomPath, userPath, rankingsPath)
+import General.Constants exposing (footerContent)
 import General.Models exposing (Model, Route(AuthRoute, CreateRoomRoute, NotFoundRoute, RankingRoute, RoomListRoute, RoomRoute, UserRoute))
-import General.View exposing (roomListView)
 import Html exposing (..)
 import Html.Attributes exposing (class, href, src)
+import Lobby.View exposing (lobbyView)
 import Msgs exposing (Msg(..))
 import Navigation exposing (Location)
 import Panel.View exposing (panelView)
 import Room.View exposing (roomView)
 import Ranking.View exposing (rankingView)
-import Urls exposing (createRoomUrl, host, lobbyUrl, rankingUrl, userUrl)
+import Urls exposing (createRoomPath, host, lobbyPath, rankingPath, userPath)
 import User.View exposing (userView)
 
 
@@ -67,10 +67,10 @@ navbar route location navbarState =
             _ ->
                 baseNavbar
                     |> Navbar.items
-                        [ Navbar.itemLink [ href lobbyUrl ] [ text "Rooms" ]
-                        , Navbar.itemLink [ href createRoomUrl ] [ text "Create room" ]
-                        , Navbar.itemLink [ href rankingUrl ] [ text "Rankings" ]
-                        , Navbar.itemLink [ href userUrl ] [ text "Profile" ]
+                        [ Navbar.itemLink [ href lobbyPath ] [ text "Rooms" ]
+                        , Navbar.itemLink [ href createRoomPath ] [ text "Create room" ]
+                        , Navbar.itemLink [ href rankingPath ] [ text "Rankings" ]
+                        , Navbar.itemLink [ href userPath ] [ text "Profile" ]
                         ]
                     |> Navbar.view navbarState
 
@@ -94,7 +94,7 @@ page model =
                     authView model |> Html.map MkAuthMsg
 
                 RoomListRoute ->
-                    roomListView model |> Html.map MkGeneralMsg
+                    lobbyView model |> Html.map MkLobbyMsg
 
                 RoomRoute id ->
                     roomView model id |> Html.map MkRoomMsg

@@ -1,11 +1,22 @@
 module Lobby.Update exposing (..)
 
 import General.Models exposing (Model)
+import Lobby.Models exposing (LobbyData, initLobbyData)
 import Lobby.Msgs exposing (LobbyMsg(OnFetchRooms))
+import RemoteData
 
 
-update : LobbyMsg -> Model -> ( Model, Cmd LobbyMsg )
+update : LobbyMsg -> LobbyData -> ( LobbyData, Cmd LobbyMsg )
 update msg model =
     case msg of
         OnFetchRooms response ->
-            { model | rooms = response } ! []
+            let
+                lobbyData =
+                    case response of
+                        RemoteData.Success rooms ->
+                            rooms
+
+                        _ ->
+                            initLobbyData
+            in
+                lobbyData ! []

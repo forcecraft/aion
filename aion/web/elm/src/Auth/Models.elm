@@ -14,7 +14,7 @@ type alias AuthData =
     }
 
 
-initAuthData : Token -> AuthData
+initAuthData : Maybe Token -> AuthData
 initAuthData token =
     { loginForm = Forms.initForm loginForm
     , registrationForm = Forms.initForm registrationForm

@@ -8,6 +8,10 @@ type alias Url =
     String
 
 
+type alias Path =
+    String
+
+
 hostname : Location -> Url
 hostname location =
     location.host
@@ -60,28 +64,29 @@ websocketUrl location token =
 
 
 -- local urls
+-- calling local urls "paths" in order to distinguish between rankingUrl and rankingPath etc.
 
 
-lobbyUrl : Url
-lobbyUrl =
+lobbyPath : Path
+lobbyPath =
     "#"
 
 
-createRoomUrl : Url
-createRoomUrl =
+createRoomPath : Path
+createRoomPath =
     "#create_room"
 
 
-panelUrl : Url
-panelUrl =
+panelPath : Path
+panelPath =
     "#panel"
 
 
-userUrl : Url
-userUrl =
+userPath : Path
+userPath =
     "#profile"
 
 
-rankingUrl : Url
-rankingUrl =
+rankingPath : Path
+rankingPath =
     "#rankings"

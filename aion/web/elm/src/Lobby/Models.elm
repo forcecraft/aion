@@ -7,9 +7,16 @@ type alias LobbyData =
     { data : List Room }
 
 
-initLobbyData : LobbyData
-initLobbyData =
-    RemoteData.Loading
+
+-- experimental
+
+
+type alias RoomList =
+    List Room
+
+
+
+-- /experimental
 
 
 type alias Room =
@@ -22,3 +29,8 @@ type alias Room =
 
 type alias RoomId =
     Int
+
+
+initLobbyData : LobbyData
+initLobbyData =
+    { data = [] }

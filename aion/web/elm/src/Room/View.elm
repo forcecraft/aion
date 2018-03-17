@@ -8,30 +8,25 @@ import Bootstrap.Grid.Col as Col
 import Bootstrap.Grid.Row as Row
 import Bootstrap.ListGroup as ListGroup
 import Bootstrap.Progress as Progress
-import General.Models exposing (Model)
 import Html exposing (Attribute, Html, a, button, div, form, h4, hr, input, li, text, ul)
 import Html.Attributes exposing (autocomplete, class, for, href, id, src, value)
 import Html.Events exposing (keyCode, on, onClick, onInput, onWithOptions)
 import Json.Decode exposing (map)
-import Msgs exposing (Msg(..))
+import Lobby.Models exposing (RoomId)
 import Html exposing (Html, a, div, img, li, p, text, ul)
 import Navigation exposing (Location)
 import Room.Constants exposing (answerInputFieldId, defaultImagePath, imagesPath)
-import Room.Models exposing (Answer, Event(MkQuestionSummaryLog, MkUserJoinedLog, MkUserLeftLog), EventLog, ImageName, ProgressBar, ProgressBarState(Stopped), RoomId, RoomState(QuestionBreak, QuestionDisplayed), RoomsData, UserGameData, UserRecord)
+import Room.Models exposing (Answer, Event(MkQuestionSummaryLog, MkUserJoinedLog, MkUserLeftLog), EventLog, ImageName, ProgressBar, ProgressBarState(Stopped), RoomData, RoomState(QuestionBreak, QuestionDisplayed), UserGameData, UserRecord)
 import Room.Msgs exposing (RoomMsg(SetAnswer, SubmitAnswer, ToastyMsg))
 import Room.Notifications exposing (toastsConfig)
 import Room.Urls exposing (getImageUrl)
-import Room.Utils exposing (getRoomList, getRoomNameById)
 import Toasty
 import Toasty.Defaults
 
 
-roomView : Model -> RoomId -> Html RoomMsg
+roomView : RoomData -> RoomId -> Html RoomMsg
 roomView model roomId =
     let
-        roomName =
-            getRoomNameById model roomId
-
         currentAnswer =
             model.userGameData.currentAnswer
     in
@@ -124,14 +119,14 @@ displaySingleLog event =
         ListGroup.li [] [ text log ]
 
 
-displayQuestionText : Model -> Html RoomMsg
+displayQuestionText : RoomData -> Html RoomMsg
 displayQuestionText model =
     div [ class "question-container" ]
         [ displayQuestion model.currentQuestion.content model.roomState
         ]
 
 
-displayScores : Model -> Html RoomMsg
+displayScores : RoomData -> Html RoomMsg
 displayScores model =
     div
         [ class "room-scoreboard" ]

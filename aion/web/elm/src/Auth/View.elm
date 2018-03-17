@@ -1,5 +1,6 @@
 module Auth.View exposing (..)
 
+import Auth.Constants exposing (authPageRightColumnContent)
 import Auth.Models exposing (AuthData, LoginForm, RegistrationForm, UnauthenticatedViewToggle(LoginView, RegisterView))
 import Auth.Msgs exposing (AuthMsg(ChangeAuthForm, Login, Register, ToastyMsg, UpdateLoginForm, UpdateRegistrationForm))
 import Auth.Notifications exposing (toastsConfig)
@@ -9,7 +10,6 @@ import Bootstrap.Form as Form
 import Bootstrap.Form.Input as Input
 import Bootstrap.Grid as Grid
 import Forms
-import General.Constants exposing (authPageRightColumnContent)
 import General.Models exposing (Model)
 import Html exposing (Html, br, div, h2, p, span, text)
 import Html.Attributes exposing (class, for)

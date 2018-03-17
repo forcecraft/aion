@@ -2,21 +2,17 @@ module General.Models exposing (..)
 
 import Auth.Models exposing (AuthData, Token, UnauthenticatedViewToggle(LoginView), initAuthData, loginForm, registrationForm)
 import Bootstrap.Navbar as Navbar
-import Forms
 import Lobby.Models exposing (LobbyData, initLobbyData)
 import Msgs exposing (Msg(NavbarMsg))
 import Navigation exposing (Location)
-import Multiselect
 import Panel.Models exposing (CategoriesData, PanelData, categoryForm, initPanelData, questionForm, roomForm)
 import Phoenix.Socket
-import RemoteData exposing (WebData)
-import Room.Models exposing (CurrentQuestion, EventLog, ProgressBar, RoomData, RoomState(QuestionBreak), UserGameData, UserList, initRoomData, initialLog, initialProgressBar)
+import Room.Models exposing (CurrentQuestion, EventLog, ProgressBar, RoomData, RoomState(QuestionBreak), UserGameData, UserList, initRoomData)
 import Ranking.Models exposing (RankingData, initRankingData)
 import Room.Msgs exposing (RoomMsg)
 import Room.Socket exposing (initSocket)
 import Toasty
 import Toasty.Defaults
-import Urls exposing (hostname, websocketUrl)
 import User.Models exposing (UserData, initUserData)
 
 
@@ -50,23 +46,31 @@ type Route
     | NotFoundRoute
 
 
-initialModel : Flags -> Route -> Location -> Model
-initialModel flags route location =
+initModel : Flags -> Route -> Location -> Model
+initModel flags route location =
     let
         ( navbarState, _ ) =
             Navbar.initialState NavbarMsg
 
-        token =
+        maybeToken =
             initToken flags
+
+        token =
+            case maybeToken of
+                Just actualToken ->
+                    actualToken
+
+                Nothing ->
+                    ""
     in
-        { authData = initAuthData token
+        { authData = initAuthData maybeToken
         , lobbyData = initLobbyData
         , panelData = initPanelData
         , rankingData = initRankingData
-        , userData = initUserData
-        , roomData = initRoomData
+        , roomData = initRoomData location
+        , userData = initUserData location
         , route = route
-        , socket = initSocket
+        , socket = initSocket token location
         , toasties = Toasty.initialState
         , navbarState = navbarState
         , location = location

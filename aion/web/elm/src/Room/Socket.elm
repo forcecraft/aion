@@ -1,5 +1,6 @@
 module Room.Socket exposing (..)
 
+import Auth.Models exposing (Token)
 import Json.Encode
 import Navigation exposing (Location)
 import Phoenix.Channel
@@ -17,7 +18,7 @@ type alias SocketMsg =
     Phoenix.Socket.Msg RoomMsg
 
 
-initSocket : String -> Location -> Phoenix.Socket.Socket msg
+initSocket : Token -> Location -> Phoenix.Socket.Socket msg
 initSocket token location =
     Phoenix.Socket.init (websocketUrl location token)
         |> Phoenix.Socket.withDebug

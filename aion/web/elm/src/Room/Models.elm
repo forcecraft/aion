@@ -4,29 +4,27 @@ import Navigation exposing (Location)
 
 
 type alias RoomData =
-    { location : Location
-    , roomState : RoomState
+    { currentQuestion : CurrentQuestion
     , eventLog : EventLog
+    , location : Location
     , progressBar : ProgressBar
+    , roomId : Int
+    , roomState : RoomState
     , userList : UserList
     , userGameData : UserGameData
-    , currentQuestion : CurrentQuestion
-    , roomId : Int
     }
 
 
-initRoomData : RoomData
-initRoomData =
-    { roomState = QuestionBreak
-    , eventLog = initialLog
-    , progressBar = initialProgressBar
-    , userList = []
-    , userGameData = { currentAnswer = "" }
-    , currentQuestion =
-        { content = ""
-        , image_name = ""
-        }
+initRoomData : Location -> RoomData
+initRoomData location =
+    { currentQuestion = initCurrentQuestion
+    , eventLog = initEventLog
+    , location = location
     , roomId = 0
+    , roomState = QuestionBreak
+    , progressBar = initProgressBar
+    , userList = []
+    , userGameData = initUserGameData
     }
 
 
@@ -58,9 +56,21 @@ type alias UserGameData =
     { currentAnswer : String }
 
 
+initUserGameData : UserGameData
+initUserGameData =
+    { currentAnswer = "" }
+
+
 type alias CurrentQuestion =
     { content : String
     , image_name : ImageName
+    }
+
+
+initCurrentQuestion : CurrentQuestion
+initCurrentQuestion =
+    { content = ""
+    , image_name = ""
     }
 
 
@@ -113,8 +123,8 @@ asLogIn eventLog event =
     event :: eventLog
 
 
-initialLog : EventLog
-initialLog =
+initEventLog : EventLog
+initEventLog =
     []
 
 
@@ -125,8 +135,8 @@ type alias ProgressBar =
     }
 
 
-initialProgressBar : ProgressBar
-initialProgressBar =
+initProgressBar : ProgressBar
+initProgressBar =
     { start = 0.0
     , progress = 0.0
     , running = Uninitialized

@@ -1,7 +1,7 @@
-module General.Utils exposing (..)
+module Lobby.Utils exposing (..)
 
-import Array exposing (Array, fromList)
 import Html exposing (Html, text)
+import Lobby.Models exposing (LobbyData, Room, RoomId)
 import Lobby.Msgs exposing (LobbyMsg)
 import RemoteData exposing (WebData)
 
@@ -33,3 +33,19 @@ displayWebData webData fun =
 
         RemoteData.Failure error ->
             text (toString error)
+
+
+getRoomNameById : LobbyData -> RoomId -> String
+getRoomNameById model roomId =
+    case (getRoomById model roomId) of
+        Just room ->
+            "Room# " ++ room.name
+
+        _ ->
+            "Room Not Found"
+
+
+getRoomById : LobbyData -> RoomId -> Maybe Room
+getRoomById model roomId =
+    List.filter (\room -> room.id == roomId) model.data
+        |> List.head

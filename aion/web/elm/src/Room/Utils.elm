@@ -1,36 +1,10 @@
 module Room.Utils exposing (..)
 
-import General.Models exposing (Model)
+import Lobby.Models exposing (Room, RoomId)
 import RemoteData
 import Room.Constants exposing (progressBarTimeout)
-import Room.Models exposing (ProgressBar, ProgressBarState(Running, Stopped), Room, RoomId, RoomsData, withProgress, withRunning, withStart)
+import Room.Models exposing (ProgressBar, ProgressBarState(Running, Stopped), RoomData, withProgress, withRunning, withStart)
 import Time exposing (Time, inMilliseconds)
-
-
-getRoomNameById : Model -> RoomId -> String
-getRoomNameById model roomId =
-    case (getRoomById model roomId) of
-        Just room ->
-            "Room# " ++ room.name
-
-        _ ->
-            "Room Not Found"
-
-
-getRoomById : Model -> RoomId -> Maybe Room
-getRoomById model roomId =
-    List.filter (\room -> room.id == roomId) (getRoomList model)
-        |> List.head
-
-
-getRoomList : Model -> List Room
-getRoomList model =
-    case model.rooms of
-        RemoteData.Success roomsData ->
-            roomsData.data
-
-        _ ->
-            []
 
 
 progressBarTick : ProgressBar -> Time -> ProgressBar

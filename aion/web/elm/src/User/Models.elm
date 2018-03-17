@@ -1,18 +1,32 @@
 module User.Models exposing (..)
 
+import Navigation exposing (Location)
 import RemoteData exposing (WebData)
+import Urls exposing (Url, host)
 
 
 type alias UserData =
     { details : WebData CurrentUser
     , scores : WebData UserScores
+    , urls : ContextUrls
     }
 
 
-initUserData : UserData
-initUserData =
+initUserData : Location -> UserData
+initUserData location =
     { details = RemoteData.Loading
     , scores = RemoteData.Loading
+    , urls = initContextUrls location
+    }
+
+
+type alias ContextUrls =
+    { avatarPlaceholder : Url
+    }
+
+
+initContextUrls location =
+    { avatarPlaceholder = (host location) ++ "placeholders/avatar_placeholder.png"
     }
 
 
