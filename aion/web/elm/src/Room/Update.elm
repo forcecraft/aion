@@ -1,18 +1,18 @@
 module Room.Update exposing (..)
 
 import Dom exposing (focus)
-import General.Models exposing (Model, Route(RoomRoute), asEventLogIn, asProgressBarIn)
+import General.Models exposing (Model)
 import Phoenix.Socket
 import RemoteData
 import Room.Constants exposing (answerInputFieldId, enterKeyCode)
 import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, questionSummaryDecoder, userJoinedInfoDecoder, userLeftDecoder, userListMessageDecoder)
-import Room.Models exposing (Event(MkQuestionSummaryLog, MkUserJoinedLog, MkUserLeftLog), ProgressBarState(Running, Stopped, Uninitialized), RoomState(QuestionBreak, QuestionDisplayed), asLogIn, withProgress, withRunning, withStart)
+import Room.Models exposing (Event(MkQuestionSummaryLog, MkUserJoinedLog, MkUserLeftLog), ProgressBarState(Running, Stopped, Uninitialized), RoomState(QuestionBreak, QuestionDisplayed), asEventLogIn, asLogIn, asProgressBarIn, withProgress, withRunning, withStart)
 import Room.Msgs exposing (RoomMsg(FocusResult, KeyDown, NoOperation, OnInitialTime, OnTime, PhoenixMsg, ReceiveAnswerFeedback, ReceiveDisplayQuestion, ReceiveQuestion, ReceiveQuestionBreak, ReceiveQuestionSummary, ReceiveUserJoined, ReceiveUserLeft, ReceiveUserList, SetAnswer, SubmitAnswer, Tick, ToastyMsg))
 import Room.Notifications exposing (closeAnswerToast, correctAnswerToast, incorrectAnswerToast, toastsConfig)
 import Room.Utils exposing (progressBarTick)
 import UpdateHelpers exposing (decodeAndUpdate)
 import Json.Encode as Encode
-import Socket exposing (leaveRoom, sendAnswer)
+import Room.Socket exposing (sendAnswer)
 import Task
 import Time exposing (inMilliseconds)
 import Toasty
