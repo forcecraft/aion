@@ -1,7 +1,7 @@
 module Auth.Models exposing (..)
 
+import Auth.Constants exposing (loginFormMsg)
 import Forms
-import General.Constants exposing (loginFormMsg)
 
 
 type alias AuthData =

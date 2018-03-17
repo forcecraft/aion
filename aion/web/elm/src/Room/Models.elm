@@ -158,11 +158,11 @@ withStart start bar =
     { bar | start = start }
 
 
-asEventLogIn : Model -> EventLog -> Model
+asEventLogIn : RoomData -> EventLog -> RoomData
 asEventLogIn model eventLog =
     { model | eventLog = eventLog }
 
 
-asProgressBarIn : Model -> ProgressBar -> Model
+asProgressBarIn : RoomData -> ProgressBar -> RoomData
 asProgressBarIn model bar =
     { model | progressBar = bar }
