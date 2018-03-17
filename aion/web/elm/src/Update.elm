@@ -2,23 +2,22 @@ module Update exposing (..)
 
 import Auth.Msgs exposing (AuthMsg(LoginResult, RegistrationResult))
 import Auth.Update
-import General.Models exposing (Model, Route(RankingRoute, UserRoute, RoomListRoute, RoomRoute))
-import Lobby.Api
+import General.Models exposing (Model, Route(RankingRoute, RoomListRoute, RoomRoute, UserRoute))
+import Lobby.Api exposing (fetchRooms)
 import Lobby.Update
-import Msgs exposing (Msg(..))
+import Msgs exposing (Msg(LeaveRoom, MkAuthMsg, MkLobbyMsg, MkPanelMsg, MkRankingMsg, MkRoomMsg, MkUserMsg, NavbarMsg, OnLocationChange))
 import Panel.Api
 import Panel.Update
 import Ranking.Api exposing (fetchRanking)
 import Ranking.Update
 import RemoteData
-import Room.Api exposing (fetchRooms)
 import Room.Msgs exposing (RoomMsg(PhoenixMsg))
+import Room.Socket exposing (initializeRoom, leaveRoom)
 import Room.Update
 import Routing exposing (parseLocation)
 import Toasty
-import Socket exposing (initSocket, initializeRoom, leaveRoom, sendAnswer)
-import UpdateHelpers exposing (decodeAndUpdate, postTokenActions, updateForm, withLocation, withToken)
-import User.Api exposing (fetchCurrentUser, fetchUserScores)
+import UpdateHelpers exposing (postTokenActions, withLocation, withToken)
+import User.Api exposing (fetchUserScores)
 import User.Msgs exposing (UserMsg(Logout))
 import User.Update
 
@@ -127,7 +126,7 @@ update msg model =
                               , fetchRooms
                                     |> withLocation model
                                     |> withToken model
-                                    |> Cmd.map MkGeneralMsg
+                                    |> Cmd.map MkLobbyMsg
                               ]
 
                     RankingRoute ->
