@@ -4,11 +4,11 @@ import Auth.Models exposing (Token)
 import Forms
 import General.Models exposing (Model)
 import Json.Decode as Decode
-import Msgs exposing (Msg(MkGeneralMsg, MkPanelMsg, MkUserMsg))
+import Lobby.Api exposing (fetchRooms)
+import Msgs exposing (Msg(MkLobbyMsg, MkPanelMsg, MkUserMsg))
 import Navigation exposing (Location, modifyUrl)
 import Panel.Api exposing (fetchCategories)
 import Ports exposing (check)
-import Room.Api exposing (fetchRooms)
 import Urls exposing (host)
 import User.Api exposing (fetchCurrentUser)
 
@@ -51,7 +51,7 @@ setHomeUrl location =
 postTokenActions : Token -> Location -> List (Cmd Msg)
 postTokenActions token location =
     [ check token
-    , fetchRooms location token |> Cmd.map MkGeneralMsg
+    , fetchRooms location token |> Cmd.map MkLobbyMsg
     , fetchCategories location token |> Cmd.map MkPanelMsg
     , fetchCurrentUser location token |> Cmd.map MkUserMsg
     , setHomeUrl location
