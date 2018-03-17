@@ -3,7 +3,7 @@ module View exposing (..)
 import Auth.View exposing (authView)
 import Bootstrap.Navbar as Navbar
 import General.Constants exposing (footerContent)
-import General.Models exposing (Model, Route(AuthRoute, CreateRoomRoute, NotFoundRoute, RankingRoute, RoomListRoute, RoomRoute, UserRoute))
+import General.Models exposing (Model, Route(AuthRoute, CreateRoomRoute, LobbyRoute, NotFoundRoute, RankingRoute, RoomRoute, UserRoute))
 import Html exposing (..)
 import Html.Attributes exposing (class, href, src)
 import Lobby.View exposing (lobbyView)
@@ -91,22 +91,22 @@ page model =
         content =
             case route of
                 AuthRoute ->
-                    authView model |> Html.map MkAuthMsg
+                    authView model.authData |> Html.map MkAuthMsg
 
-                RoomListRoute ->
-                    lobbyView model |> Html.map MkLobbyMsg
+                LobbyRoute ->
+                    lobbyView model.lobbyData |> Html.map MkLobbyMsg
 
                 RoomRoute id ->
-                    roomView model id |> Html.map MkRoomMsg
+                    roomView model.roomData id |> Html.map MkRoomMsg
 
                 CreateRoomRoute ->
-                    panelView model |> Html.map MkPanelMsg
+                    panelView model.panelData |> Html.map MkPanelMsg
 
                 UserRoute ->
-                    userView model |> Html.map MkUserMsg
+                    userView model.userData |> Html.map MkUserMsg
 
                 RankingRoute ->
-                    rankingView model |> Html.map MkRankingMsg
+                    rankingView model.rankingData |> Html.map MkRankingMsg
 
                 NotFoundRoute ->
                     notFoundView

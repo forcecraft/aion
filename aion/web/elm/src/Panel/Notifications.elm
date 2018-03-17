@@ -1,7 +1,6 @@
 module Panel.Notifications exposing (..)
 
 import Html.Attributes exposing (class)
-import Msgs exposing (Msg(..))
 import Panel.Models exposing (PanelData)
 import Panel.Msgs exposing (PanelMsg(ToastyMsg))
 import Toasty

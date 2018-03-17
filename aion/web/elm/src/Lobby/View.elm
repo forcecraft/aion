@@ -9,6 +9,7 @@ import Lobby.Models exposing (LobbyData, Room)
 import Lobby.Msgs exposing (LobbyMsg)
 
 
+asGridContainer : List (Html msg) -> Html msg
 asGridContainer data =
     Grid.container [] data
 
@@ -17,10 +18,10 @@ lobbyView : LobbyData -> Html LobbyMsg
 lobbyView model =
     div []
         [ h4 [ class "room-list-label" ] [ text "Recommended" ]
-        , displayRooms model.data Recommended
+        , displayRooms model Recommended
         , hr [ class "room-content-separator" ] []
         , h4 [ class "room-list-label" ] [ text "All rooms" ]
-        , displayRooms model.data All
+        , displayRooms model All
         ]
 
 

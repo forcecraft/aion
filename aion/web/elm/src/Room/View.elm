@@ -93,10 +93,7 @@ displaySingleLog event =
         log =
             case event of
                 MkUserJoinedLog userJoinedLog ->
-                    if userJoinedLog.currentPlayer == userJoinedLog.newPlayer then
-                        "You have joined the room."
-                    else
-                        userJoinedLog.newPlayer ++ " joined the room."
+                    userJoinedLog ++ " joined the room."
 
                 MkUserLeftLog userLeftLog ->
                     userLeftLog.user ++ " left."

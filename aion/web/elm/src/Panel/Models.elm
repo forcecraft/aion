@@ -4,24 +4,28 @@ import Forms
 import Panel.Validators exposing (answersValidations, categoryNameValidations, questionValidations, categoryValidations)
 import Multiselect
 import RemoteData exposing (WebData)
+import Toasty
+import Toasty.Defaults
 
 
 type alias PanelData =
-    { questionForm : QuestionForm
+    { categories : WebData CategoriesData
     , categoryForm : CategoryForm
-    , roomForm : RoomForm
     , categoryMultiSelect : Multiselect.Model
-    , categories : WebData CategoriesData
+    , roomForm : RoomForm
+    , questionForm : QuestionForm
+    , toasties : Toasty.Stack Toasty.Defaults.Toast
     }
 
 
 initPanelData : PanelData
 initPanelData =
-    { questionForm = Forms.initForm questionForm
+    { categories = RemoteData.Loading
     , categoryForm = Forms.initForm categoryForm
-    , roomForm = Forms.initForm roomForm
     , categoryMultiSelect = Multiselect.initModel [] "id"
-    , categories = RemoteData.Loading
+    , roomForm = Forms.initForm roomForm
+    , questionForm = Forms.initForm questionForm
+    , toasties = Toasty.initialState
     }
 
 

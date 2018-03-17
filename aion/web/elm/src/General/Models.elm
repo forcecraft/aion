@@ -38,7 +38,7 @@ type alias Flags =
 
 type Route
     = AuthRoute
-    | RoomListRoute
+    | LobbyRoute
     | RoomRoute Int
     | CreateRoomRoute
     | RankingRoute

@@ -21,9 +21,9 @@ updateForm name value form =
 decodeAndUpdate :
     Decode.Value
     -> Decode.Decoder a
-    -> Model
-    -> (a -> ( Model, Cmd msg ))
-    -> ( Model, Cmd msg )
+    -> model
+    -> (a -> ( model, Cmd msg ))
+    -> ( model, Cmd msg )
 decodeAndUpdate encodedValue decoder model updateFun =
     case Decode.decodeValue decoder encodedValue of
         Ok value ->

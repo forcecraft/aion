@@ -58,23 +58,13 @@ update msg model =
                 userJoinedInfoDecoder
                 model
                 (\userJoinedInfo ->
-                    let
-                        oldEventLog =
-                            model.eventLog
-
-                        log =
-                            case model.user.details of
-                                RemoteData.Success currentUser ->
-                                    { currentPlayer = currentUser.name
-                                    , newPlayer = userJoinedInfo.user
-                                    }
-                                        |> MkUserJoinedLog
-                                        |> asLogIn oldEventLog
-
-                                _ ->
-                                    oldEventLog
-                    in
-                        { model | eventLog = log } ! []
+                    (userJoinedInfo
+                        |> .user
+                        |> MkUserJoinedLog
+                        |> asLogIn model.eventLog
+                        |> asEventLogIn model
+                    )
+                        ! []
                 )
 
         ReceiveUserLeft rawUserLeftInfo ->

@@ -1,6 +1,8 @@
 module Room.Models exposing (..)
 
 import Navigation exposing (Location)
+import Toasty
+import Toasty.Defaults
 
 
 type alias RoomData =
@@ -10,6 +12,7 @@ type alias RoomData =
     , progressBar : ProgressBar
     , roomId : Int
     , roomState : RoomState
+    , toasties : Toasty.Stack Toasty.Defaults.Toast
     , userList : UserList
     , userGameData : UserGameData
     }
@@ -23,6 +26,7 @@ initRoomData location =
     , roomId = 0
     , roomState = QuestionBreak
     , progressBar = initProgressBar
+    , toasties = Toasty.initialState
     , userList = []
     , userGameData = initUserGameData
     }
@@ -102,9 +106,7 @@ type Event
 
 
 type alias UserJoined =
-    { currentPlayer : String
-    , newPlayer : String
-    }
+    String
 
 
 type alias UserLeft =
