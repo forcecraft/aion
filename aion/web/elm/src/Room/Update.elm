@@ -2,7 +2,6 @@ module Room.Update exposing (..)
 
 import Dom exposing (focus)
 import Phoenix.Socket
-import RemoteData
 import Room.Constants exposing (answerInputFieldId, enterKeyCode)
 import Room.Decoders exposing (answerFeedbackDecoder, questionDecoder, questionSummaryDecoder, userJoinedInfoDecoder, userLeftDecoder, userListMessageDecoder)
 import Room.Models exposing (Event(MkQuestionSummaryLog, MkUserJoinedLog, MkUserLeftLog), ProgressBarState(Running, Stopped, Uninitialized), RoomData, RoomState(QuestionBreak, QuestionDisplayed), asEventLogIn, asLogIn, asProgressBarIn, withProgress, withRunning, withStart)

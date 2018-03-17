@@ -6,11 +6,10 @@ import Bootstrap.Form as Form
 import Bootstrap.Form.Input as Input
 import Bootstrap.Form.Select as Select
 import Forms
-import General.Models exposing (Model)
 import Html exposing (..)
 import Html.Attributes exposing (class, for, placeholder, type_, value)
 import Multiselect
-import Panel.Models exposing (CategoriesData, Category)
+import Panel.Models exposing (CategoriesData, Category, PanelData)
 import Panel.Msgs exposing (PanelMsg(CreateNewCategory, CreateNewQuestionWithAnswers, CreateNewRoom, MultiselectMsg, ToastyMsg, UpdateCategoryForm, UpdateQuestionForm, UpdateRoomForm))
 import Panel.Notifications exposing (toastsConfig)
 import RemoteData exposing (WebData)
@@ -18,11 +17,11 @@ import Toasty
 import Toasty.Defaults
 
 
-panelView : Model -> Html PanelMsg
+panelView : PanelData -> Html PanelMsg
 panelView model =
     div [ class "panel-container" ]
         [ h5 [] [ text "Create room" ]
-        , renderRoomForm model.panelData.roomForm model.panelData.categoryMultiSelect
+        , renderRoomForm model.roomForm model.categoryMultiSelect
         , Toasty.view toastsConfig Toasty.Defaults.view ToastyMsg model.toasties
         ]
 

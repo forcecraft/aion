@@ -24,7 +24,6 @@ type alias Model =
     , roomData : RoomData
     , userData : UserData
     , route : Route
-    , socket : Phoenix.Socket.Socket RoomMsg
     , toasties : Toasty.Stack Toasty.Defaults.Toast
     , navbarState : Navbar.State
     , location : Location
@@ -63,14 +62,13 @@ initModel flags route location =
                 Nothing ->
                     ""
     in
-        { authData = initAuthData maybeToken
+        { authData = initAuthData location maybeToken
         , lobbyData = initLobbyData
-        , panelData = initPanelData
-        , rankingData = initRankingData
-        , roomData = initRoomData location
+        , panelData = initPanelData location token
+        , rankingData = initRankingData location
+        , roomData = initRoomData location token
         , userData = initUserData location
         , route = route
-        , socket = initSocket token location
         , toasties = Toasty.initialState
         , navbarState = navbarState
         , location = location

@@ -44,10 +44,10 @@ init flags location =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Phoenix.Socket.listen model.socket PhoenixMsg |> Sub.map MkRoomMsg
+        [ Phoenix.Socket.listen model.roomData.socket PhoenixMsg |> Sub.map MkRoomMsg
         , Navbar.subscriptions model.navbarState NavbarMsg
         , Multiselect.subscriptions model.panelData.categoryMultiSelect |> Sub.map MultiselectMsg |> Sub.map MkPanelMsg
-        , Room.Subscriptions.subscriptions model |> Sub.map MkRoomMsg
+        , Room.Subscriptions.subscriptions model.roomData |> Sub.map MkRoomMsg
         ]
 
 

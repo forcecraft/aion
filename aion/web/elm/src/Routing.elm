@@ -1,6 +1,6 @@
 module Routing exposing (..)
 
-import General.Models exposing (Route(AuthRoute, CreateRoomRoute, NotFoundRoute, RankingRoute, RoomListRoute, RoomRoute, UserRoute))
+import General.Models exposing (Route(AuthRoute, CreateRoomRoute, LobbyRoute, NotFoundRoute, RankingRoute, RoomRoute, UserRoute))
 import Navigation exposing (Location)
 import UrlParser exposing (..)
 
@@ -8,7 +8,7 @@ import UrlParser exposing (..)
 matchers : Parser (Route -> a) a
 matchers =
     oneOf
-        [ map RoomListRoute top
+        [ map LobbyRoute top
         , map AuthRoute (s "auth")
         , map RoomRoute (s "rooms" </> int)
         , map CreateRoomRoute (s "create_room")

@@ -1,18 +1,21 @@
 module Ranking.Models exposing (..)
 
+import Navigation exposing (Location)
 import RemoteData exposing (WebData)
 
 
 type alias RankingData =
     { data : WebData Ranking
     , selectedCategoryId : Int
+    , location : Location
     }
 
 
-initRankingData : RankingData
-initRankingData =
+initRankingData : Location -> RankingData
+initRankingData location =
     { data = RemoteData.Loading
     , selectedCategoryId = -1
+    , location = location
     }
 
 

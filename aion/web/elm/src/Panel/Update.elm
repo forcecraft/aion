@@ -1,7 +1,6 @@
 module Panel.Update exposing (..)
 
 import Forms
-import General.Models exposing (Model)
 import Multiselect
 import Panel.Api exposing (createCategory, createQuestionWithAnswers, createRoom)
 import Panel.Models exposing (PanelData, categoryNamePossibleFields, questionFormPossibleFields)
@@ -9,7 +8,7 @@ import Panel.Msgs exposing (PanelMsg(CreateNewCategory, CreateNewQuestionWithAns
 import Panel.Notifications exposing (categoryCreationErrorToast, categoryCreationSuccessfulToast, categoryFormValidationErrorToast, questionCreationErrorToast, questionCreationSuccessfulToast, questionFormValidationErrorToast, roomCreationErrorToast, roomCreationSuccessfulToast, roomFormValidationErrorToast, toastsConfig)
 import RemoteData
 import Toasty
-import UpdateHelpers exposing (unwrapToken, updateForm)
+import UpdateHelpers exposing (updateForm)
 
 
 update : PanelMsg -> PanelData -> ( PanelData, Cmd PanelMsg )
@@ -54,9 +53,6 @@ update msg model =
 
         CreateNewCategory ->
             let
-                token =
-                    unwrapToken model.authData.token
-
                 location =
                     model.location
 
@@ -67,7 +63,7 @@ update msg model =
                         |> List.filter (\validations -> validations /= Nothing)
             in
                 if List.isEmpty validationErrors then
-                    model ! [ createCategory location token model.categoryForm ]
+                    model ! [ createCategory location model.token model.categoryForm ]
                 else
                     model ! [] |> categoryFormValidationErrorToast
 
@@ -77,16 +73,13 @@ update msg model =
                     []
 
                 categoryIds =
-                    List.map (\( id, _ ) -> id) (Multiselect.getSelectedValues model.panelData.categoryMultiSelect)
-
-                token =
-                    unwrapToken model.authData.token
+                    List.map (\( id, _ ) -> id) (Multiselect.getSelectedValues model.categoryMultiSelect)
 
                 location =
                     model.location
             in
                 if List.isEmpty validationErrors then
-                    model ! [ createRoom location token model.roomForm categoryIds ]
+                    model ! [ createRoom location model.token model.roomForm categoryIds ]
                 else
                     model ! [] |> roomFormValidationErrorToast
 
@@ -119,14 +112,11 @@ update msg model =
                         |> List.foldr (++) []
                         |> List.filter (\validations -> validations /= Nothing)
 
-                token =
-                    unwrapToken model.authData.token
-
                 location =
                     model.location
             in
                 if List.isEmpty validationErrors then
-                    model ! [ createQuestionWithAnswers location token model.questionForm ]
+                    model ! [ createQuestionWithAnswers location model.token model.questionForm ]
                 else
                     model ! [] |> questionFormValidationErrorToast
 
@@ -151,9 +141,6 @@ update msg model =
         MultiselectMsg subMsg ->
             let
                 ( subModel, subCmd ) =
-                    Multiselect.update subMsg model.panelData.categoryMultiSelect
-
-                oldPanelData =
-                    model.panelData
+                    Multiselect.update subMsg model.categoryMultiSelect
             in
                 { model | categoryMultiSelect = subModel } ! [ Cmd.map MultiselectMsg subCmd ]

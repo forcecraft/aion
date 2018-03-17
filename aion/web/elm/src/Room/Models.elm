@@ -1,6 +1,11 @@
 module Room.Models exposing (..)
 
+import Auth.Models exposing (Token)
+import Lobby.Models exposing (RoomId)
 import Navigation exposing (Location)
+import Phoenix.Socket
+import Room.Msgs exposing (RoomMsg)
+import Room.Socket exposing (SocketModel, initSocket)
 import Toasty
 import Toasty.Defaults
 
@@ -12,20 +17,22 @@ type alias RoomData =
     , progressBar : ProgressBar
     , roomId : Int
     , roomState : RoomState
+    , socket : Phoenix.Socket.Socket RoomMsg
     , toasties : Toasty.Stack Toasty.Defaults.Toast
     , userList : UserList
     , userGameData : UserGameData
     }
 
 
-initRoomData : Location -> RoomData
-initRoomData location =
+initRoomData : Location -> Token -> RoomData
+initRoomData location token =
     { currentQuestion = initCurrentQuestion
     , eventLog = initEventLog
     , location = location
     , roomId = 0
     , roomState = QuestionBreak
     , progressBar = initProgressBar
+    , socket = initSocket token location
     , toasties = Toasty.initialState
     , userList = []
     , userGameData = initUserGameData
@@ -178,3 +185,13 @@ asEventLogIn model eventLog =
 asProgressBarIn : RoomData -> ProgressBar -> RoomData
 asProgressBarIn model bar =
     { model | progressBar = bar }
+
+
+cleanRoomData : RoomId -> SocketModel -> RoomData -> RoomData
+cleanRoomData roomId socket roomData =
+    { roomData
+        | roomId = roomId
+        , socket = socket
+        , eventLog = []
+        , toasties = Toasty.initialState
+    }
