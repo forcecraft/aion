@@ -1,6 +1,6 @@
 module Routing exposing (..)
 
-import General.Models exposing (Route(AuthRoute, CreateRoomRoute, LobbyRoute, NotFoundRoute, RankingRoute, RoomRoute, UserRoute))
+import Models exposing (Route(AuthRoute, CreateRoomRoute, LobbyRoute, NotFoundRoute, RankingRoute, RoomRoute, UserRoute))
 import Navigation exposing (Location)
 import UrlParser exposing (..)
 

@@ -1,6 +1,5 @@
 module Lobby.Update exposing (..)
 
-import General.Models exposing (Model)
 import Lobby.Models exposing (LobbyData, initLobbyData)
 import Lobby.Msgs exposing (LobbyMsg(OnFetchRooms))
 import RemoteData

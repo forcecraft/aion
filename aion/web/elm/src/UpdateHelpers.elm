@@ -2,7 +2,7 @@ module UpdateHelpers exposing (..)
 
 import Auth.Models exposing (Token)
 import Forms
-import General.Models exposing (Model)
+import Models exposing (Model)
 import Json.Decode as Decode
 import Lobby.Api exposing (fetchRooms)
 import Msgs exposing (Msg(MkLobbyMsg, MkPanelMsg, MkUserMsg))

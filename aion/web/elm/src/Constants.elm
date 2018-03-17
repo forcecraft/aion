@@ -1,4 +1,4 @@
-module General.Constants exposing (..)
+module Constants exposing (..)
 
 
 footerContent : List String

@@ -1,8 +1,8 @@
 module App exposing (..)
 
 import Bootstrap.Navbar as Navbar
-import General.Models exposing (Flags, Model, initModel)
 import Lobby.Api exposing (fetchRooms)
+import Models exposing (Flags, Model, initModel)
 import Msgs exposing (Msg(MkLobbyMsg, MkPanelMsg, MkRoomMsg, MkUserMsg, NavbarMsg))
 import Multiselect
 import Navigation exposing (Location, modifyUrl)

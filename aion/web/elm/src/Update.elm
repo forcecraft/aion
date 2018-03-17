@@ -2,7 +2,7 @@ module Update exposing (..)
 
 import Auth.Msgs exposing (AuthMsg(LoginResult, RegistrationResult))
 import Auth.Update
-import General.Models exposing (Model, Route(LobbyRoute, RankingRoute, RoomRoute, UserRoute))
+import Models exposing (Model, Route(LobbyRoute, RankingRoute, RoomRoute, UserRoute))
 import Lobby.Api exposing (fetchRooms)
 import Lobby.Update
 import Msgs exposing (Msg(LeaveRoom, MkAuthMsg, MkLobbyMsg, MkPanelMsg, MkRankingMsg, MkRoomMsg, MkUserMsg, NavbarMsg, OnLocationChange))

@@ -1,4 +1,4 @@
-module General.Models exposing (..)
+module Models exposing (..)
 
 import Auth.Models exposing (AuthData, Token, UnauthenticatedViewToggle(LoginView), initAuthData, loginForm, registrationForm)
 import Bootstrap.Navbar as Navbar
@@ -6,11 +6,8 @@ import Lobby.Models exposing (LobbyData, initLobbyData)
 import Msgs exposing (Msg(NavbarMsg))
 import Navigation exposing (Location)
 import Panel.Models exposing (CategoriesData, PanelData, categoryForm, initPanelData, questionForm, roomForm)
-import Phoenix.Socket
 import Room.Models exposing (CurrentQuestion, EventLog, ProgressBar, RoomData, RoomState(QuestionBreak), UserGameData, UserList, initRoomData)
 import Ranking.Models exposing (RankingData, initRankingData)
-import Room.Msgs exposing (RoomMsg)
-import Room.Socket exposing (initSocket)
 import Toasty
 import Toasty.Defaults
 import User.Models exposing (UserData, initUserData)

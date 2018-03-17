@@ -2,8 +2,8 @@ module View exposing (..)
 
 import Auth.View exposing (authView)
 import Bootstrap.Navbar as Navbar
-import General.Constants exposing (footerContent)
-import General.Models exposing (Model, Route(AuthRoute, CreateRoomRoute, LobbyRoute, NotFoundRoute, RankingRoute, RoomRoute, UserRoute))
+import Constants exposing (footerContent)
+import Models exposing (Model, Route(AuthRoute, CreateRoomRoute, LobbyRoute, NotFoundRoute, RankingRoute, RoomRoute, UserRoute))
 import Html exposing (..)
 import Html.Attributes exposing (class, href, src)
 import Lobby.View exposing (lobbyView)
