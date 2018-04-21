@@ -1,5 +1,6 @@
 module Auth.View exposing (..)
 
+import Auth.Constants exposing (authPageRightColumnContent)
 import Auth.Models exposing (AuthData, LoginForm, RegistrationForm, UnauthenticatedViewToggle(LoginView, RegisterView))
 import Auth.Msgs exposing (AuthMsg(ChangeAuthForm, Login, Register, ToastyMsg, UpdateLoginForm, UpdateRegistrationForm))
 import Auth.Notifications exposing (toastsConfig)
@@ -9,28 +10,26 @@ import Bootstrap.Form as Form
 import Bootstrap.Form.Input as Input
 import Bootstrap.Grid as Grid
 import Forms
-import General.Constants exposing (authPageRightColumnContent)
-import General.Models exposing (Model)
 import Html exposing (Html, br, div, h2, p, span, text)
 import Html.Attributes exposing (class, for)
 import Toasty
 import Toasty.Defaults
 
 
-authView : Model -> Html AuthMsg
+authView : AuthData -> Html AuthMsg
 authView model =
     let
         unauthenticatedView =
-            model.authData.unauthenticatedView
+            model.unauthenticatedView
 
         loginForm =
-            model.authData.loginForm
+            model.loginForm
 
         registrationForm =
-            model.authData.registrationForm
+            model.registrationForm
 
         formMsg =
-            model.authData.formMsg
+            model.formMsg
     in
         Grid.container [ class "auth-container" ]
             [ Grid.container []

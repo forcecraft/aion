@@ -2,23 +2,22 @@ module Update exposing (..)
 
 import Auth.Msgs exposing (AuthMsg(LoginResult, RegistrationResult))
 import Auth.Update
-import General.Api
-import General.Models exposing (Model, Route(RankingRoute, UserRoute, RoomListRoute, RoomRoute), asEventLogIn, asProgressBarIn)
-import General.Update
-import Msgs exposing (Msg(..))
+import Models exposing (Model, Route(LobbyRoute, RankingRoute, RoomRoute, UserRoute))
+import Lobby.Api exposing (fetchRooms)
+import Lobby.Update
+import Msgs exposing (Msg(LeaveRoom, MkAuthMsg, MkLobbyMsg, MkPanelMsg, MkRankingMsg, MkRoomMsg, MkUserMsg, NavbarMsg, OnLocationChange))
 import Panel.Api
 import Panel.Update
 import Ranking.Api exposing (fetchRanking)
 import Ranking.Update
 import RemoteData
-import Room.Api exposing (fetchRooms)
+import Room.Models exposing (cleanRoomData)
 import Room.Msgs exposing (RoomMsg(PhoenixMsg))
+import Room.Socket exposing (initializeRoom, leaveRoom)
 import Room.Update
 import Routing exposing (parseLocation)
-import Toasty
-import Socket exposing (initSocket, initializeRoom, leaveRoom, sendAnswer)
-import UpdateHelpers exposing (decodeAndUpdate, postTokenActions, updateForm, withLocation, withToken)
-import User.Api exposing (fetchCurrentUser, fetchUserScores)
+import UpdateHelpers exposing (postTokenActions, withLocation, withToken)
+import User.Api exposing (fetchUserScores)
 import User.Msgs exposing (UserMsg(Logout))
 import User.Update
 
@@ -30,9 +29,9 @@ update msg model =
         MkRoomMsg subMsg ->
             let
                 ( updatedModel, cmd ) =
-                    Room.Update.update subMsg model
+                    Room.Update.update subMsg model.roomData
             in
-                updatedModel ! [ Cmd.map MkRoomMsg cmd ]
+                { model | roomData = updatedModel } ! [ Cmd.map MkRoomMsg cmd ]
 
         MkUserMsg subMsg ->
             if User.Api.unauthorized subMsg then
@@ -40,9 +39,9 @@ update msg model =
             else
                 let
                     ( updatedModel, cmd ) =
-                        User.Update.update subMsg model
+                        User.Update.update subMsg model.userData
                 in
-                    updatedModel ! [ Cmd.map MkUserMsg cmd ]
+                    { model | userData = updatedModel } ! [ Cmd.map MkUserMsg cmd ]
 
         MkRankingMsg subMsg ->
             if Ranking.Api.unauthorized subMsg then
@@ -50,9 +49,9 @@ update msg model =
             else
                 let
                     ( updatedModel, cmd ) =
-                        Ranking.Update.update subMsg model
+                        Ranking.Update.update subMsg model.rankingData
                 in
-                    updatedModel ! [ Cmd.map MkRankingMsg cmd ]
+                    { model | rankingData = updatedModel } ! [ Cmd.map MkRankingMsg cmd ]
 
         MkPanelMsg subMsg ->
             if Panel.Api.unauthorized subMsg then
@@ -60,24 +59,24 @@ update msg model =
             else
                 let
                     ( updatedModel, cmd ) =
-                        Panel.Update.update subMsg model
+                        Panel.Update.update subMsg model.panelData
                 in
-                    updatedModel ! [ Cmd.map MkPanelMsg cmd ]
+                    { model | panelData = updatedModel } ! [ Cmd.map MkPanelMsg cmd ]
 
-        MkGeneralMsg subMsg ->
-            if General.Api.unauthorized subMsg then
+        MkLobbyMsg subMsg ->
+            if Lobby.Api.unauthorized subMsg then
                 update (MkUserMsg Logout) model
             else
                 let
                     ( updatedModel, cmd ) =
-                        General.Update.update subMsg model
+                        Lobby.Update.update subMsg model.lobbyData
                 in
-                    updatedModel ! [ Cmd.map MkGeneralMsg cmd ]
+                    { model | lobbyData = updatedModel } ! [ Cmd.map MkLobbyMsg cmd ]
 
         MkAuthMsg subMsg ->
             let
                 ( updatedModel, cmd ) =
-                    Auth.Update.update subMsg model
+                    Auth.Update.update subMsg model.authData
 
                 extraCmds =
                     case subMsg of
@@ -90,7 +89,7 @@ update msg model =
                         _ ->
                             []
             in
-                updatedModel
+                { model | authData = updatedModel }
                     ! ([ Cmd.map MkAuthMsg cmd ] ++ extraCmds)
 
         --the rest
@@ -106,14 +105,11 @@ update msg model =
                     RoomRoute roomId ->
                         let
                             ( initializeRoomSocket, initializeRoomCmd ) =
-                                initializeRoom newModel.socket (toString roomId)
+                                initializeRoom newModel.roomData.socket (toString roomId)
                         in
                             { newModel
-                                | eventLog = []
+                                | roomData = cleanRoomData roomId initializeRoomSocket newModel.roomData
                                 , route = newRoute
-                                , roomId = roomId
-                                , socket = initializeRoomSocket
-                                , toasties = Toasty.initialState
                             }
                                 ! [ afterLeaveCmd
                                   , initializeRoomCmd
@@ -121,13 +117,13 @@ update msg model =
                                         |> Cmd.map MkRoomMsg
                                   ]
 
-                    RoomListRoute ->
+                    LobbyRoute ->
                         { newModel | route = newRoute }
                             ! [ afterLeaveCmd
                               , fetchRooms
                                     |> withLocation model
                                     |> withToken model
-                                    |> Cmd.map MkGeneralMsg
+                                    |> Cmd.map MkLobbyMsg
                               ]
 
                     RankingRoute ->
@@ -156,9 +152,15 @@ update msg model =
                 RoomRoute id ->
                     let
                         ( leaveRoomSocket, leaveRoomCmd ) =
-                            leaveRoom (toString id) model.socket
+                            leaveRoom (toString id) model.roomData.socket
+
+                        oldRoomData =
+                            model.roomData
+
+                        newRoomData =
+                            { oldRoomData | socket = leaveRoomSocket }
                     in
-                        { model | socket = leaveRoomSocket }
+                        { model | roomData = newRoomData }
                             ! [ leaveRoomCmd
                                     |> Cmd.map PhoenixMsg
                                     |> Cmd.map MkRoomMsg

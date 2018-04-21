@@ -1,23 +1,9 @@
 module Room.Decoders exposing (..)
 
-import Room.Models exposing (Answer, AnswerFeedback, CurrentQuestion, QuestionSummary, Room, RoomsData, UserJoinedInfo, UserLeft, UserList, UserListMessage, UserRecord)
+import Lobby.Models exposing (Room)
+import Room.Models exposing (Answer, AnswerFeedback, CurrentQuestion, QuestionSummary, UserJoinedInfo, UserLeft, UserList, UserListMessage, UserRecord)
 import Json.Decode as Decode exposing (field, list, map, null, oneOf)
 import Json.Decode.Pipeline exposing (decode, required)
-
-
-roomsDecoder : Decode.Decoder RoomsData
-roomsDecoder =
-    decode RoomsData
-        |> required "data" (Decode.list (roomDecoder))
-
-
-roomDecoder : Decode.Decoder Room
-roomDecoder =
-    decode Room
-        |> required "id" Decode.int
-        |> required "name" Decode.string
-        |> required "description" Decode.string
-        |> required "player_count" Decode.int
 
 
 userListMessageDecoder : Decode.Decoder UserListMessage

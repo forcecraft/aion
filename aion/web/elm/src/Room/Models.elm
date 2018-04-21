@@ -1,25 +1,47 @@
 module Room.Models exposing (..)
 
+import Auth.Models exposing (Token)
+import Lobby.Models exposing (RoomId)
+import Navigation exposing (Location)
+import Phoenix.Socket
+import Room.Msgs exposing (RoomMsg)
+import Room.Socket exposing (SocketModel, initSocket)
+import Toasty
+import Toasty.Defaults
 
-type alias RoomId =
-    Int
+
+type alias RoomData =
+    { currentQuestion : CurrentQuestion
+    , eventLog : EventLog
+    , location : Location
+    , progressBar : ProgressBar
+    , roomId : Int
+    , roomState : RoomState
+    , socket : Phoenix.Socket.Socket RoomMsg
+    , toasties : Toasty.Stack Toasty.Defaults.Toast
+    , userList : UserList
+    , userGameData : UserGameData
+    }
 
 
-type alias Room =
-    { id : RoomId
-    , name : String
-    , description : String
-    , player_count : Int
+initRoomData : Location -> Token -> RoomData
+initRoomData location token =
+    { currentQuestion = initCurrentQuestion
+    , eventLog = initEventLog
+    , location = location
+    , roomId = 0
+    , roomState = QuestionBreak
+    , progressBar = initProgressBar
+    , socket = initSocket token location
+    , toasties = Toasty.initialState
+    , userList = []
+    , userGameData = initUserGameData
     }
 
 
 type RoomState
     = QuestionDisplayed
     | QuestionBreak
-
-
-type alias RoomsData =
-    { data : List Room }
 
 
 type alias UserRecord =
@@ -45,9 +67,21 @@ type alias UserGameData =
     { currentAnswer : String }
 
 
+initUserGameData : UserGameData
+initUserGameData =
+    { currentAnswer = "" }
+
+
 type alias CurrentQuestion =
     { content : String
     , image_name : ImageName
+    }
+
+
+initCurrentQuestion : CurrentQuestion
+initCurrentQuestion =
+    { content = ""
+    , image_name = ""
     }
 
 
@@ -79,9 +113,7 @@ type Event
 
 
 type alias UserJoined =
-    { currentPlayer : String
-    , newPlayer : String
-    }
+    String
 
 
 type alias UserLeft =
@@ -100,8 +132,8 @@ asLogIn eventLog event =
     event :: eventLog
 
 
-initialLog : EventLog
-initialLog =
+initEventLog : EventLog
+initEventLog =
     []
 
 
@@ -112,8 +144,8 @@ type alias ProgressBar =
     }
 
 
-initialProgressBar : ProgressBar
-initialProgressBar =
+initProgressBar : ProgressBar
+initProgressBar =
     { start = 0.0
     , progress = 0.0
     , running = Uninitialized
@@ -143,3 +175,23 @@ withRunning running bar =
 withStart : Float -> ProgressBar -> ProgressBar
 withStart start bar =
     { bar | start = start }
+
+
+asEventLogIn : RoomData -> EventLog -> RoomData
+asEventLogIn model eventLog =
+    { model | eventLog = eventLog }
+
+
+asProgressBarIn : RoomData -> ProgressBar -> RoomData
+asProgressBarIn model bar =
+    { model | progressBar = bar }
+
+
+cleanRoomData : RoomId -> SocketModel -> RoomData -> RoomData
+cleanRoomData roomId socket roomData =
+    { roomData
+        | roomId = roomId
+        , socket = socket
+        , eventLog = []
+        , toasties = Toasty.initialState
+    }

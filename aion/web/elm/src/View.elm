@@ -2,17 +2,17 @@ module View exposing (..)
 
 import Auth.View exposing (authView)
 import Bootstrap.Navbar as Navbar
-import General.Constants exposing (footerContent, roomsPath, createRoomPath, userPath, rankingsPath)
-import General.Models exposing (Model, Route(AuthRoute, CreateRoomRoute, NotFoundRoute, RankingRoute, RoomListRoute, RoomRoute, UserRoute))
-import General.View exposing (roomListView)
+import Constants exposing (footerContent)
+import Models exposing (Model, Route(AuthRoute, CreateRoomRoute, LobbyRoute, NotFoundRoute, RankingRoute, RoomRoute, UserRoute))
 import Html exposing (..)
 import Html.Attributes exposing (class, href, src)
+import Lobby.View exposing (lobbyView)
 import Msgs exposing (Msg(..))
 import Navigation exposing (Location)
 import Panel.View exposing (panelView)
 import Room.View exposing (roomView)
 import Ranking.View exposing (rankingView)
-import Urls exposing (host)
+import Urls exposing (createRoomPath, host, lobbyPath, rankingPath, userPath)
 import User.View exposing (userView)
 
 
@@ -67,9 +67,9 @@ navbar route location navbarState =
             _ ->
                 baseNavbar
                     |> Navbar.items
-                        [ Navbar.itemLink [ href roomsPath ] [ text "Rooms" ]
+                        [ Navbar.itemLink [ href lobbyPath ] [ text "Rooms" ]
                         , Navbar.itemLink [ href createRoomPath ] [ text "Create room" ]
-                        , Navbar.itemLink [ href rankingsPath ] [ text "Rankings" ]
+                        , Navbar.itemLink [ href rankingPath ] [ text "Rankings" ]
                         , Navbar.itemLink [ href userPath ] [ text "Profile" ]
                         ]
                     |> Navbar.view navbarState
@@ -91,22 +91,22 @@ page model =
         content =
             case route of
                 AuthRoute ->
-                    authView model |> Html.map MkAuthMsg
+                    authView model.authData |> Html.map MkAuthMsg
 
-                RoomListRoute ->
-                    roomListView model |> Html.map MkGeneralMsg
+                LobbyRoute ->
+                    lobbyView model.lobbyData |> Html.map MkLobbyMsg
 
                 RoomRoute id ->
-                    roomView model id |> Html.map MkRoomMsg
+                    roomView model.roomData id |> Html.map MkRoomMsg
 
                 CreateRoomRoute ->
-                    panelView model |> Html.map MkPanelMsg
+                    panelView model.panelData |> Html.map MkPanelMsg
 
                 UserRoute ->
-                    userView model |> Html.map MkUserMsg
+                    userView model.userData |> Html.map MkUserMsg
 
                 RankingRoute ->
-                    rankingView model |> Html.map MkRankingMsg
+                    rankingView model.rankingData |> Html.map MkRankingMsg
 
                 NotFoundRoute ->
                     notFoundView

@@ -3,13 +3,14 @@ module Panel.Api exposing (..)
 import Forms
 import Http exposing (Body, Error(BadStatus), Request)
 import Json.Decode as Decode
+import Lobby.Models exposing (RoomList)
 import Navigation exposing (Location)
 import Panel.Msgs exposing (PanelMsg(OnCategoryCreated, OnFetchCategories, OnQuestionCreated, OnRoomCreated))
 import RemoteData exposing (WebData)
 import Panel.Decoders exposing (categoriesDecoder, categoryCreatedDecoder, questionCreatedDecoder, roomCreatedDecoder)
 import Json.Encode as Encode
 import Panel.Models exposing (CategoriesData, CategoryCreatedData, CategoryForm, QuestionCreatedData, QuestionForm, RoomCreatedData, RoomForm)
-import Room.Models exposing (RoomsData)
+import Room.Models exposing (UserList)
 import Urls exposing (categoriesUrl, questionsUrl, hostname, roomsUrl)
 
 
@@ -57,11 +58,11 @@ createQuestionWithAnswersRequest url token decoder body =
         }
 
 
-createQuestionWithAnswers : Location -> String -> QuestionForm -> WebData RoomsData -> Cmd PanelMsg
-createQuestionWithAnswers location token form rooms =
+createQuestionWithAnswers : Location -> String -> QuestionForm -> Cmd PanelMsg
+createQuestionWithAnswers location token form =
     let
         body =
-            questionCreationEncoder form rooms
+            questionCreationEncoder form
 
         url =
             questionsUrl location
@@ -71,8 +72,8 @@ createQuestionWithAnswers location token form rooms =
             |> Cmd.map OnQuestionCreated
 
 
-questionCreationEncoder : QuestionForm -> WebData RoomsData -> Http.Body
-questionCreationEncoder form rooms =
+questionCreationEncoder : QuestionForm -> Http.Body
+questionCreationEncoder form =
     let
         questionValue =
             Forms.formValue form "question"

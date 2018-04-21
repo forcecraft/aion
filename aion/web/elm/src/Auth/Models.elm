@@ -1,15 +1,34 @@
 module Auth.Models exposing (..)
 
+import Auth.Constants exposing (loginFormMsg)
 import Forms
+import Navigation exposing (Location)
+import Toasty
+import Toasty.Defaults
 
 
 type alias AuthData =
-    { loginForm : LoginForm
-    , registrationForm : RegistrationForm
-    , unauthenticatedView : UnauthenticatedViewToggle
-    , formMsg : String
-    , token : Maybe Token
+    { formMsg : String
+    , location : Location
+    , loginForm : LoginForm
     , msg : String
+    , registrationForm : RegistrationForm
+    , toasties : Toasty.Stack Toasty.Defaults.Toast
+    , token : Maybe Token
+    , unauthenticatedView : UnauthenticatedViewToggle
+    }
+
+
+initAuthData : Location -> Maybe Token -> AuthData
+initAuthData location token =
+    { formMsg = loginFormMsg
+    , location = location
+    , loginForm = Forms.initForm loginForm
+    , msg = ""
+    , registrationForm = Forms.initForm registrationForm
+    , token = token
+    , toasties = Toasty.initialState
+    , unauthenticatedView = LoginView
     }
 
 

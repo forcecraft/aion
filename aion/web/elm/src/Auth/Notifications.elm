@@ -1,7 +1,7 @@
 module Auth.Notifications exposing (..)
 
+import Auth.Models exposing (AuthData)
 import Auth.Msgs exposing (AuthMsg(ToastyMsg))
-import General.Models exposing (Model)
 import Html.Attributes exposing (class)
 import Toasty
 import Toasty.Defaults
@@ -10,7 +10,7 @@ import Toasty.Defaults
 -- registration notifications
 
 
-registrationErrorToast : ( Model, Cmd AuthMsg ) -> ( Model, Cmd AuthMsg )
+registrationErrorToast : ( AuthData, Cmd AuthMsg ) -> ( AuthData, Cmd AuthMsg )
 registrationErrorToast =
     addToast (Toasty.Defaults.Error "Error!" "Failed to register :(")
 
@@ -19,7 +19,7 @@ registrationErrorToast =
 -- login notifications
 
 
-loginErrorToast : ( Model, Cmd AuthMsg ) -> ( Model, Cmd AuthMsg )
+loginErrorToast : ( AuthData, Cmd AuthMsg ) -> ( AuthData, Cmd AuthMsg )
 loginErrorToast =
     addToast (Toasty.Defaults.Error "Error!" "Failed to login :(")
 
@@ -31,6 +31,6 @@ toastsConfig =
         |> Toasty.containerAttrs [ class "toasty-notification" ]
 
 
-addToast : Toasty.Defaults.Toast -> ( Model, Cmd AuthMsg ) -> ( Model, Cmd AuthMsg )
+addToast : Toasty.Defaults.Toast -> ( AuthData, Cmd AuthMsg ) -> ( AuthData, Cmd AuthMsg )
 addToast toast ( model, cmd ) =
     Toasty.addToast toastsConfig ToastyMsg toast ( model, cmd )

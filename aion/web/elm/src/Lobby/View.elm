@@ -1,29 +1,27 @@
-module General.View exposing (..)
+module Lobby.View exposing (..)
 
 import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Col as Col
-import General.Models exposing (Model)
-import General.Msgs exposing (GeneralMsg)
-import General.Utils exposing (displayWebData, sliceList)
+import Lobby.Utils exposing (displayWebData, sliceList)
 import Html exposing (Html, a, br, button, div, h2, h3, h4, hr, i, img, li, p, span, text, ul)
 import Html.Attributes exposing (class, href, src, style)
-import Msgs exposing (Msg)
-import RemoteData exposing (WebData)
-import Room.Models exposing (RoomsData, Room)
+import Lobby.Models exposing (LobbyData, Room)
+import Lobby.Msgs exposing (LobbyMsg)
 
 
+asGridContainer : List (Html msg) -> Html msg
 asGridContainer data =
     Grid.container [] data
 
 
-roomListView : Model -> Html GeneralMsg
-roomListView model =
+lobbyView : LobbyData -> Html LobbyMsg
+lobbyView model =
     div []
         [ h4 [ class "room-list-label" ] [ text "Recommended" ]
-        , displayRooms model.rooms Recommended
+        , displayRooms model Recommended
         , hr [ class "room-content-separator" ] []
         , h4 [ class "room-list-label" ] [ text "All rooms" ]
-        , displayRooms model.rooms All
+        , displayRooms model All
         ]
 
 
@@ -32,7 +30,7 @@ type FilterType
     | All
 
 
-displayRooms : WebData RoomsData -> FilterType -> Html GeneralMsg
+displayRooms : LobbyData -> FilterType -> Html LobbyMsg
 displayRooms rooms filterType =
     let
         fun =
@@ -43,10 +41,10 @@ displayRooms rooms filterType =
                 All ->
                     listRooms
     in
-        div [] [ displayWebData rooms fun ]
+        div [] [ fun rooms ]
 
 
-listRooms : RoomsData -> Html GeneralMsg
+listRooms : LobbyData -> Html LobbyMsg
 listRooms rooms =
     rooms
         |> .data
@@ -56,23 +54,23 @@ listRooms rooms =
         |> asGridContainer
 
 
-listRecommendedRooms : RoomsData -> Html GeneralMsg
+listRecommendedRooms : LobbyData -> Html LobbyMsg
 listRecommendedRooms rooms =
     listRooms { rooms | data = List.take 6 rooms.data }
 
 
-listRoomsSlice : List Room -> Html GeneralMsg
+listRoomsSlice : List Room -> Html LobbyMsg
 listRoomsSlice rooms =
     Grid.row [] (List.map listSingleRoom rooms)
 
 
-listSingleRoom : Room -> Grid.Column GeneralMsg
+listSingleRoom : Room -> Grid.Column LobbyMsg
 listSingleRoom room =
     Grid.col [ Col.lg2, Col.md4 ]
         [ div [ class "tile" ] [ displayRoomLabel room ] ]
 
 
-displayRoomLabel : Room -> Html GeneralMsg
+displayRoomLabel : Room -> Html LobbyMsg
 displayRoomLabel room =
     let
         url =

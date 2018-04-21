@@ -1,30 +1,19 @@
 module User.Update exposing (..)
 
-import General.Models exposing (Model)
 import Ports exposing (check)
+import User.Models exposing (UserData)
 import User.Msgs exposing (UserMsg(Logout, OnFetchCurrentUser, OnFetchUserScores))
 
 
-update : UserMsg -> Model -> ( Model, Cmd UserMsg )
+update : UserMsg -> UserData -> ( UserData, Cmd UserMsg )
 update msg model =
     case msg of
         OnFetchCurrentUser response ->
-            let
-                oldUserData =
-                    model.user
-            in
-                { model | user = { oldUserData | details = response } } ! []
+            { model | details = response } ! []
 
         OnFetchUserScores response ->
-            let
-                oldUserData =
-                    model.user
-            in
-                { model | user = { oldUserData | scores = response } } ! []
+            { model | scores = response } ! []
 
+        --  this one should be handled in the top-level update in order to clear out the token field
         Logout ->
-            let
-                oldAuthData =
-                    model.authData
-            in
-                { model | authData = { oldAuthData | token = Nothing } } ! [ check "" ]
+            model ! []

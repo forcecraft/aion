@@ -1,15 +1,37 @@
 module Panel.Models exposing (..)
 
+import Auth.Models exposing (Token)
 import Forms
+import Navigation exposing (Location)
 import Panel.Validators exposing (answersValidations, categoryNameValidations, questionValidations, categoryValidations)
 import Multiselect
+import RemoteData exposing (WebData)
+import Toasty
+import Toasty.Defaults
 
 
 type alias PanelData =
-    { questionForm : QuestionForm
+    { categories : WebData CategoriesData
     , categoryForm : CategoryForm
-    , roomForm : RoomForm
     , categoryMultiSelect : Multiselect.Model
+    , location : Location
+    , roomForm : RoomForm
+    , questionForm : QuestionForm
+    , toasties : Toasty.Stack Toasty.Defaults.Toast
+    , token : Token
+    }
+
+
+initPanelData : Location -> Token -> PanelData
+initPanelData location token =
+    { categories = RemoteData.Loading
+    , categoryForm = Forms.initForm categoryForm
+    , categoryMultiSelect = Multiselect.initModel [] "id"
+    , location = location
+    , roomForm = Forms.initForm roomForm
+    , questionForm = Forms.initForm questionForm
+    , toasties = Toasty.initialState
+    , token = token
     }
 
 

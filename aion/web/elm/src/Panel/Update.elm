@@ -1,234 +1,139 @@
 module Panel.Update exposing (..)
 
 import Forms
-import General.Models exposing (Model)
 import Multiselect
 import Panel.Api exposing (createCategory, createQuestionWithAnswers, createRoom)
-import Panel.Models exposing (categoryNamePossibleFields, questionFormPossibleFields)
+import Panel.Models exposing (PanelData, categoryNamePossibleFields, questionFormPossibleFields)
 import Panel.Msgs exposing (PanelMsg(CreateNewCategory, CreateNewQuestionWithAnswers, CreateNewRoom, MultiselectMsg, OnCategoryCreated, OnFetchCategories, OnQuestionCreated, OnRoomCreated, ToastyMsg, UpdateCategoryForm, UpdateQuestionForm, UpdateRoomForm))
 import Panel.Notifications exposing (categoryCreationErrorToast, categoryCreationSuccessfulToast, categoryFormValidationErrorToast, questionCreationErrorToast, questionCreationSuccessfulToast, questionFormValidationErrorToast, roomCreationErrorToast, roomCreationSuccessfulToast, roomFormValidationErrorToast, toastsConfig)
 import RemoteData
 import Toasty
-import UpdateHelpers exposing (unwrapToken, updateForm)
+import UpdateHelpers exposing (updateForm)
 
 
-update : PanelMsg -> Model -> ( Model, Cmd PanelMsg )
+update : PanelMsg -> PanelData -> ( PanelData, Cmd PanelMsg )
 update msg model =
     case msg of
         OnQuestionCreated response ->
             case response of
                 RemoteData.Success responseData ->
                     let
-                        oldPanelData =
-                            model.panelData
-
-                        oldQuestionForm =
-                            model.panelData.questionForm
-
                         newQuestionForm =
-                            updateForm "question" "" oldQuestionForm
+                            updateForm "question" "" model.questionForm
                                 |> updateForm "answers" ""
                     in
-                        { model | panelData = { oldPanelData | questionForm = newQuestionForm } }
-                            ! []
-                            |> questionCreationSuccessfulToast
+                        { model | questionForm = newQuestionForm } ! [] |> questionCreationSuccessfulToast
 
                 _ ->
-                    model
-                        ! []
-                        |> questionCreationErrorToast
+                    model ! [] |> questionCreationErrorToast
 
         OnCategoryCreated response ->
             case response of
                 RemoteData.Success responseData ->
                     let
-                        oldPanelData =
-                            model.panelData
-
-                        oldCategoryForm =
-                            model.panelData.categoryForm
-
                         newCategoryForm =
-                            updateForm "name" "" oldCategoryForm
+                            updateForm "name" "" model.categoryForm
                     in
-                        { model | panelData = { oldPanelData | categoryForm = newCategoryForm } }
-                            ! []
-                            |> categoryCreationSuccessfulToast
+                        { model | categoryForm = newCategoryForm } ! [] |> categoryCreationSuccessfulToast
 
                 _ ->
-                    model
-                        ! []
-                        |> categoryCreationErrorToast
+                    model ! [] |> categoryCreationErrorToast
 
         OnRoomCreated response ->
             case response of
                 RemoteData.Success responseData ->
                     let
-                        oldPanelData =
-                            model.panelData
-
-                        oldRoomForm =
-                            model.panelData.roomForm
-
                         newRoomForm =
-                            updateForm "name" "" oldRoomForm
-                                |> updateForm "description" ""
+                            updateForm "name" "" model.roomForm |> updateForm "description" ""
                     in
-                        { model | panelData = { oldPanelData | roomForm = newRoomForm } }
-                            ! []
-                            |> roomCreationSuccessfulToast
+                        { model | roomForm = newRoomForm } ! [] |> roomCreationSuccessfulToast
 
                 _ ->
-                    model
-                        ! []
-                        |> roomCreationErrorToast
+                    model ! [] |> roomCreationErrorToast
 
         CreateNewCategory ->
             let
-                categoryForm =
-                    model.panelData.categoryForm
-
-                token =
-                    unwrapToken model.authData.token
-
                 location =
                     model.location
 
                 validationErrors =
                     categoryNamePossibleFields
-                        |> List.map (\name -> Forms.errorList categoryForm name)
+                        |> List.map (\name -> Forms.errorList model.categoryForm name)
                         |> List.foldr (++) []
                         |> List.filter (\validations -> validations /= Nothing)
             in
                 if List.isEmpty validationErrors then
-                    model ! [ createCategory location token categoryForm ]
+                    model ! [ createCategory location model.token model.categoryForm ]
                 else
-                    model
-                        ! []
-                        |> categoryFormValidationErrorToast
+                    model ! [] |> categoryFormValidationErrorToast
 
         CreateNewRoom ->
             let
-                roomForm =
-                    model.panelData.roomForm
-
                 validationErrors =
                     []
 
                 categoryIds =
-                    List.map (\( id, _ ) -> id) (Multiselect.getSelectedValues model.panelData.categoryMultiSelect)
-
-                token =
-                    unwrapToken model.authData.token
+                    List.map (\( id, _ ) -> id) (Multiselect.getSelectedValues model.categoryMultiSelect)
 
                 location =
                     model.location
             in
                 if List.isEmpty validationErrors then
-                    model ! [ createRoom location token roomForm categoryIds ]
+                    model ! [ createRoom location model.token model.roomForm categoryIds ]
                 else
-                    model
-                        ! []
-                        |> roomFormValidationErrorToast
+                    model ! [] |> roomFormValidationErrorToast
 
         UpdateQuestionForm name value ->
             let
-                oldPanelData =
-                    model.panelData
-
-                questionForm =
-                    oldPanelData.questionForm
-
                 updatedQuestionForm =
-                    Forms.updateFormInput questionForm name value
+                    Forms.updateFormInput model.questionForm name value
             in
-                { model
-                    | panelData =
-                        { oldPanelData | questionForm = updatedQuestionForm }
-                }
-                    ! []
+                { model | questionForm = updatedQuestionForm } ! []
 
         UpdateCategoryForm name value ->
             let
-                oldPanelData =
-                    model.panelData
-
-                categoryForm =
-                    oldPanelData.categoryForm
-
                 updatedCategoryForm =
-                    Forms.updateFormInput categoryForm name value
+                    Forms.updateFormInput model.categoryForm name value
             in
-                { model
-                    | panelData =
-                        { oldPanelData | categoryForm = updatedCategoryForm }
-                }
-                    ! []
+                { model | categoryForm = updatedCategoryForm } ! []
 
         UpdateRoomForm name value ->
             let
-                panelData =
-                    model.panelData
-
-                oldRoomForm =
-                    panelData.roomForm
-
                 updatedRoomForm =
-                    Forms.updateFormInput oldRoomForm name value
+                    Forms.updateFormInput model.roomForm name value
             in
-                { model
-                    | panelData =
-                        { panelData | roomForm = updatedRoomForm }
-                }
-                    ! []
+                { model | roomForm = updatedRoomForm } ! []
 
         CreateNewQuestionWithAnswers ->
             let
-                questionForm =
-                    model.panelData.questionForm
-
                 validationErrors =
                     questionFormPossibleFields
-                        |> List.map (\name -> Forms.errorList questionForm name)
+                        |> List.map (\name -> Forms.errorList model.questionForm name)
                         |> List.foldr (++) []
                         |> List.filter (\validations -> validations /= Nothing)
 
-                token =
-                    unwrapToken model.authData.token
-
                 location =
                     model.location
-
-                rooms =
-                    model.rooms
             in
                 if List.isEmpty validationErrors then
-                    model ! [ createQuestionWithAnswers location token questionForm rooms ]
+                    model ! [ createQuestionWithAnswers location model.token model.questionForm ]
                 else
-                    model
-                        ! []
-                        |> questionFormValidationErrorToast
+                    model ! [] |> questionFormValidationErrorToast
 
         OnFetchCategories response ->
             let
-                newModel =
-                    { model | categories = response }
-
                 categoryList =
-                    case newModel.categories of
+                    case response of
                         RemoteData.Success categoriesData ->
                             List.map (\category -> ( toString (category.id), category.name )) categoriesData.data
 
                         _ ->
                             []
 
-                oldPanelData =
-                    model.panelData
-
                 updatedCategoryMultiselect =
                     Multiselect.initModel categoryList "id"
             in
-                { newModel | panelData = { oldPanelData | categoryMultiSelect = updatedCategoryMultiselect } } ! []
+                { model | categories = response, categoryMultiSelect = updatedCategoryMultiselect } ! []
 
         ToastyMsg subMsg ->
             Toasty.update toastsConfig ToastyMsg subMsg model
@@ -236,9 +141,6 @@ update msg model =
         MultiselectMsg subMsg ->
             let
                 ( subModel, subCmd ) =
-                    Multiselect.update subMsg model.panelData.categoryMultiSelect
-
-                oldPanelData =
-                    model.panelData
+                    Multiselect.update subMsg model.categoryMultiSelect
             in
-                { model | panelData = { oldPanelData | categoryMultiSelect = subModel } } ! [ Cmd.map MultiselectMsg subCmd ]
+                { model | categoryMultiSelect = subModel } ! [ Cmd.map MultiselectMsg subCmd ]

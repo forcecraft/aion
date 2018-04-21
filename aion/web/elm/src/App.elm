@@ -1,14 +1,14 @@
 module App exposing (..)
 
 import Bootstrap.Navbar as Navbar
-import General.Models exposing (Flags, Model, initialModel)
-import Msgs exposing (Msg(MkGeneralMsg, MkPanelMsg, MkRoomMsg, MkUserMsg, NavbarMsg))
+import Lobby.Api exposing (fetchRooms)
+import Models exposing (Flags, Model, initModel)
+import Msgs exposing (Msg(MkLobbyMsg, MkPanelMsg, MkRoomMsg, MkUserMsg, NavbarMsg))
 import Multiselect
 import Navigation exposing (Location, modifyUrl)
 import Panel.Api exposing (fetchCategories)
 import Panel.Msgs exposing (PanelMsg(MultiselectMsg))
 import Phoenix.Socket
-import Room.Api exposing (fetchRooms)
 import Room.Msgs exposing (RoomMsg(PhoenixMsg))
 import Room.Subscriptions
 import Routing
@@ -28,13 +28,13 @@ init flags location =
             Navbar.initialState NavbarMsg
 
         getInitialModel =
-            initialModel flags currentRoute location
+            initModel flags currentRoute location
     in
         ( { getInitialModel | navbarState = navbarState }
         , Cmd.batch
             [ setHomeUrl location
             , navbarCmd
-            , Cmd.map MkGeneralMsg (fetchRooms location flags.token)
+            , Cmd.map MkLobbyMsg (fetchRooms location flags.token)
             , Cmd.map MkPanelMsg (fetchCategories location flags.token)
             , Cmd.map MkUserMsg (fetchCurrentUser location flags.token)
             ]
@@ -44,10 +44,10 @@ init flags location =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Phoenix.Socket.listen model.socket PhoenixMsg |> Sub.map MkRoomMsg
+        [ Phoenix.Socket.listen model.roomData.socket PhoenixMsg |> Sub.map MkRoomMsg
         , Navbar.subscriptions model.navbarState NavbarMsg
         , Multiselect.subscriptions model.panelData.categoryMultiSelect |> Sub.map MultiselectMsg |> Sub.map MkPanelMsg
-        , Room.Subscriptions.subscriptions model |> Sub.map MkRoomMsg
+        , Room.Subscriptions.subscriptions model.roomData |> Sub.map MkRoomMsg
         ]
 
 

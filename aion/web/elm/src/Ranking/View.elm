@@ -1,9 +1,7 @@
 module Ranking.View exposing (..)
 
-import General.Models exposing (Model)
 import Html exposing (..)
 import Html.Attributes exposing (style, src, value, class)
-import Msgs exposing (Msg(..))
 import Bootstrap.Table as Table
 import Bootstrap.Grid as Grid
 import Bootstrap.Table exposing (rowAttr)
@@ -18,7 +16,7 @@ import Ranking.Utils exposing (selectedCategoryScores, sortedScoresWithIndices)
 import Ranking.Urls exposing (getGoldMedalImageUrl, getSilverMedalImageUrl, getBronzeMedalImageUrl)
 
 
-rankingView : Model -> Html RankingMsg
+rankingView : RankingData -> Html RankingMsg
 rankingView model =
     Grid.container []
         [ Grid.row []
@@ -36,9 +34,9 @@ rankingView model =
         ]
 
 
-selectCategoriesAttributes : Model -> List (Select.Item msg)
+selectCategoriesAttributes : RankingData -> List (Select.Item msg)
 selectCategoriesAttributes model =
-    case model.rankingData.data of
+    case model.data of
         RemoteData.Success rankingData ->
             List.map displayCategoryOption rankingData.rankingList
 
@@ -51,7 +49,7 @@ displayCategoryOption category =
     Select.item [ value (toString category.categoryId) ] [ text category.categoryName ]
 
 
-rankingTable : Model -> Html RankingMsg
+rankingTable : RankingData -> Html RankingMsg
 rankingTable model =
     Table.table
         { options = [ Table.striped, Table.hover ]
@@ -66,13 +64,13 @@ rankingTable model =
         }
 
 
-displayScores : Model -> Table.TBody RankingMsg
+displayScores : RankingData -> Table.TBody RankingMsg
 displayScores model =
-    case model.rankingData.data of
+    case model.data of
         RemoteData.Success rankingData ->
             let
                 categoryScores =
-                    selectedCategoryScores rankingData.rankingList model.rankingData.selectedCategoryId
+                    selectedCategoryScores rankingData.rankingList model.selectedCategoryId
             in
                 Table.tbody [] (List.map (displaySingleScore model) (sortedScoresWithIndices categoryScores))
 
@@ -80,7 +78,7 @@ displayScores model =
             Table.tbody [] []
 
 
-displaySingleScore : Model -> ( Int, PlayerScore ) -> Table.Row RankingMsg
+displaySingleScore : RankingData -> ( Int, PlayerScore ) -> Table.Row RankingMsg
 displaySingleScore model indexAndScore =
     case indexAndScore of
         ( index, playerScore ) ->

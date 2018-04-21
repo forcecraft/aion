@@ -1,13 +1,12 @@
 module User.View exposing (..)
 
 import Bootstrap.Button as Button
-import General.Models exposing (Model)
 import Html exposing (..)
 import Html.Attributes exposing (class, src)
 import Navigation exposing (Location)
 import RemoteData
 import Urls exposing (host)
-import User.Models exposing (CurrentUser, UserCategoryScore)
+import User.Models exposing (CurrentUser, UserCategoryScore, UserData)
 import Bootstrap.Grid as Grid
 import Bootstrap.Grid.Col as Col
 import Bootstrap.Badge as Badge
@@ -15,9 +14,9 @@ import Bootstrap.Button as Button
 import User.Msgs exposing (UserMsg(Logout))
 
 
-userView : Model -> Html UserMsg
+userView : UserData -> Html UserMsg
 userView model =
-    case model.user.details of
+    case model.details of
         RemoteData.Success user ->
             renderUserView model user
 
@@ -31,12 +30,12 @@ userView model =
             text (toString error)
 
 
-renderUserView : Model -> CurrentUser -> Html UserMsg
+renderUserView : UserData -> CurrentUser -> Html UserMsg
 renderUserView model user =
     div [ class "profile-container" ]
         [ Grid.container []
             [ Grid.row []
-                [ Grid.col [] [ (userDetails model.location user) ] ]
+                [ Grid.col [] [ (userDetails model user) ] ]
             , Grid.row []
                 [ Grid.col [ Col.xs12 ]
                     [ div [ class "userScoreDetails" ]
@@ -50,11 +49,11 @@ renderUserView model user =
         ]
 
 
-userDetails : Location -> CurrentUser -> Html UserMsg
-userDetails location user =
+userDetails : UserData -> CurrentUser -> Html UserMsg
+userDetails model user =
     let
         avatarPlaceholder =
-            (host location) ++ "placeholders/avatar_placeholder.png"
+            model.urls.avatarPlaceholder
     in
         div []
             [ img [ src avatarPlaceholder, class "user-avatar" ] []
@@ -71,9 +70,9 @@ userDetails location user =
             ]
 
 
-displayUserScores : Model -> List (Grid.Column UserMsg)
+displayUserScores : UserData -> List (Grid.Column UserMsg)
 displayUserScores model =
-    case model.user.scores of
+    case model.scores of
         RemoteData.Success userScores ->
             userScores.categoryScores
                 |> List.sortBy .score

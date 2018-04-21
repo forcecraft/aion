@@ -1,8 +1,7 @@
 module Panel.Notifications exposing (..)
 
-import General.Models exposing (Model)
 import Html.Attributes exposing (class)
-import Msgs exposing (Msg(..))
+import Panel.Models exposing (PanelData)
 import Panel.Msgs exposing (PanelMsg(ToastyMsg))
 import Toasty
 import Toasty.Defaults
@@ -11,17 +10,17 @@ import Toasty.Defaults
 -- question form notifications
 
 
-questionFormValidationErrorToast : ( Model, Cmd PanelMsg ) -> ( Model, Cmd PanelMsg )
+questionFormValidationErrorToast : ( PanelData, Cmd PanelMsg ) -> ( PanelData, Cmd PanelMsg )
 questionFormValidationErrorToast =
     addToast (Toasty.Defaults.Error "Error!" "Submission form is not valid!")
 
 
-questionCreationErrorToast : ( Model, Cmd PanelMsg ) -> ( Model, Cmd PanelMsg )
+questionCreationErrorToast : ( PanelData, Cmd PanelMsg ) -> ( PanelData, Cmd PanelMsg )
 questionCreationErrorToast =
     addToast (Toasty.Defaults.Error "Error!" "Failed to create a question.")
 
 
-questionCreationSuccessfulToast : ( Model, Cmd PanelMsg ) -> ( Model, Cmd PanelMsg )
+questionCreationSuccessfulToast : ( PanelData, Cmd PanelMsg ) -> ( PanelData, Cmd PanelMsg )
 questionCreationSuccessfulToast =
     addToast (Toasty.Defaults.Success "Success!" "Question created successfully.")
 
@@ -30,17 +29,17 @@ questionCreationSuccessfulToast =
 -- category form notifications
 
 
-categoryFormValidationErrorToast : ( Model, Cmd PanelMsg ) -> ( Model, Cmd PanelMsg )
+categoryFormValidationErrorToast : ( PanelData, Cmd PanelMsg ) -> ( PanelData, Cmd PanelMsg )
 categoryFormValidationErrorToast =
     addToast (Toasty.Defaults.Error "Error!" "Category submission form is not valid!")
 
 
-categoryCreationErrorToast : ( Model, Cmd PanelMsg ) -> ( Model, Cmd PanelMsg )
+categoryCreationErrorToast : ( PanelData, Cmd PanelMsg ) -> ( PanelData, Cmd PanelMsg )
 categoryCreationErrorToast =
     addToast (Toasty.Defaults.Error "Error!" "Failed to create a category.")
 
 
-categoryCreationSuccessfulToast : ( Model, Cmd PanelMsg ) -> ( Model, Cmd PanelMsg )
+categoryCreationSuccessfulToast : ( PanelData, Cmd PanelMsg ) -> ( PanelData, Cmd PanelMsg )
 categoryCreationSuccessfulToast =
     addToast (Toasty.Defaults.Success "Success!" "Category created successfully.")
 
@@ -49,17 +48,17 @@ categoryCreationSuccessfulToast =
 -- room form notifications
 
 
-roomFormValidationErrorToast : ( Model, Cmd PanelMsg ) -> ( Model, Cmd PanelMsg )
+roomFormValidationErrorToast : ( PanelData, Cmd PanelMsg ) -> ( PanelData, Cmd PanelMsg )
 roomFormValidationErrorToast =
     addToast (Toasty.Defaults.Error "Error!" "Room submission form is not valid!")
 
 
-roomCreationErrorToast : ( Model, Cmd PanelMsg ) -> ( Model, Cmd PanelMsg )
+roomCreationErrorToast : ( PanelData, Cmd PanelMsg ) -> ( PanelData, Cmd PanelMsg )
 roomCreationErrorToast =
     addToast (Toasty.Defaults.Error "Error!" "Failed to create a room.")
 
 
-roomCreationSuccessfulToast : ( Model, Cmd PanelMsg ) -> ( Model, Cmd PanelMsg )
+roomCreationSuccessfulToast : ( PanelData, Cmd PanelMsg ) -> ( PanelData, Cmd PanelMsg )
 roomCreationSuccessfulToast =
     addToast (Toasty.Defaults.Success "Success!" "Room created successfully.")
 
@@ -71,6 +70,6 @@ toastsConfig =
         |> Toasty.containerAttrs [ class "toasty-notification" ]
 
 
-addToast : Toasty.Defaults.Toast -> ( Model, Cmd PanelMsg ) -> ( Model, Cmd PanelMsg )
+addToast : Toasty.Defaults.Toast -> ( PanelData, Cmd PanelMsg ) -> ( PanelData, Cmd PanelMsg )
 addToast toast ( model, cmd ) =
     Toasty.addToast toastsConfig ToastyMsg toast ( model, cmd )

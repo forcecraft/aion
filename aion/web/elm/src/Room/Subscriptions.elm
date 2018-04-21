@@ -1,12 +1,11 @@
 module Room.Subscriptions exposing (..)
 
-import General.Models exposing (Model)
-import Room.Models exposing (RoomState(QuestionBreak, QuestionDisplayed))
+import Room.Models exposing (RoomData, RoomState(QuestionBreak, QuestionDisplayed))
 import Room.Msgs exposing (RoomMsg(Tick))
 import Time
 
 
-subscriptions : Model -> Sub RoomMsg
+subscriptions : RoomData -> Sub RoomMsg
 subscriptions model =
     case model.roomState of
         QuestionDisplayed ->
